@@ -1,5 +1,5 @@
 #include "ghidra.hh"
-#include "error.hh"
+#include "exception.hh"
 
 #include <libdecomp.hh>
 
@@ -7,6 +7,6 @@ namespace yagi
 {
 	void ghidra::init()
 	{
-		startDecompilerLibrary("C:\\Program Files\\IDA Pro 7.4\\plugins");
+		startDecompilerLibrary("C:\\work\\dev\\build\\");
 	}
-} // end of namespace gaip
+} // end of namespace yagi

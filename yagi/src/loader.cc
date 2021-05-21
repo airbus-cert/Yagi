@@ -7,12 +7,12 @@ extern "C" int64_t __stdcall get_bytes(void* buf, int64_t size, uint64_t ea, int
 namespace yagi 
 {
 	Loader::Loader()
-		: LoadImage("gaip")
+		: LoadImage("yagi")
 	{}
 
 	std::string Loader::getArchType(void) const 
 	{
-		return "gaip";
+		return "yagi";
 	}
 
 	void Loader::loadFill(uint1* ptr, int4 size, const Address& addr)
@@ -22,6 +22,6 @@ namespace yagi
 
 	void Loader::adjustVma(long adjust)
 	{
-		throw LowlevelError("Cannot adjust GAIP virtual memory");
+		throw LowlevelError("Cannot adjust YAGI virtual memory");
 	}
 } // end of namespace ghidra

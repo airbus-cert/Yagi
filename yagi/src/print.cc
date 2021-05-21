@@ -1,4 +1,5 @@
 #include "print.hh"
+#include "symbolinfo.hh"
 
 #define COLOR_ON        '\1'     ///< Escape character (ON).
 ///< Followed by a color code (::color_t).
@@ -60,7 +61,7 @@ namespace yagi
 
 	IdaPrintCapability::IdaPrintCapability(void)
 	{
-		name = "gaip-c-language";
+		name = "yagi-c-language";
 		isdefault = false;
 	}
 
@@ -116,17 +117,26 @@ namespace yagi
 			hl = syntax_highlight::keyword_color;
 		}
 
-		EmitColorGuard guard(*this, hl);
-		EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
+		auto name = std::string(ptr);
+		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
+		{
+			EmitColorGuard guard(*this, COLOR_IMPNAME);
+			EmitPrettyPrint::tagVariable(name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length()).c_str(), hl, vn, op);
+		}
+		else
+		{
+			EmitColorGuard guard(*this, hl);
+			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
+		}
 	}
 
 	void IdaEmit::tagFuncName(const char* ptr, syntax_highlight hl, const Funcdata* fd, const PcodeOp* op)
 	{
 		auto name = std::string(ptr);
-		if (name.substr(0, 6) == "__imp_")
+		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
 		{
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
-			EmitPrettyPrint::tagFuncName(name.substr(6, name.length() - 6).c_str(), hl, fd, op);
+			EmitPrettyPrint::tagFuncName(name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length()).c_str(), hl, fd, op);
 		}
 		else
 		{

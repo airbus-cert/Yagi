@@ -1,7 +1,7 @@
 #include "scope.hh"
 #include "symbolinfo.hh"
 #include "base.hh"
-#include "error.hh"
+#include "exception.hh"
 #include "typemanager.hh"
 
 namespace yagi 
@@ -24,7 +24,7 @@ namespace yagi
 			return result;
 		}
 
-		auto data = SymbolInfo::find(addr.getOffset(), static_cast<YagiArchitecture*>(glb)->getSymbolDatabase());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
 
 		if (!data.has_value())
 		{
@@ -32,7 +32,7 @@ namespace yagi
 		}
 
 		// found a function
-		auto sym = proxy->addFunction(addr, data.value().getName());
+		auto sym = proxy->addFunction(addr, data.value()->getName());
 
 		auto funcData = sym->getFunction();
 
@@ -58,29 +58,52 @@ namespace yagi
 			return result;
 		}
 
-		auto data = SymbolInfo::load(addr.getOffset(), static_cast<YagiArchitecture*>(glb)->getSymbolDatabase());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
 		if (data.has_value())
 		{
 			auto scope = glb->symboltab->getGlobalScope();
+			auto name = data.value()->getName();
+			Symbol* symbol = nullptr;
 
-			switch (data.value().getType())
+			switch (data.value()->getType())
 			{
 			case SymbolInfo::Type::Function:
-				return proxy->addMapPoint(proxy->addFunction(addr, data.value().getName()), addr, usepoint);
+				symbol = proxy->addFunction(addr, name);
+				break;
 			case SymbolInfo::Type::Import:
-				return proxy->addMapPoint(proxy->addExternalRef(addr, addr, data.value().getName()), addr, usepoint);
+				symbol = proxy->addExternalRef(addr, addr, name);
+				break;
 			case SymbolInfo::Type::Label:
-				return proxy->addMapPoint(proxy->addCodeLabel(addr, data.value().getName()), addr, usepoint);
+				symbol = proxy->addCodeLabel(addr, name);
+				break;
 			case SymbolInfo::Type::Other:
 			{
 				auto type = static_cast<YagiArchitecture*>(glb)->getTypeInfoFactory().build(addr.getOffset());
-				return proxy->addMapPoint(proxy->addSymbol(data.value().getName(), static_cast<TypeManager*>(glb->types)->findByTypeInfo(*(type.value()))), addr, usepoint);
+				if (type.has_value())
+				{
+					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->findByTypeInfo(*(type.value())));
+				}
+				else 
+				{
+					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->getBase(size, TYPE_UNKNOWN));
+				}
+				break;
 			}	
 			default:
-				break;
+				return nullptr;
 			}
+
+			if (data.value()->isReadOnly())
+			{
+				proxy->setAttribute(symbol, Varnode::readonly);
+			}
+
+			return proxy->addMapPoint(symbol, addr, usepoint);
 		}
 
+		if (result != nullptr) {
+			
+		}
 		return nullptr;
 	}
 
@@ -98,13 +121,13 @@ namespace yagi
 			return result;
 		}
 
-		auto data = SymbolInfo::load(addr.getOffset(), static_cast<YagiArchitecture*>(glb)->getSymbolDatabase());
-		if (!data.has_value() || !data.value().isImport())
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		if (!data.has_value() || !data.value()->isImport())
 		{
 			return nullptr;
 		}
 
-		return proxy->addExternalRef(addr, addr, data.value().getName());
+		return proxy->addExternalRef(addr, addr, data.value()->getName());
 	}
 
 	LabSymbol* IdaScope::findCodeLabel(const Address& addr) const
@@ -116,13 +139,13 @@ namespace yagi
 			return result;
 		}
 
-		auto data = SymbolInfo::load(addr.getOffset(), static_cast<YagiArchitecture*>(glb)->getSymbolDatabase());
-		if (!data.has_value() || !data.value().isLabel())
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		if (!data.has_value() || !data.value()->isLabel())
 		{
 			return nullptr;
 			
 		}
-		return proxy->addCodeLabel(addr, data.value().getName());
+		return proxy->addCodeLabel(addr, data.value()->getName());
 	}
 
 	bool IdaScope::isNameUsed(const std::string& name, const Scope* scope) const
@@ -133,10 +156,10 @@ namespace yagi
 	Funcdata* IdaScope::resolveExternalRefFunction(ExternRefSymbol* sym) const
 	{
 		auto proxy = static_cast<IdaScope*>(glb->symboltab->getGlobalScope())->getProxy();
-		auto data = SymbolInfo::load(sym->getRefAddr().getOffset(), static_cast<YagiArchitecture*>(glb)->getSymbolDatabase());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(sym->getRefAddr().getOffset());
 		if (data.has_value())
 		{
-			auto funcData = proxy->addFunction(sym->getRefAddr(), data.value().getName())->getFunction();
+			auto funcData = proxy->addFunction(sym->getRefAddr(), data.value()->getName())->getFunction();
 
 			// Try to set model type
 			static_cast<TypeManager*>(glb->types)->update(*funcData);
@@ -161,4 +184,4 @@ namespace yagi
 	{
 		return m_proxy.addSymbol(name, ct, addr, usepoint);
 	}
-} // end of namespace gaip
+} // end of namespace yagi

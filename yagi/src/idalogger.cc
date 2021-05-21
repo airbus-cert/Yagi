@@ -8,4 +8,4 @@ namespace yagi
 	{
 		msg(message.c_str());
 	}
-} // end of namespace gaip
+} // end of namespace yagi

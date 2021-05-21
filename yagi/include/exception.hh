@@ -56,6 +56,12 @@ namespace yagi
 	public:
 		explicit InvalidType(std::string);
 	};
+
+	class UnknownCompiler : public Error
+	{
+	public:
+		explicit UnknownCompiler();
+	};
 }
 
 #endif

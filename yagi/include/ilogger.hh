@@ -7,22 +7,34 @@ namespace yagi
 {
 	class ILogger
 	{
-	public:
-		virtual void print(const std::string& message) = 0;
-
+	private:
 		template<typename... Params>
-		void error(const std::string& message, Params... parameters)
+		void format(const std::string& level, const std::string& message, Params... parameters)
 		{
 			std::stringstream ss;
-			ss << "[ERROR] : ";
+			ss << "[Yagi] " << level << " : ";
 			for (auto& val : { message, parameters ... })
 			{
 				ss << " " << val;
 			}
 
 			ss << std::endl;
-			
+
 			print(ss.str());
+		}
+
+		virtual void print(const std::string& message) = 0;
+
+	public:
+		
+
+		template<typename... Params>
+		void error(const std::string& message, Params... parameters) {
+			this->format("ERROR", message, parameters...);
+		}
+		template<typename... Params>
+		void info(const std::string& message, Params... parameters) {
+			this->format("INFO", message, parameters...);
 		}
 	};
 }

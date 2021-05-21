@@ -1,7 +1,7 @@
 #ifndef __YAGI_ARCHITECTURE__
 #define __YAGI_ARCHITECTURE__
 
-#include "symbolfactory.hh"
+#include "symbolinfo.hh"
 #include "typeinfo.hh"
 #include "ilogger.hh"
 
@@ -17,7 +17,7 @@ namespace yagi
 	class YagiArchitecture : public SleighArchitecture
 	{
 	protected:
-		std::shared_ptr<SymbolFactory> m_symbols;
+		std::unique_ptr<SymbolInfoFactory> m_symbols;
 
 		/*!
 		 *	\brief use as type backend factory
@@ -58,14 +58,16 @@ namespace yagi
 		/*!
 		 *	\brief	default ctor
 		 *	\param	name	name of the decompilation file
+		 *	\param	sleighId	ID of decompiler to used
 		 *	\param	logger	logger used by the entire program to print user informations
 		 *	\param	symbols	symbol factory backend, use to find symbol
 		 *	\param	type	type factory backend, use to find type informations
 		 */
 		explicit YagiArchitecture(
 			const std::string& name,
+			const std::string& sleighId,
 			std::unique_ptr<ILogger> logger,
-			std::shared_ptr<SymbolFactory> symbols,
+			std::unique_ptr<SymbolInfoFactory> symbols,
 			std::unique_ptr<TypeInfoFactory> type
 		);
 
@@ -87,7 +89,7 @@ namespace yagi
 		 *	\brief	Access to the symbol factory backend
 		 *	\return	An implementation of the symbol factory
 		 */
-		std::shared_ptr<SymbolFactory> getSymbolDatabase() const;
+		SymbolInfoFactory& getSymbolDatabase() const;
 
 		/*!
 		 *	\brief	Access to the type factory backend

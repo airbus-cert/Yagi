@@ -8,19 +8,24 @@ namespace yagi
 	/**********************************************************************/
 	YagiArchitecture::YagiArchitecture(
 		const std::string& name,
+		const std::string& sleighId,
 		std::unique_ptr<ILogger> logger,
-		std::shared_ptr<SymbolFactory> symbols,
+		std::unique_ptr<SymbolInfoFactory> symbols,
 		std::unique_ptr<TypeInfoFactory> type
-	) : SleighArchitecture(name, "x86:LE:64:default:windows", &m_err),
-		m_logger{ std::move(logger) }, m_symbols{ symbols }, m_type{ std::move(type) }
-	{}
+	) : SleighArchitecture(name, sleighId, &m_err),
+		m_logger{ std::move(logger) }, m_symbols{ std::move(symbols) }, m_type{ std::move(type) }
+	{
+		
+	}
 
 	/**********************************************************************/
 	void YagiArchitecture::buildLoader(DocumentStorage& store)
 	{
 		std::stringstream error;
 		collectSpecFiles(error);
-		m_logger->error("spec files loading", error.str());
+		if (error.str().length() > 0) {
+			m_logger->error("spec files loading", error.str());
+		}
 		loader = new Loader();
 	}
 
@@ -47,7 +52,6 @@ namespace yagi
 		types->setCoreType("__uint32", 4, TYPE_UNKNOWN, false);
 		types->setCoreType("__uint64", 8, TYPE_UNKNOWN, false);
 		types->setCoreType("code", 1, TYPE_CODE, false);
-		types->setCoreType("WCHAR", 2, TYPE_INT, true);
 		types->cacheCoreTypes();
 	}
 
@@ -66,9 +70,9 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::shared_ptr<SymbolFactory> YagiArchitecture::getSymbolDatabase() const
+	SymbolInfoFactory& YagiArchitecture::getSymbolDatabase() const
 	{
-		return m_symbols;
+		return *m_symbols;
 	}
 
 	/**********************************************************************/

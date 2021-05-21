@@ -8,35 +8,14 @@
 namespace yagi 
 {
 	/**********************************************************************/
-	SymbolInfo::SymbolInfo(uint64_t ea, std::string name, std::shared_ptr<SymbolFactory> database)
-		: m_ea(ea), m_name(name), m_database(database)
-	{
-
-	}
+	// define the prefix
+	const std::string SymbolInfo::IMPORT_PREFIX = "__imp_";
 
 	/**********************************************************************/
-	std::optional<SymbolInfo> SymbolInfo::load(uint64_t ea, std::shared_ptr<SymbolFactory> database) noexcept
+	SymbolInfo::SymbolInfo(uint64_t ea, std::string name)
+		: m_ea(ea), m_name(name)
 	{
-		auto name = database->getSymbol(ea);
-		if (!name.has_value())
-		{
-			return std::nullopt;
-		}
 
-		return SymbolInfo(ea, name.value(), database);
-	}
-
-	/**********************************************************************/
-	std::optional<SymbolInfo> SymbolInfo::find(uint64_t ea, std::shared_ptr<SymbolFactory> database) noexcept
-	{
-		auto function = database->getFunction(ea);
-		if (!function.has_value())
-		{
-			return std::nullopt;
-		}
-
-		auto [name, startEA, endEA] = function.value();
-		return SymbolInfo(startEA, name, database);
 	}
 
 	/**********************************************************************/
@@ -46,45 +25,14 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	uint64_t SymbolInfo::getFunctionSize() const
-	{
-		auto function = m_database->getFunction(m_ea);
-		if (!function.has_value())
-		{
-			throw SymbolIsNotAFunction(m_name);
-		}
-
-		auto [name, startEA, endEA] = function.value();
-		if (startEA != m_ea)
-		{
-			throw SymbolIsNotAFunction(m_name);
-		}
-
-		return endEA - startEA;
-	}
-
-	/**********************************************************************/
 	std::string SymbolInfo::getName() const noexcept
 	{
+		// Mark import symbol with IDA convention
+		if (isImport() && m_name.substr(0, IMPORT_PREFIX.length()) != IMPORT_PREFIX) {
+			return IMPORT_PREFIX + m_name;
+		}
+		
 		return m_name;
-	}
-
-	/**********************************************************************/
-	bool SymbolInfo::isFunction() const noexcept
-	{
-		return m_database->isFunction(m_ea);
-	}
-
-	/**********************************************************************/
-	bool SymbolInfo::isLabel() const noexcept
-	{
-		return m_database->isLabel(m_ea);
-	}
-
-	/**********************************************************************/
-	bool SymbolInfo::isImport() const noexcept
-	{
-		return m_database->isImport(m_name);
 	}
 
 	/**********************************************************************/
@@ -105,4 +53,4 @@ namespace yagi
 
 		return SymbolInfo::Type::Other;
 	}
-} // end of namespace gaip
+} // end of namespace yagi

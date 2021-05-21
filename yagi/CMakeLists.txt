@@ -1,15 +1,13 @@
 set(YAGI_SOURCE
-	src/action.cc
 	src/yagiarchitecture.cc
 	src/base.cc
 	src/decompiler.cc
-	src/error.cc
-	src/gaip.cc
+	src/exception.cc
+	src/yagi.cc
 	src/idatypeinfo.cc
 	src/ghidra.cc
 	src/idalogger.cc
 	src/idasymbolfactory.cc
-	src/idatypefactory.cc
 	src/loader.cc
 	src/plugin.cc
 	src/print.cc
@@ -19,17 +17,15 @@ set(YAGI_SOURCE
 )
 
 set(YAGI_INCLUDE
-	include/action.hh
 	include/yagiarchitecture.hh
 	include/base.hh
 	include/decompiler.hh
 	include/idatypeinfo.hh
-	include/error.hh
+	include/exception.hh
 	include/ghidra.hh
 	include/idalogger.hh
 	include/idasymbolfactory.hh
 	include/idatool.hh
-	include/idatypefactory.hh
 	include/idatypeinfo.hh
 	include/idecompile.hh
 	include/ilogger.hh
@@ -37,7 +33,6 @@ set(YAGI_INCLUDE
 	include/plugin.hh
 	include/print.hh
 	include/scope.hh
-	include/symbolfactory.hh
 	include/symbolinfo.hh
 	include/typemanager.hh
 	include/typeinfo.hh

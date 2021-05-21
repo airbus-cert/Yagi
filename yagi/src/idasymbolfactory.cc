@@ -1,6 +1,6 @@
 #include "idasymbolfactory.hh"
 #include "base.hh"
-#include "error.hh"
+#include "exception.hh"
 #include "idatool.hh"
 #include <idp.hpp>
 #include <name.hpp>
@@ -8,22 +8,22 @@
 
 namespace yagi 
 {
-	IdaSymbolFactory::IdaSymbolFactory()
+	IdaSymbolInfoFactory::IdaSymbolInfoFactory()
 	{
 
 	}
 
-	std::optional<std::string> IdaSymbolFactory::getSymbol(uint64_t ea)
+	std::optional<std::unique_ptr<SymbolInfo>> IdaSymbolInfoFactory::find(uint64_t ea)
 	{
 		qstring name;
 		if (get_name(&name, ea) == 0 || name.size() == 0)
 		{
 			return std::nullopt;
 		}
-		return name.c_str();
+		return std::make_unique<IdaSymbolInfo>(ea, name.c_str());
 	}
 
-	std::optional<std::tuple<std::string, uint64_t, uint64_t>> IdaSymbolFactory::getFunction(uint64_t ea)
+	std::optional<std::unique_ptr<SymbolInfo>> IdaSymbolInfoFactory::find_function(uint64_t ea)
 	{
 		auto idaFunc = get_func(ea);
 		if (idaFunc == nullptr)
@@ -35,18 +35,23 @@ namespace yagi
 		get_short_name(&idaName, idaFunc->start_ea);
 		auto beginParameter = idaName.find("(");
 		auto functionName = split(idaName.substr(0, beginParameter).c_str(), ' ').back();
-		return std::make_tuple(functionName, idaFunc->start_ea, idaFunc->end_ea);
+
+		return std::make_unique<IdaSymbolInfo>(idaFunc->start_ea, functionName);
 	}
 
-	bool IdaSymbolFactory::isFunction(uint64_t ea)
+	IdaSymbolInfo::IdaSymbolInfo(uint64_t ea, std::string name)
+		: SymbolInfo(ea, name) 
+	{}
+
+	bool IdaSymbolInfo::isFunction() const noexcept
 	{
-		auto idaFunc = get_func(ea);
-		return idaFunc != nullptr && idaFunc->start_ea == ea;
+		auto idaFunc = get_func(m_ea);
+		return idaFunc != nullptr && idaFunc->start_ea == m_ea;
 	}
 
-	bool IdaSymbolFactory::isImport(const std::string& name)
+	bool IdaSymbolInfo::isImport() const noexcept
 	{
-		std::string importName = name;
+		std::string importName = m_name;
 		if (importName.length() > 6 && importName.substr(0, 6) == "__imp_")
 		{
 			importName = importName.substr(6, importName.length() - 6);
@@ -71,10 +76,11 @@ namespace yagi
 		}
 		return false;
 	}
-	bool IdaSymbolFactory::isLabel(uint64_t ea)
+
+	bool IdaSymbolInfo::isLabel() const noexcept
 	{
 		xrefblk_t xr;
-		for (bool success = xr.first_to((ea_t)ea, XREF_ALL); success; success = xr.next_to()) {
+		for (bool success = xr.first_to((ea_t)m_ea, XREF_ALL); success; success = xr.next_to()) {
 			if (xr.iscode == 0) {
 				break;
 			}
@@ -86,4 +92,22 @@ namespace yagi
 
 		return false;
 	}
-} // end of namespace gaip
+
+	bool IdaSymbolInfo::isReadOnly() const noexcept
+	{
+		auto seg = getseg(m_ea);
+		return seg->perm == SEGPERM_READ;
+	}
+
+	/**********************************************************************/
+	uint64_t IdaSymbolInfo::getFunctionSize() const
+	{
+		auto function = get_func(m_ea);
+		if (function == nullptr || function->start_ea != m_ea)
+		{
+			throw SymbolIsNotAFunction(m_name);
+		}
+
+		return function->end_ea - function->start_ea;
+	}
+} // end of namespace yagi

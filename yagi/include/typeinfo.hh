@@ -37,8 +37,13 @@ namespace yagi
 		virtual bool isDotDotDot() const = 0;
 		virtual bool isVoid() const = 0;
 		virtual bool isFunc() const = 0;
+		virtual bool isConst() const = 0;
+		virtual bool isChar() const = 0;
+		virtual bool isArray() const = 0;
+		
 		virtual std::vector<TypeStructField> getFields() const = 0;
 		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
+		virtual uint64_t getArraySize() const = 0;
 	};
 
 	class TypeInfoFactory

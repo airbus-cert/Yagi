@@ -2,6 +2,7 @@
 #define __YAGI_LOADER__
 
 #include <libdecomp.hh>
+#include <yagiarchitecture.hh>
 
 namespace yagi 
 {

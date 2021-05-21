@@ -1,4 +1,4 @@
-#include "error.hh"
+#include "exception.hh"
 #include "base.hh"
 #include <sstream>
 
@@ -70,4 +70,12 @@ namespace yagi
 		ss << "Invalid type id " << name;
 		m_reason = ss.str();
 	}
-} // end of namespace gaip
+
+	UnknownCompiler::UnknownCompiler()
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "Invalid Compiler Type";
+		m_reason = ss.str();
+	}
+} // end of namespace yagi

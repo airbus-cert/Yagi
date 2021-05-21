@@ -14,7 +14,6 @@ namespace yagi
 		template<typename T, typename R, typename U>
 		void transform(const qvector<T>& origin, U it, std::function<R(const T&)> callback)
 		{
-
 			for (auto i = 0; i < origin.size(); i++)
 			{
 				*it = callback(origin.at(i));

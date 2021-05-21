@@ -11,7 +11,7 @@
 #include <idp.hpp>
 
 #include "typeinfo.hh"
-#include "error.hh"
+#include "exception.hh"
 
 
 namespace yagi 
@@ -55,9 +55,24 @@ namespace yagi
 		bool isDotDotDot() const;
 		bool isVoid() const;
 		bool isFunc() const;
+		bool isConst() const;
+		bool isChar() const;
+		bool isArray() const;
 
 		std::unique_ptr<TypeInfo> getPointedObject() const;
 		std::vector<TypeStructField> getFields() const;
+		uint64_t getArraySize() const;
+	};
+
+	class IdaTypeInfoFactory : public TypeInfoFactory
+	{
+	public:
+		explicit IdaTypeInfoFactory();
+		virtual ~IdaTypeInfoFactory();
+
+		std::optional<std::unique_ptr<TypeInfo>> build(const std::string& name) override;
+		std::optional<std::unique_ptr<TypeInfo>> build(uint64_t ea) override;
+
 	};
 }
 

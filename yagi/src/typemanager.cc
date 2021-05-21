@@ -1,6 +1,6 @@
 #include "typemanager.hh"
 #include "base.hh"
-#include "error.hh"
+#include "exception.hh"
 
 #include <regex>
 
@@ -85,6 +85,13 @@ namespace yagi
 			return ct;
 		}
 
+		if (typeInfo.isChar())
+		{
+			auto ct = new TypeChar(name);
+			setName(ct, name);
+			return ct;
+		}
+
 		if (typeInfo.isInt())
 		{
 			auto ct = new TypeBase(typeInfo.getSize(), TYPE_INT, name);
@@ -127,11 +134,35 @@ namespace yagi
 			return parseFunc(typeInfo);
 		}
 
+		if (typeInfo.isArray())
+		{
+			if (typeInfo.getSize() > 0)
+			{
+				auto ct = new TypeArray(
+					typeInfo.getSize(), 
+					findByTypeInfo(*typeInfo.getPointedObject())
+				);
+				setName(ct, name);
+				return ct;
+			}
+			// if an array of size 0 convert to pointer
+			else {
+				auto ct = new TypePointer(
+					glb->getDefaultCodeSpace()->getAddrSize(),
+					findByTypeInfo(*typeInfo.getPointedObject()),
+					glb->getDefaultCodeSpace()->getWordSize()
+				);
+				setName(ct, name);
+				return ct;
+			}
+		}
+
 		auto ct = new TypeBase(glb->getDefaultCodeSpace()->getAddrSize(), TYPE_UNKNOWN, name);
 		setName(ct, name);
 		return ct;
 	}
 
+	/**********************************************************************/
 	Datatype* TypeManager::findByTypeInfo(const TypeInfo& typeInfo)
 	{
 		try
@@ -156,6 +187,12 @@ namespace yagi
 		PrototypePieces pieces;
 		type->getPrototype()->getPieces(pieces);
 		func.getFuncProto().setPieces(pieces);
+
+		// maybe IDA didn't finish to analyze it
+		// wait for ghidra type inference
+		if (pieces.intypes.size() == 0) {
+			func.getFuncProto().setInputLock(false);
+		}
 	}
 
-} // end of namespace gaip
+} // end of namespace yagi

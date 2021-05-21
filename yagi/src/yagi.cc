@@ -11,12 +11,34 @@
 #endif
 
 #include <loader.hpp>
+#include "ida.hpp"
+#include "idp.hpp"
 #include "plugin.hh"
+#include "idecompile.hh"
 #include "decompiler.hh"
 #include "ghidra.hh"
-#include "idatypefactory.hh"
+#include "idatypeinfo.hh"
 #include "idasymbolfactory.hh"
 #include "idalogger.hh"
+
+#define COMPILER_MODE(mode) inf_is_64bit() ? mode ## _64 : mode ## _32;
+#define COMPILER_ENDIANESS(compiler) inf_is_be() ? compiler ## _BE : compiler ## _LE;
+#define COMPILER(c) COMPILER_MODE(COMPILER_ENDIANESS(c))
+
+static int processor_id() {
+#if IDA_SDK_VERSION < 750
+	return ph.id;
+#else
+	return PH.id;
+#endif
+}
+
+static yagi::Compiler compute_compiler() {
+	compiler_info_t info;
+	inf_get_cc(&info);
+
+	return yagi::Compiler(yagi::Compiler::Language::X86_WINDOWS, yagi::Compiler::Endianess::LE, yagi::Compiler::Mode::M64);
+}
 
 /*
  *	\brief init function called from IDA directly
@@ -26,8 +48,9 @@ static plugmod_t* idaapi yagi_init(void)
 	yagi::ghidra::init();
 	
 	auto decompiler = yagi::GhidraDecompiler::build(
+		compute_compiler(),
 		std::make_unique<yagi::IdaLogger>(),
-		std::make_shared<yagi::IdaSymbolFactory>(),
+		std::make_unique<yagi::IdaSymbolInfoFactory>(),
 		std::make_unique<yagi::IdaTypeInfoFactory>()
 	);
 	if (decompiler.has_value())

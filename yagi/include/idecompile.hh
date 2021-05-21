@@ -5,6 +5,30 @@
 
 namespace yagi 
 {
+	struct Compiler {
+		enum class Language {
+			X86_WINDOWS
+		};
+
+		enum class Endianess {
+			BE,
+			LE
+		};
+
+		enum class Mode {
+			M32,
+			M64
+		};
+
+		Language	language;
+		Endianess	endianess;
+		Mode		mode;
+
+		Compiler(Language language, Endianess endianess, Mode mode)
+			: language {language}, endianess{endianess}, mode{mode}
+		{}
+	};
+
 	class IDecompiler
 	{
 	public:

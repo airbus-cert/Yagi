@@ -13,7 +13,7 @@
 #include "plugin.hh"
 #include "ghidra.hh"
 #include "symbolinfo.hh"
-#include "error.hh"
+#include "exception.hh"
 #include <kernwin.hpp>
 #include <sstream>
 
@@ -64,4 +64,4 @@ namespace yagi
 		set_code_viewer_is_source(code_view);
 		display_widget(code_view, WOPN_DP_TAB);
 	}
-} // end of namespace gaip
+} // end of namespace yagi

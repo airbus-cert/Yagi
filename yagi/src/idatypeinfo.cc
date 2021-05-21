@@ -1,6 +1,6 @@
 #include "idatypeinfo.hh"
 #include "base.hh"
-#include "error.hh"
+#include "exception.hh"
 #include "idatool.hh"
 
 #include <algorithm>
@@ -103,7 +103,13 @@ namespace yagi
 
 	std::unique_ptr<TypeInfo> IdaTypeInfo::getPointedObject() const
 	{
-		return std::make_unique<IdaTypeInfo>(m_type.get_pointed_object());
+		if (isPtr()) {
+			return std::make_unique<IdaTypeInfo>(m_type.get_pointed_object());
+		}
+		if (isArray()) {
+			return std::make_unique<IdaTypeInfo>(m_type.get_array_element());
+		}
+		throw InvalidType("The current is not a pointer of an array");
 	}
 
 	bool IdaTypeInfo::isBool() const
@@ -136,6 +142,21 @@ namespace yagi
 		return m_type.is_func();
 	}
 
+	bool IdaTypeInfo::isConst() const
+	{
+		return m_type.is_const();
+	}
+
+	bool IdaTypeInfo::isChar() const
+	{
+		return m_type.is_char();
+	}
+
+	bool IdaTypeInfo::isArray() const
+	{
+		return m_type.is_array();
+	}
+
 	std::vector<TypeStructField> IdaTypeInfo::getFields() const
 	{
 		udt_type_data_t attributes;
@@ -152,4 +173,43 @@ namespace yagi
 
 		return result;
 	}
-} // end of namespace gaip
+
+	uint64_t IdaTypeInfo::getArraySize() const
+	{
+		return m_type.get_array_nelems();
+	}
+
+	IdaTypeInfoFactory::IdaTypeInfoFactory()
+	{
+
+	}
+
+	IdaTypeInfoFactory::~IdaTypeInfoFactory()
+	{}
+
+	std::optional<std::unique_ptr<TypeInfo>> IdaTypeInfoFactory::build(const std::string& name)
+	{
+		// Rewrite raw type
+		tinfo_t idaTypeInfo;
+
+		if (!idaTypeInfo.get_named_type(get_idati(), name.c_str()))
+		{
+			return std::nullopt;
+		}
+
+		return std::make_unique<IdaTypeInfo>(idaTypeInfo);
+	}
+
+	std::optional<std::unique_ptr<TypeInfo>> IdaTypeInfoFactory::build(uint64_t ea)
+	{
+		tinfo_t idaTypeInfo;
+
+		if (!get_tinfo(&idaTypeInfo, ea) && !guess_tinfo(&idaTypeInfo, ea))
+		{
+			return std::nullopt;
+		}
+
+		return std::make_unique<IdaTypeInfo>(idaTypeInfo);
+	}
+
+} // end of namespace yagi

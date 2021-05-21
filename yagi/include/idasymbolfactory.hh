@@ -1,27 +1,55 @@
 #ifndef __YAGI_IDASYMBOLFACTORY__
 #define __YAGI_IDASYMBOLFACTORY__
 
-#include "symbolfactory.hh"
+#include "symbolinfo.hh"
 
 namespace yagi 
 {
-	class IdaSymbolFactory : public SymbolFactory
+
+	class IdaSymbolInfo : public SymbolInfo 
 	{
 	public:
-		IdaSymbolFactory();
+		/*!
+		 *	\brief	ctor
+		 */
+		explicit IdaSymbolInfo(uint64_t ea, std::string name);
 
 		/*!
-		 *	\brief	Query a symbol by address
-		 *	\param	ea	address of the symbol
-		 *	\return	name of the symbol
+		 *	\brief	if symbol refer to a function compute the size of the symbol
+		 *	\return	the size of the symbol
+		 *	\raise	SymbolIsNotAFunction
 		 */
-		std::optional<std::string> getSymbol(uint64_t ea) override;
+		uint64_t getFunctionSize() const override;
 
-		std::optional<std::tuple<std::string, uint64_t, uint64_t>> getFunction(uint64_t ea) override;
 
-		bool isFunction(uint64_t ea) override;
-		bool isImport(const std::string& name) override;
-		bool isLabel(uint64_t ea) override;
+		/*!
+		 *	\brief	state of symbol
+		 *	\return	true if the symbol is a function
+		 */
+		bool isFunction() const noexcept override;
+
+		/*!
+		 *	\brief	state of the function
+		 *	\return	true if symbol is associated to a symbol
+		 */
+		bool isLabel() const noexcept override;
+
+		/*!
+		 *	\brief	state of the symbol
+		 *	\return	true the symbol is associate to an import
+		 */
+		bool isImport() const noexcept override;
+
+		bool isReadOnly() const noexcept override;
+	};
+
+	class IdaSymbolInfoFactory : public SymbolInfoFactory
+	{
+	public:
+		IdaSymbolInfoFactory();
+
+		std::optional<std::unique_ptr<SymbolInfo>> find(uint64_t ea);
+		std::optional<std::unique_ptr<SymbolInfo>> find_function(uint64_t ea);
 	};
 }
 
