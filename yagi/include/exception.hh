@@ -45,6 +45,12 @@ namespace yagi
 		explicit UnableToFindType(uint32_t typeName);
 	};
 
+	class UnableToFindPrototype : public Error
+	{
+	public:
+		explicit UnableToFindPrototype(std::string funName);
+	};
+
 	class InvalidTypeId : public Error
 	{
 	public:
@@ -61,6 +67,12 @@ namespace yagi
 	{
 	public:
 		explicit UnknownCompiler();
+	};
+
+	class UnknownCallingConvention : public Error
+	{
+	public:
+		explicit UnknownCallingConvention(std::string funcName);
 	};
 }
 

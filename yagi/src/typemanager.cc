@@ -29,7 +29,7 @@ namespace yagi
 			return result;
 		}
 
-		auto type = m_archi->getTypeInfoFactory().build(n);
+		auto type = m_archi->getTypeInfoFactory()->build(n);
 		
 		if (!type.has_value())
 		{
@@ -59,7 +59,21 @@ namespace yagi
 			}
 		);
 
-		return getTypeCode(glb->getModel("__fastcall"), retType, paramType, typeInfo.isDotDotDot());
+		// handle calling convention conversion
+		auto cc = typeInfo.getCallingConv();
+		if (!glb->hasModel(cc))
+		{
+			// convert cdecl convention into thiscall ghidra
+			if (cc == "__cdecl")
+			{
+				cc = "__thiscall";
+			}
+			else 
+			{
+				throw UnknownCallingConvention(typeInfo.getName());
+			}
+		}
+		return getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
 	}
 
 	/**********************************************************************/
@@ -176,7 +190,7 @@ namespace yagi
 
 	void TypeManager::update(Funcdata& func)
 	{
-		auto typeInfo = m_archi->getTypeInfoFactory().build(func.getAddress().getOffset());
+		auto typeInfo = m_archi->getTypeInfoFactory()->build(func.getAddress().getOffset());
 		if (!typeInfo.has_value())
 		{
 			return;

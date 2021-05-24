@@ -89,19 +89,19 @@ namespace yagi
 		 *	\brief	Access to the symbol factory backend
 		 *	\return	An implementation of the symbol factory
 		 */
-		SymbolInfoFactory& getSymbolDatabase() const;
+		SymbolInfoFactory* getSymbolDatabase() const;
 
 		/*!
 		 *	\brief	Access to the type factory backend
 		 *	\return	An implementation of a type info factory
 		 */
-		TypeInfoFactory& getTypeInfoFactory() const;
+		TypeInfoFactory* getTypeInfoFactory() const;
 
 		/*!
 		 *	\brief	Access to the current logger
 		 *	\return	An implementation of a logger
 		 */
-		ILogger& getLogger() const;
+		ILogger* getLogger() const;
 	};
 }
 

@@ -25,9 +25,9 @@ namespace yagi
 	{
 		std::vector<std::unique_ptr<TypeInfo>> result;
 		func_type_data_t funcInfo;
-		if (!m_type.is_func() || !m_type.get_func_details(&funcInfo))
+		if (!m_type.get_func_details(&funcInfo, GTD_CALC_ARGLOCS))
 		{
-			throw TypeIsNotAFunction(getName());
+			throw UnableToFindPrototype(getName());
 		}
 
 		result.push_back(std::make_unique<IdaTypeInfo>(funcInfo.rettype));
@@ -109,7 +109,7 @@ namespace yagi
 		if (isArray()) {
 			return std::make_unique<IdaTypeInfo>(m_type.get_array_element());
 		}
-		throw InvalidType("The current is not a pointer of an array");
+		throw InvalidType("The current type is not a pointer or an array");
 	}
 
 	bool IdaTypeInfo::isBool() const
@@ -177,6 +177,31 @@ namespace yagi
 	uint64_t IdaTypeInfo::getArraySize() const
 	{
 		return m_type.get_array_nelems();
+	}
+
+	std::string IdaTypeInfo::getCallingConv() const
+	{
+		func_type_data_t funcInfo;
+		if (!m_type.get_func_details(&funcInfo))
+		{
+			throw UnableToFindPrototype(getName());
+		}
+
+		switch (funcInfo.get_cc())
+		{
+		case CM_CC_FASTCALL:
+			return "__fastcall";
+		case CM_CC_STDCALL:
+			return "__stdcall";
+		case CM_CC_THISCALL:
+			return "__thiscall";
+		case CM_CC_CDECL:
+			return "__cdecl";
+		case CM_CC_INVALID:
+		case CM_CC_UNKNOWN:
+		default:
+			throw UnknownCallingConvention(getName());
+		}
 	}
 
 	IdaTypeInfoFactory::IdaTypeInfoFactory()

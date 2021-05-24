@@ -62,6 +62,7 @@ namespace yagi
 		std::unique_ptr<TypeInfo> getPointedObject() const;
 		std::vector<TypeStructField> getFields() const;
 		uint64_t getArraySize() const;
+		std::string getCallingConv() const;
 	};
 
 	class IdaTypeInfoFactory : public TypeInfoFactory

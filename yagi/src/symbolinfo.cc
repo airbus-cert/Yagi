@@ -1,6 +1,5 @@
 #include "symbolinfo.hh"
 #include "base.hh"
-#include "error.hh"
 #include <idp.hpp>
 #include <name.hpp>
 #include <typeinf.hpp>

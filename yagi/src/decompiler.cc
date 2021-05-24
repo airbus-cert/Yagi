@@ -17,7 +17,7 @@ namespace yagi
 	/**********************************************************************/
 	std::string GhidraDecompiler::decompile(uint64_t funcAddress)
 	{
-		auto funcSym = m_architecture->getSymbolDatabase().find_function(funcAddress);
+		auto funcSym = m_architecture->getSymbolDatabase()->find_function(funcAddress);
 
 		if (!funcSym.has_value())
 		{
@@ -123,7 +123,7 @@ namespace yagi
 		}
 		catch (LowlevelError& e)
 		{
-			architecture->getLogger().error(e.explain);
+			architecture->getLogger()->error(e.explain);
 			return std::nullopt;
 		}
 	}

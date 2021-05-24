@@ -55,6 +55,14 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
+	UnableToFindPrototype::UnableToFindPrototype(std::string funcName)
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "Unable to find a protype for " << funcName;
+		m_reason = ss.str();
+	}
+
 	InvalidTypeId::InvalidTypeId(uint32_t typeId)
 		: Error("")
 	{
@@ -76,6 +84,14 @@ namespace yagi
 	{
 		std::stringstream ss(m_reason);
 		ss << "Invalid Compiler Type";
+		m_reason = ss.str();
+	}
+	
+	UnknownCallingConvention::UnknownCallingConvention(std::string funcName)
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "Unknown calling convention of method " << funcName;
 		m_reason = ss.str();
 	}
 } // end of namespace yagi

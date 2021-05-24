@@ -17,14 +17,9 @@ namespace yagi
 
 	Funcdata* IdaScope::findFunction(const Address& addr) const
 	{
+		// don't check cache to force symbol database update
 		auto proxy = static_cast<IdaScope*>(glb->symboltab->getGlobalScope())->getProxy();
-		auto result = proxy->findFunction(addr);
-		if (result != nullptr)
-		{
-			return result;
-		}
-
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase()->find(addr.getOffset());
 
 		if (!data.has_value())
 		{
@@ -58,7 +53,7 @@ namespace yagi
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase()->find(addr.getOffset());
 		if (data.has_value())
 		{
 			auto scope = glb->symboltab->getGlobalScope();
@@ -78,7 +73,7 @@ namespace yagi
 				break;
 			case SymbolInfo::Type::Other:
 			{
-				auto type = static_cast<YagiArchitecture*>(glb)->getTypeInfoFactory().build(addr.getOffset());
+				auto type = static_cast<YagiArchitecture*>(glb)->getTypeInfoFactory()->build(addr.getOffset());
 				if (type.has_value())
 				{
 					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->findByTypeInfo(*(type.value())));
@@ -121,7 +116,7 @@ namespace yagi
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase()->find(addr.getOffset());
 		if (!data.has_value() || !data.value()->isImport())
 		{
 			return nullptr;
@@ -139,7 +134,7 @@ namespace yagi
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase()->find(addr.getOffset());
 		if (!data.has_value() || !data.value()->isLabel())
 		{
 			return nullptr;
@@ -156,13 +151,20 @@ namespace yagi
 	Funcdata* IdaScope::resolveExternalRefFunction(ExternRefSymbol* sym) const
 	{
 		auto proxy = static_cast<IdaScope*>(glb->symboltab->getGlobalScope())->getProxy();
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(sym->getRefAddr().getOffset());
+		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase()->find(sym->getRefAddr().getOffset());
 		if (data.has_value())
 		{
 			auto funcData = proxy->addFunction(sym->getRefAddr(), data.value()->getName())->getFunction();
 
 			// Try to set model type
-			static_cast<TypeManager*>(glb->types)->update(*funcData);
+			try
+			{
+				static_cast<TypeManager*>(glb->types)->update(*funcData);
+			}
+			catch (Error& e)
+			{
+				static_cast<YagiArchitecture*>(glb)->getLogger()->error(e.what());
+			}
 			
 			return funcData;
 		}

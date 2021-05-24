@@ -44,6 +44,7 @@ namespace yagi
 		virtual std::vector<TypeStructField> getFields() const = 0;
 		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
 		virtual uint64_t getArraySize() const = 0;
+		virtual std::string getCallingConv() const = 0;
 	};
 
 	class TypeInfoFactory

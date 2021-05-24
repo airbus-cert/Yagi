@@ -52,7 +52,7 @@ namespace yagi
 	bool IdaSymbolInfo::isImport() const noexcept
 	{
 		std::string importName = m_name;
-		if (importName.length() > 6 && importName.substr(0, 6) == "__imp_")
+		if (importName.length() > 6 && importName.substr(0, 6) == IMPORT_PREFIX)
 		{
 			importName = importName.substr(6, importName.length() - 6);
 		}
@@ -96,6 +96,16 @@ namespace yagi
 	bool IdaSymbolInfo::isReadOnly() const noexcept
 	{
 		auto seg = getseg(m_ea);
+		qstring idaName;
+		if (get_segm_name(&idaName, seg))
+		{
+			// assuming that .data segment are read only to improve static analysis
+			if (idaName == ".data")
+			{
+				return true;
+			}
+		}
+
 		return seg->perm == SEGPERM_READ;
 	}
 
