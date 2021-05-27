@@ -40,13 +40,8 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	TypeCode* TypeManager::parseFunc(const TypeInfo& typeInfo)
+	TypeCode* TypeManager::parseFunc(const FuncInfo& typeInfo)
 	{
-		if (!typeInfo.isFunc())
-		{
-			throw InvalidType(typeInfo.getName());
-		}
-
 		auto prototype = typeInfo.getFuncPrototype();
 		auto retType = findByTypeInfo(*(prototype.front()));
 		std::vector<Datatype*> paramType;
@@ -60,19 +55,20 @@ namespace yagi
 		);
 
 		// handle calling convention conversion
-		auto cc = typeInfo.getCallingConv();
+		std::string cc = "__fastcall";
+		try
+		{
+			cc = typeInfo.getCallingConv();
+		}
+		catch (UnknownCallingConvention&)
+		{}
+			
 		if (!glb->hasModel(cc))
 		{
-			// convert cdecl convention into thiscall ghidra
-			if (cc == "__cdecl")
-			{
-				cc = "__thiscall";
-			}
-			else 
-			{
-				throw UnknownCallingConvention(typeInfo.getName());
-			}
+			// by default we put __fastcall as calling convention
+			cc = "__fastcall";
 		}
+
 		return getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
 	}
 
@@ -81,11 +77,12 @@ namespace yagi
 	{
 		auto name = typeInfo.getName();
 
-		if (typeInfo.isPtr())
+		auto ptrType = typeInfo.toPtr();
+		if (ptrType.has_value())
 		{
 			auto ct = new TypePointer(
 				glb->getDefaultCodeSpace()->getAddrSize(),
-				findByTypeInfo(*typeInfo.getPointedObject()),
+				findByTypeInfo(*ptrType.value()->getPointedObject()),
 				glb->getDefaultCodeSpace()->getWordSize()
 			);
 			setName(ct, name);
@@ -120,11 +117,12 @@ namespace yagi
 			return ct;
 		}
 
-		if (typeInfo.isStruct())
+		auto structType = typeInfo.toStruct();
+		if (structType.has_value())
 		{
 			auto ct = new TypeStruct(name);
 			setName(ct, name);
-			auto fields = typeInfo.getFields();
+			auto fields = structType.value()->getFields();
 			std::vector<TypeField> result;
 			std::transform(fields.begin(), fields.end(), std::back_inserter(result),
 				[this](const TypeStructField& info)
@@ -143,18 +141,20 @@ namespace yagi
 			return ct;
 		}
 
-		if (typeInfo.isFunc())
+		auto funcType = typeInfo.toFunc();
+		if (funcType.has_value())
 		{
-			return parseFunc(typeInfo);
+			return parseFunc(*funcType.value());
 		}
 
-		if (typeInfo.isArray())
+		auto arrayType = typeInfo.toArray();
+		if (arrayType.has_value())
 		{
 			if (typeInfo.getSize() > 0)
 			{
 				auto ct = new TypeArray(
 					typeInfo.getSize(), 
-					findByTypeInfo(*typeInfo.getPointedObject())
+					findByTypeInfo(*arrayType.value()->getPointedObject())
 				);
 				setName(ct, name);
 				return ct;
@@ -163,7 +163,7 @@ namespace yagi
 			else {
 				auto ct = new TypePointer(
 					glb->getDefaultCodeSpace()->getAddrSize(),
-					findByTypeInfo(*typeInfo.getPointedObject()),
+					findByTypeInfo(*arrayType.value()->getPointedObject()),
 					glb->getDefaultCodeSpace()->getWordSize()
 				);
 				setName(ct, name);
@@ -188,6 +188,7 @@ namespace yagi
 		return parseTypeInfo(typeInfo);
 	}
 
+	/**********************************************************************/
 	void TypeManager::update(Funcdata& func)
 	{
 		auto typeInfo = m_archi->getTypeInfoFactory()->build(func.getAddress().getOffset());
@@ -196,16 +197,38 @@ namespace yagi
 			return;
 		}
 
-		auto type = parseFunc(*(typeInfo.value()));
+		auto funcType = typeInfo.value()->toFunc();
+
+		// it's not a function
+		if (!funcType.has_value())
+		{
+			throw SymbolIsNotAFunction(typeInfo.value()->getName());
+		}
+
+		auto type = parseFunc(*(funcType.value()));
+		auto proto = type->getPrototype();
 
 		PrototypePieces pieces;
-		type->getPrototype()->getPieces(pieces);
+		proto->getPieces(pieces);
+
+		// Update with param name if possible
+		pieces.innames = funcType.value()->getFuncParamName();
 		func.getFuncProto().setPieces(pieces);
 
-		// maybe IDA didn't finish to analyze it
-		// wait for ghidra type inference
-		if (pieces.intypes.size() == 0) {
-			func.getFuncProto().setInputLock(false);
+		if (func.getName() == "__alloca_probe")
+		{
+			// inject interface is only available through
+			// XML API...
+			std::stringstream ss; 
+			func.getFuncProto().saveXml(ss);
+
+			auto document = xml_tree(ss);
+			Element inject(document->getRoot());
+			inject.setName("inject");
+			inject.addContent("alloca_probe", 0, 12);
+
+			document->getRoot()->addChild(&inject);
+			func.getFuncProto().restoreXml(document->getRoot(), m_archi);
 		}
 	}
 

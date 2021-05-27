@@ -25,8 +25,12 @@ namespace yagi
 		}
 
 		auto scope = m_architecture->symboltab->getGlobalScope();
-		auto func = scope->findFunction(Address(m_architecture->getDefaultCodeSpace(), funcSym.value()->getAddress()));
-		
+		scope->clear();
+
+		auto func = scope->findFunction(
+			Address(m_architecture->getDefaultCodeSpace(), funcSym.value()->getAddress())
+		);
+
 		try
 		{
 			m_architecture->clearAnalysis(func);

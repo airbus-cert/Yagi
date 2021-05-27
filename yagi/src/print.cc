@@ -74,7 +74,7 @@ namespace yagi
 		: PrintC(g, nm)
 	{
 		emit = new IdaEmit();
-		emit->setMaxLineSize(200);
+		emit->setMaxLineSize(400);
 	}
 
 	void IdaEmit::startColorTag(char c)
@@ -122,6 +122,11 @@ namespace yagi
 		{
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
 			EmitPrettyPrint::tagVariable(name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length()).c_str(), hl, vn, op);
+		}
+		else if (*ptr == '\"')
+		{
+			EmitColorGuard guard(*this, COLOR_DSTR);
+			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
 		}
 		else
 		{

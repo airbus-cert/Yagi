@@ -39,7 +39,7 @@ namespace yagi
 		 *	\brief	Factory function override to build our internal scope
 		 *			Scopes are used to reselve symbols
 		 */
-		Scope* buildGlobalScope() override;
+		Scope* buildDatabase(DocumentStorage& store) override;
 
 		/*!
 		 *	\brief	Internal factory function override

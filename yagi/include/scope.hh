@@ -15,16 +15,16 @@ namespace yagi
 
 		ScopeInternal m_proxy;
 
-		void addSymbolInternal(Symbol* sym) override { throw LowlevelError("addSymbolInternal should not be performed on radare2 scope"); }
-		SymbolEntry* addMapInternal(Symbol* sym, uint4 exfl, const Address& addr, int4 off, int4 sz, const RangeList& uselim) override { throw LowlevelError("addMapInternal should not be performed on radare2 scope"); }
+		void addSymbolInternal(Symbol* sym) override { throw LowlevelError("addSymbolInternal should not be performed on ida scope"); }
+		SymbolEntry* addMapInternal(Symbol* sym, uint4 exfl, const Address& addr, int4 off, int4 sz, const RangeList& uselim) override { throw LowlevelError("addMapInternal should not be performed on ida scope"); }
 
 
-		Scope* buildSubScope(const string& nm) override { throw LowlevelError("buildSubScope should not be performed on radare2 scope"); }
+		Scope* buildSubScope(uint8 id, const string& nm) override { return new ScopeInternal(id, nm, glb); }
 		void removeRange(AddrSpace* spc, uintb first, uintb last) override { throw LowlevelError("removeRange should not be performed on ida scope"); }
 		SymbolEntry* addDynamicMapInternal(Symbol* sym, uint4 exfl, uint8 hash, int4 off, int4 sz, const RangeList& uselim) override { throw LowlevelError("addMap unimplemented"); }
 
 	public:
-		explicit IdaScope(YagiArchitecture* architecture);
+		explicit IdaScope(uint8_t id, YagiArchitecture* architecture);
 
 		virtual Funcdata* findFunction(const Address& addr) const override;
 		string buildVariableName(const Address& addr, const Address& pc, Datatype* ct, int4& index, uint4 flags) const override;
@@ -42,12 +42,13 @@ namespace yagi
 		bool Scope::isNameUsed(const std::string&, const Scope*) const override;
 		Funcdata* Scope::resolveExternalRefFunction(ExternRefSymbol* sym) const override;
 
-		void clear(void) override { throw LowlevelError("clear unimplemented"); }
+		void clear(void) override { m_proxy.clear(); }
+		void adjustCaches(void) override { m_proxy.adjustCaches(); }
 		
-		string buildUndefinedName(void) const override { throw LowlevelError("buildUndefinedName unimplemented"); }
-		void setAttribute(Symbol* sym, uint4 attr) override { throw LowlevelError("setAttribute unimplemented"); }
-		void clearAttribute(Symbol* sym, uint4 attr) override { throw LowlevelError("clearAttribute unimplemented"); }
-		void setDisplayFormat(Symbol* sym, uint4 attr) override { throw LowlevelError("setDisplayFormat unimplemented"); }
+		string buildUndefinedName(void) const override { return m_proxy.buildUndefinedName(); }
+		void setAttribute(Symbol* sym, uint4 attr) override { m_proxy.setAttribute(sym, attr); }
+		void clearAttribute(Symbol* sym, uint4 attr) override { m_proxy.clearAttribute(sym, attr); }
+		void setDisplayFormat(Symbol* sym, uint4 attr) override { m_proxy.setDisplayFormat(sym, attr); }
 
 		SymbolEntry* findOverlap(const Address& addr, int4 size) const { throw LowlevelError("findOverlap unimplemented"); }
 		SymbolEntry* findBefore(const Address& addr) const { throw LowlevelError("findBefore unimplemented"); }

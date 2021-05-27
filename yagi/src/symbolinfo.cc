@@ -26,12 +26,34 @@ namespace yagi
 	/**********************************************************************/
 	std::string SymbolInfo::getName() const noexcept
 	{
+		qstring pname;
+		if (!cleanup_name(&pname, m_ea, m_name.c_str()))
+		{
+			pname = m_name.c_str();
+		}
+
+		qstring idaName = demangle_name(pname.c_str(), 0);
+		if (idaName != "")
+		{
+			auto pp = idaName.find('(', 0);
+			size_t sp = pp;
+			while (sp > 0)
+			{
+				if (idaName.c_str()[sp] == ' ')
+				{
+					break;
+				}
+				sp--;
+			}
+			pname = idaName.substr(sp, pp);
+		}
+
 		// Mark import symbol with IDA convention
-		if (isImport() && m_name.substr(0, IMPORT_PREFIX.length()) != IMPORT_PREFIX) {
-			return IMPORT_PREFIX + m_name;
+		if (isImport()) {
+			return IMPORT_PREFIX + pname.c_str();
 		}
 		
-		return m_name;
+		return pname.c_str();
 	}
 
 	/**********************************************************************/

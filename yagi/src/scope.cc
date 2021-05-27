@@ -6,8 +6,8 @@
 
 namespace yagi 
 {
-	IdaScope::IdaScope(YagiArchitecture* architecture)
-		: Scope("", architecture, this), m_proxy("", architecture, this)
+	IdaScope::IdaScope(uint8_t id, YagiArchitecture* architecture)
+		: Scope(id, "", architecture, this), m_proxy(0, "", architecture, this)
 	{}
 
 	ScopeInternal* IdaScope::getProxy()
@@ -19,6 +19,13 @@ namespace yagi
 	{
 		// don't check cache to force symbol database update
 		auto proxy = static_cast<IdaScope*>(glb->symboltab->getGlobalScope())->getProxy();
+
+		auto result = proxy->findFunction(addr);
+		if (result != nullptr)
+		{
+			return result;
+		}
+
 		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase()->find(addr.getOffset());
 
 		if (!data.has_value())
@@ -30,7 +37,7 @@ namespace yagi
 		auto sym = proxy->addFunction(addr, data.value()->getName());
 
 		auto funcData = sym->getFunction();
-
+		
 		// Try to set model type
 		static_cast<TypeManager*>(glb->types)->update(*funcData);
 

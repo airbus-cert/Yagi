@@ -19,32 +19,62 @@ namespace yagi
 		std::unique_ptr<TypeInfo> type;
 	};
 
+	class StructInfo
+	{
+	public:
+		virtual ~StructInfo() = default;
+		virtual const TypeInfo& getType() const = 0;
+		virtual std::vector<TypeStructField> getFields() const = 0;
+	};
+
+	class PtrInfo
+	{
+	public:
+		virtual ~PtrInfo() = default;
+		virtual const TypeInfo& getType() const = 0;
+		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
+	};
+
+	class ArrayInfo
+	{
+	public:
+		virtual ~ArrayInfo() = default;
+		virtual const TypeInfo& getType() const = 0;
+		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
+		virtual uint64_t getSize() const = 0;
+	};
+
+	class FuncInfo
+	{
+	public:
+		virtual ~FuncInfo() = default;
+
+		virtual bool isDotDotDot() const = 0;
+
+		virtual std::vector<std::unique_ptr<TypeInfo>> getFuncPrototype() const = 0;
+		virtual std::vector<std::string> getFuncParamName() const = 0;
+		virtual std::string getCallingConv() const = 0;
+		virtual const TypeInfo& getType() const = 0;
+	};
+
 	class TypeInfo
 	{
 	public:
-		virtual std::vector<std::unique_ptr<TypeInfo>> getFuncPrototype() const = 0;
-		virtual std::vector<std::string> getFuncParamName() const = 0;
-
 		virtual size_t getSize() const = 0;
-
 		virtual std::string getName() const = 0;
 
 		virtual bool isInt() const = 0;
-		virtual bool isPtr() const = 0;
 		virtual bool isBool() const = 0;
 		virtual bool isFloat() const = 0;
-		virtual bool isStruct() const = 0;
-		virtual bool isDotDotDot() const = 0;
 		virtual bool isVoid() const = 0;
-		virtual bool isFunc() const = 0;
 		virtual bool isConst() const = 0;
 		virtual bool isChar() const = 0;
-		virtual bool isArray() const = 0;
-		
-		virtual std::vector<TypeStructField> getFields() const = 0;
-		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
-		virtual uint64_t getArraySize() const = 0;
-		virtual std::string getCallingConv() const = 0;
+
+		virtual std::optional<std::unique_ptr<FuncInfo>> toFunc() const = 0;
+		virtual std::optional<std::unique_ptr<StructInfo>> toStruct() const = 0;
+		virtual std::optional<std::unique_ptr<PtrInfo>> toPtr() const = 0;
+		virtual std::optional<std::unique_ptr<ArrayInfo>> toArray() const = 0;
+	
 	};
 
 	class TypeInfoFactory

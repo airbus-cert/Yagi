@@ -15,7 +15,6 @@ namespace yagi
 	) : SleighArchitecture(name, sleighId, &m_err),
 		m_logger{ std::move(logger) }, m_symbols{ std::move(symbols) }, m_type{ std::move(type) }
 	{
-		
 	}
 
 	/**********************************************************************/
@@ -56,17 +55,12 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	Scope* YagiArchitecture::buildGlobalScope()
+	Scope* YagiArchitecture::buildDatabase(DocumentStorage& store)
 	{
-		Scope* globalscope = symboltab->getGlobalScope();
-		if (globalscope)
-		{
-			return globalscope;
-		}
-			
-		globalscope = new IdaScope(this);
-		symboltab->attachScope(globalscope, nullptr);
-		return globalscope;
+		symboltab = new Database(this, false);
+		Scope* globscope = new IdaScope(0, this);
+		symboltab->attachScope(globscope, nullptr);
+		return globscope;
 	}
 
 	/**********************************************************************/

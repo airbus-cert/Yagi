@@ -21,10 +21,6 @@
 #include "idasymbolfactory.hh"
 #include "idalogger.hh"
 
-#define COMPILER_MODE(mode) inf_is_64bit() ? mode ## _64 : mode ## _32;
-#define COMPILER_ENDIANESS(compiler) inf_is_be() ? compiler ## _BE : compiler ## _LE;
-#define COMPILER(c) COMPILER_MODE(COMPILER_ENDIANESS(c))
-
 static int processor_id() {
 #if IDA_SDK_VERSION < 750
 	return ph.id;

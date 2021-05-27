@@ -40,7 +40,7 @@ namespace yagi
 		TypeManager(TypeManager&&) noexcept = default;
 		TypeManager& operator=(TypeManager&&) noexcept = default;
 
-		TypeCode* parseFunc(const TypeInfo& typeInfo);
+		TypeCode* parseFunc(const FuncInfo& typeInfo);
 		Datatype* parseTypeInfo(const TypeInfo& typeInfo);
 
 		Datatype* findByTypeInfo(const TypeInfo& typeInfo);
