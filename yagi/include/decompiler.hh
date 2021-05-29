@@ -7,7 +7,7 @@
 #include "idecompile.hh"
 #include "typeinfo.hh"
 #include "symbolinfo.hh"
-#include "ilogger.hh"
+#include "logger.hh"
 
 namespace yagi 
 {
@@ -69,7 +69,7 @@ namespace yagi
 		 */
 		static std::optional<std::unique_ptr<IDecompiler>> build(
 			const Compiler& compilerType,
-			std::unique_ptr<ILogger> logger, 
+			std::unique_ptr<Logger> logger, 
 			std::unique_ptr<SymbolInfoFactory> symbolDatabase, 
 			std::unique_ptr<TypeInfoFactory> typeDatabase
 		) noexcept;

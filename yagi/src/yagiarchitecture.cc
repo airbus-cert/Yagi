@@ -9,7 +9,7 @@ namespace yagi
 	YagiArchitecture::YagiArchitecture(
 		const std::string& name,
 		const std::string& sleighId,
-		std::unique_ptr<ILogger> logger,
+		std::unique_ptr<Logger> logger,
 		std::unique_ptr<SymbolInfoFactory> symbols,
 		std::unique_ptr<TypeInfoFactory> type
 	) : SleighArchitecture(name, sleighId, &m_err),
@@ -76,9 +76,9 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	ILogger* YagiArchitecture::getLogger() const
+	Logger& YagiArchitecture::getLogger() const
 	{
-		return m_logger.get();
+		return *m_logger.get();
 	}
 
 } // end of namespace yagi

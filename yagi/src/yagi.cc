@@ -17,8 +17,8 @@
 #include "idecompile.hh"
 #include "decompiler.hh"
 #include "ghidra.hh"
-#include "idatypeinfo.hh"
-#include "idasymbolfactory.hh"
+#include "idatype.hh"
+#include "idasymbol.hh"
 #include "idalogger.hh"
 
 static int processor_id() {

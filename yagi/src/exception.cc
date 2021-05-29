@@ -4,17 +4,20 @@
 
 namespace yagi 
 {
+	/**********************************************************************/
 	Error::Error(std::string reason)
 		: m_reason(reason)
 	{
 
 	}
 
+	/**********************************************************************/
 	char const* Error::what() const
 	{
 		return m_reason.c_str();
 	}
 
+	/**********************************************************************/
 	UnknownTypeError::UnknownTypeError(const std::string& typeName)
 		: Error("")
 	{
@@ -23,6 +26,7 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
+	/**********************************************************************/
 	SymbolIsNotAFunction::SymbolIsNotAFunction(const std::string& functionName)
 		: Error("")
 	{
@@ -31,6 +35,7 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
+	/**********************************************************************/
 	TypeIsNotAFunction::TypeIsNotAFunction(const std::string& typeName)
 		: Error("")
 	{
@@ -39,6 +44,7 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
+	/**********************************************************************/
 	UnableToFindFunction::UnableToFindFunction(uint64_t ea)
 		: Error("")
 	{
@@ -47,6 +53,7 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
+	/**********************************************************************/
 	UnableToFindType::UnableToFindType(uint32_t typeId)
 		: Error("")
 	{
@@ -55,6 +62,7 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
+	/**********************************************************************/
 	UnableToFindPrototype::UnableToFindPrototype(std::string funcName)
 		: Error("")
 	{
@@ -63,30 +71,7 @@ namespace yagi
 		m_reason = ss.str();
 	}
 
-	InvalidTypeId::InvalidTypeId(uint32_t typeId)
-		: Error("")
-	{
-		std::stringstream ss(m_reason);
-		ss << "Unknown type id " << typeId;
-		m_reason = ss.str();
-	}
-
-	InvalidType::InvalidType(std::string name)
-		: Error("")
-	{
-		std::stringstream ss(m_reason);
-		ss << "Invalid type id " << name;
-		m_reason = ss.str();
-	}
-
-	UnknownCompiler::UnknownCompiler()
-		: Error("")
-	{
-		std::stringstream ss(m_reason);
-		ss << "Invalid Compiler Type";
-		m_reason = ss.str();
-	}
-	
+	/**********************************************************************/
 	UnknownCallingConvention::UnknownCallingConvention(std::string funcName)
 		: Error("")
 	{

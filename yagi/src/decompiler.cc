@@ -25,6 +25,7 @@ namespace yagi
 		}
 
 		auto scope = m_architecture->symboltab->getGlobalScope();
+		// clear scope to update all symbole
 		scope->clear();
 
 		auto func = scope->findFunction(
@@ -36,13 +37,11 @@ namespace yagi
 			m_architecture->clearAnalysis(func);
 			m_architecture->allacts.getCurrent()->reset(*func);
 
-			auto res = m_architecture->allacts.getCurrent()->perform(*func);
-
+			auto res = m_architecture->allacts.getCurrent()->perform(*func); 
 			m_architecture->setPrintLanguage("yagi-c-language");
 
 			stringstream ss;
 			m_architecture->print->setIndentIncrement(3);
-
 			m_architecture->print->setOutputStream(&ss);
 
 			//print as C
@@ -52,7 +51,8 @@ namespace yagi
 		
 		catch (LowlevelError& e)
 		{
-			return e.explain;
+			m_architecture->getLogger().error(e.explain);
+			return "";
 		}
 	}
 
@@ -103,7 +103,7 @@ namespace yagi
 	/**********************************************************************/
 	std::optional<std::unique_ptr<IDecompiler>> GhidraDecompiler::build(
 		const Compiler& compilerType,
-		std::unique_ptr<ILogger> logger, 
+		std::unique_ptr<Logger> logger, 
 		std::unique_ptr<SymbolInfoFactory> symbolDatabase, 
 		std::unique_ptr<TypeInfoFactory> typeDatabase
 	) noexcept
@@ -127,7 +127,7 @@ namespace yagi
 		}
 		catch (LowlevelError& e)
 		{
-			architecture->getLogger()->error(e.explain);
+			architecture->getLogger().error(e.explain);
 			return std::nullopt;
 		}
 	}

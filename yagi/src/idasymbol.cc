@@ -1,4 +1,4 @@
-#include "idasymbolfactory.hh"
+#include "idasymbol.hh"
 #include "base.hh"
 #include "exception.hh"
 #include "idatool.hh"
@@ -8,11 +8,6 @@
 
 namespace yagi 
 {
-	IdaSymbolInfoFactory::IdaSymbolInfoFactory()
-	{
-
-	}
-
 	std::optional<std::unique_ptr<SymbolInfo>> IdaSymbolInfoFactory::find(uint64_t ea)
 	{
 		qstring name;

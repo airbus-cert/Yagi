@@ -19,6 +19,45 @@
 
 namespace yagi 
 {
+	static bool idaapi _KeyboardCallback(TWidget* w, int key, int shift, void* ud) 
+	{
+		int x, y;
+		if (get_custom_viewer_place(w, false, &x, &y) == NULL) {
+			return false;
+		}
+
+		auto cursor = get_custom_viewer_curline(w, false);
+		qstring result;
+		tag_remove(&result, cursor);
+		
+		char* start = result.begin() + x;
+		char* end = start;
+
+		while ((qisalnum(*end) || *end == '_') && *end != '\0') {
+			end++;
+		}
+
+		while ((qisalnum(*start) || *start == '_')) {
+			start--;
+		}
+
+		qstring keyword = qstring(start + 1, end - start - 1);		
+
+		return true;
+	}
+
+	static const custom_viewer_handlers_t _ViewHandlers(
+		_KeyboardCallback,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr,
+		nullptr
+	);
+
 	Plugin::Plugin(std::unique_ptr<IDecompiler> decompiler)
 		: m_decompiler(std::move(decompiler))
 	{}
@@ -42,7 +81,7 @@ namespace yagi
 		}
 		catch (...)
 		{
-			msg("Error during decompilation");
+			msg("Error during decompilation\n");
 		}
 		return true;
 	}
@@ -59,7 +98,7 @@ namespace yagi
 		simpleline_place_t s1;
 		simpleline_place_t s2((int)(sv->size() - 1));
 		auto w = create_custom_viewer(name.c_str(), &s1, &s2,
-			&s1, NULL, sv, nullptr, sv);
+			&s1, nullptr, sv, &_ViewHandlers, sv);
 		TWidget* code_view = create_code_viewer(w);
 		set_code_viewer_is_source(code_view);
 		display_widget(code_view, WOPN_DP_TAB);

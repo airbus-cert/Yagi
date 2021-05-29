@@ -4,10 +4,10 @@ set(YAGI_SOURCE
 	src/decompiler.cc
 	src/exception.cc
 	src/yagi.cc
-	src/idatypeinfo.cc
+	src/idatype.cc
 	src/ghidra.cc
 	src/idalogger.cc
-	src/idasymbolfactory.cc
+	src/idasymbol.cc
 	src/loader.cc
 	src/plugin.cc
 	src/print.cc
@@ -20,15 +20,14 @@ set(YAGI_INCLUDE
 	include/yagiarchitecture.hh
 	include/base.hh
 	include/decompiler.hh
-	include/idatypeinfo.hh
+	include/idatype.hh
 	include/exception.hh
 	include/ghidra.hh
 	include/idalogger.hh
-	include/idasymbolfactory.hh
+	include/idasymbol.hh
 	include/idatool.hh
-	include/idatypeinfo.hh
 	include/idecompile.hh
-	include/ilogger.hh
+	include/logger.hh
 	include/loader.hh
 	include/plugin.hh
 	include/print.hh

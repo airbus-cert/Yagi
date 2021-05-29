@@ -11,6 +11,13 @@ namespace yagi
 {
 	namespace idatool
 	{
+		/*!
+		 * \brief	Tool function use to create a transform function
+		 *			Applicable to a qvector
+		 * \param	origin	Original qvector to transform
+		 * \param	it	std iterator
+		 * \param	callback	callback use to transform from qvector to std vector
+		 */
 		template<typename T, typename R, typename U>
 		void transform(const qvector<T>& origin, U it, std::function<R(const T&)> callback)
 		{

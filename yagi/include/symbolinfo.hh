@@ -25,6 +25,9 @@ namespace yagi
 
 	public:
 
+		/*!
+		 * \brief	Use to mark specific symbol as imported 
+		 */
 		static const std::string IMPORT_PREFIX;
 
 		/*!
@@ -105,13 +108,34 @@ namespace yagi
 		 */
 		virtual bool isImport() const noexcept = 0;
 
+		/*!
+		 *	\brief	Is the symbol is in Read only mode
+		 *			Use to espand static data from read only memory space
+		 */
 		virtual bool isReadOnly() const noexcept = 0;
 	};
 
+	/*!
+	 * \brief	A factory interface, to abstract build of symbol 
+	 */
 	class SymbolInfoFactory {
 	public:
-		virtual ~SymbolInfoFactory() {}
+		/*!
+		 * \brief	default destructor 
+		 */
+		virtual ~SymbolInfoFactory() = default;
+
+		/*!
+		 * \brief	Find any symbol at a particular address
+		 * \param	ea	the address of the symbol
+		 * \return	optional symbol if found into database
+		 */
 		virtual std::optional<std::unique_ptr<SymbolInfo>> find(uint64_t ea) = 0;
+
+		/*!
+		 * \brief	Find a function symbol from an address anywhere in the function
+		 * \param	ea	any address that is handle by a function
+		 */
 		virtual std::optional<std::unique_ptr<SymbolInfo>> find_function(uint64_t ea) = 0;
 	};
 

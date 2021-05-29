@@ -3,7 +3,7 @@
 
 #include "symbolinfo.hh"
 #include "typeinfo.hh"
-#include "ilogger.hh"
+#include "logger.hh"
 
 #include <libdecomp.hh>
 
@@ -28,7 +28,7 @@ namespace yagi
 		 *	\brief	allow object that have access to the core
 		 *			to print informations message to the end user
 		 */
-		std::unique_ptr<ILogger> m_logger;
+		std::unique_ptr<Logger> m_logger;
 
 		/*!
 		 *	\brief	stream use by SleighArchitecture to write some log
@@ -66,7 +66,7 @@ namespace yagi
 		explicit YagiArchitecture(
 			const std::string& name,
 			const std::string& sleighId,
-			std::unique_ptr<ILogger> logger,
+			std::unique_ptr<Logger> logger,
 			std::unique_ptr<SymbolInfoFactory> symbols,
 			std::unique_ptr<TypeInfoFactory> type
 		);
@@ -101,7 +101,7 @@ namespace yagi
 		 *	\brief	Access to the current logger
 		 *	\return	An implementation of a logger
 		 */
-		ILogger* getLogger() const;
+		Logger& getLogger() const;
 	};
 }
 

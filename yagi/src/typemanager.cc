@@ -136,7 +136,12 @@ namespace yagi
 
 		if (typeInfo.isVoid())
 		{
-			auto ct = new TypeBase(typeInfo.getSize(), TYPE_VOID, name);
+			size_t size = typeInfo.getSize();
+			if (size == 0)
+			{
+				size = glb->getDefaultCodeSpace()->getAddrSize();
+			}
+			auto ct = new TypeBase(size, TYPE_VOID, name);
 			setName(ct, name);
 			return ct;
 		}
@@ -171,7 +176,7 @@ namespace yagi
 			}
 		}
 
-		auto ct = new TypeBase(glb->getDefaultCodeSpace()->getAddrSize(), TYPE_UNKNOWN, name);
+		auto ct = new TypeBase(typeInfo.getSize(), TYPE_UNKNOWN, name);
 		setName(ct, name);
 		return ct;
 	}

@@ -123,6 +123,7 @@ namespace yagi
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
 			EmitPrettyPrint::tagVariable(name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length()).c_str(), hl, vn, op);
 		}
+		// Constant string
 		else if (*ptr == '\"')
 		{
 			EmitColorGuard guard(*this, COLOR_DSTR);

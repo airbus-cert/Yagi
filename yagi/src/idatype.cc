@@ -1,4 +1,4 @@
-#include "idatypeinfo.hh"
+#include "idatype.hh"
 #include "base.hh"
 #include "exception.hh"
 #include "idatool.hh"

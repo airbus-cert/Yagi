@@ -170,7 +170,7 @@ namespace yagi
 			}
 			catch (Error& e)
 			{
-				static_cast<YagiArchitecture*>(glb)->getLogger()->error(e.what());
+				static_cast<YagiArchitecture*>(glb)->getLogger().error(e.what());
 			}
 			
 			return funcData;
