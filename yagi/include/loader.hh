@@ -1,19 +1,25 @@
 #ifndef __YAGI_LOADER__
 #define __YAGI_LOADER__
 
-#include <libdecomp.hh>
-#include <yagiarchitecture.hh>
-
+class LoadImage;
 namespace yagi 
 {
-	class Loader : public LoadImage
+
+	class LoaderFactory
 	{
 	public:
-		Loader();
+		virtual LoadImage* build() = 0;
+	};
 
-		std::string getArchType(void) const override;
-		void loadFill(uint1* ptr, int4 size, const Address& addr) override;
-		void adjustVma(long adjust);
+
+	template<typename T>
+	class LoaderFactoryDefault : public LoaderFactory
+	{
+	public:
+		LoadImage* build() override
+		{
+			return new T();
+		}
 	};
 }
 

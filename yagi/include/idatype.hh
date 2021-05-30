@@ -179,7 +179,7 @@ namespace yagi
 		 * \brief	return the inner type
 		 * \return	the inner type
 		 */
-		const TypeInfo& getType() const override;
+		const TypeInfo& getType() const;
 
 		/*!
 		 *	\brief	Build a list of type
@@ -233,7 +233,7 @@ namespace yagi
 		 * \brief	return the inner IDA type
 		 * \return	the inner IDA type
 		 */
-		const TypeInfo& getType() const override;
+		const TypeInfo& getType() const;
 
 		/*!
 		 * \brief	Return the list of structure fields 
@@ -273,7 +273,7 @@ namespace yagi
 		 * \brief	Return the inner type
 		 * \return	The inner IDA type
 		 */
-		const TypeInfo& getType() const override;
+		const TypeInfo& getType() const;
 
 		/*!
 		 * \brief	Get the type information of the pointed object
@@ -313,7 +313,7 @@ namespace yagi
 		/*!
 		 * \brief	Get the inner type informations
 		 */
-		const TypeInfo& getType() const override;
+		const TypeInfo& getType() const;
 
 		/*!
 		 * \brief	Get the type information of the Array elements

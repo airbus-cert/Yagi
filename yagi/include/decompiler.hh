@@ -8,6 +8,7 @@
 #include "typeinfo.hh"
 #include "symbolinfo.hh"
 #include "logger.hh"
+#include "loader.hh"
 
 namespace yagi 
 {
@@ -23,11 +24,6 @@ namespace yagi
 		 *	\brief	pointer to the main Ghidra architecture 
 		 */
 		std::unique_ptr<YagiArchitecture> m_architecture;
-
-		/*!
-		 * \brief	compute the Sleigh id from the computer type
-		 */
-		static std::string compute_sleigh_id(const Compiler& compilerType) noexcept;
 
 	public:
 		/*!
@@ -54,6 +50,11 @@ namespace yagi
 		GhidraDecompiler& operator=(GhidraDecompiler&&) noexcept = default;
 
 		/*!
+		 * \brief	compute the Sleigh id from the computer type
+		 */
+		static std::string compute_sleigh_id(const Compiler& compilerType) noexcept;
+
+		/*!
 		 *	\brief	main function for decompiler
 		 *	\param	funcAddress	address of function to decompile
 		 */
@@ -63,6 +64,7 @@ namespace yagi
 		 *	\brief	factory
 		 *			Use to build a ghidra decompiler interface
 		 *	\param	compilerType	decompiler id to load
+		 *  \param	loaderFactory	Loader factory, use to interact with file or IDA
 		 *  \param	logger	logger use to inform state of the decompilation
 		 *	\param	symbolDatabase	symboles database use to increase the decompilation output
 		 *  \param	typeDatabase	type declared use to increase the decompilation output

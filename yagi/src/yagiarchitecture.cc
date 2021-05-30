@@ -9,11 +9,15 @@ namespace yagi
 	YagiArchitecture::YagiArchitecture(
 		const std::string& name,
 		const std::string& sleighId,
+		std::unique_ptr<LoaderFactory> loaderFactory,
 		std::unique_ptr<Logger> logger,
 		std::unique_ptr<SymbolInfoFactory> symbols,
 		std::unique_ptr<TypeInfoFactory> type
 	) : SleighArchitecture(name, sleighId, &m_err),
-		m_logger{ std::move(logger) }, m_symbols{ std::move(symbols) }, m_type{ std::move(type) }
+		m_loaderFactory{ std::move(loaderFactory)},
+		m_logger{ std::move(logger) }, 
+		m_symbols{ std::move(symbols) }, 
+		m_type{ std::move(type) }
 	{
 	}
 
@@ -25,7 +29,7 @@ namespace yagi
 		if (error.str().length() > 0) {
 			m_logger->error("spec files loading", error.str());
 		}
-		loader = new Loader();
+		loader = m_loaderFactory->build();
 	}
 
 	/**********************************************************************/

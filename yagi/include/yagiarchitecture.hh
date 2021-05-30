@@ -4,6 +4,7 @@
 #include "symbolinfo.hh"
 #include "typeinfo.hh"
 #include "logger.hh"
+#include "loader.hh"
 
 #include <libdecomp.hh>
 
@@ -17,6 +18,11 @@ namespace yagi
 	class YagiArchitecture : public SleighArchitecture
 	{
 	protected:
+		std::unique_ptr<LoaderFactory> m_loaderFactory;
+
+		/*!
+		 * \brief Symbol Info factory
+		 */
 		std::unique_ptr<SymbolInfoFactory> m_symbols;
 
 		/*!
@@ -66,6 +72,7 @@ namespace yagi
 		explicit YagiArchitecture(
 			const std::string& name,
 			const std::string& sleighId,
+			std::unique_ptr<LoaderFactory> loaderFactory,
 			std::unique_ptr<Logger> logger,
 			std::unique_ptr<SymbolInfoFactory> symbols,
 			std::unique_ptr<TypeInfoFactory> type

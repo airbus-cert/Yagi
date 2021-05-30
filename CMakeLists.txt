@@ -22,7 +22,7 @@ add_subdirectory(ghidra)
 
 # The IDA plugin
 add_subdirectory(yagi)
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 # Summary
 message(STATUS "Configuration summary")

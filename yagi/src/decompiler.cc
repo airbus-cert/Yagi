@@ -4,6 +4,7 @@
 #include "typeinfo.hh"
 #include "symbolinfo.hh"
 #include "exception.hh"
+#include "idaloader.hh"
 
 namespace yagi 
 {
@@ -25,7 +26,7 @@ namespace yagi
 		}
 
 		auto scope = m_architecture->symboltab->getGlobalScope();
-		// clear scope to update all symbole
+		// clear scope to update all symbols
 		scope->clear();
 
 		auto func = scope->findFunction(
@@ -114,6 +115,7 @@ namespace yagi
 		auto architecture = std::make_unique<YagiArchitecture>(
 			"", 
 			sleighId,
+			std::make_unique<IdaLoaderFactory>(),
 			std::move(logger), 
 			std::move(symbolDatabase), 
 			std::move(typeDatabase)

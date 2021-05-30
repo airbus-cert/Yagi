@@ -88,7 +88,7 @@ namespace yagi
 		 *	\brief	the associate symbol name
 		 *	\return symbol string
 		 */
-		std::string getName() const noexcept;
+		virtual std::string getName() const;
 
 		/*!
 		 *	\brief	state of symbol

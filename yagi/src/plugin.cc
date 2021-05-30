@@ -21,7 +21,7 @@ namespace yagi
 {
 	static bool idaapi _KeyboardCallback(TWidget* w, int key, int shift, void* ud) 
 	{
-		int x, y;
+		/*int x, y;
 		if (get_custom_viewer_place(w, false, &x, &y) == NULL) {
 			return false;
 		}
@@ -41,7 +41,7 @@ namespace yagi
 			start--;
 		}
 
-		qstring keyword = qstring(start + 1, end - start - 1);		
+		qstring keyword = qstring(start + 1, end - start - 1);*/		
 
 		return true;
 	}

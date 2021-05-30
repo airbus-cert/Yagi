@@ -20,6 +20,8 @@
 #include "idatype.hh"
 #include "idasymbol.hh"
 #include "idalogger.hh"
+#include "loader.hh"
+
 
 static int processor_id() {
 #if IDA_SDK_VERSION < 750

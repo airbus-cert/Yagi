@@ -43,16 +43,22 @@ namespace yagi
 	TypeCode* TypeManager::parseFunc(const FuncInfo& typeInfo)
 	{
 		auto prototype = typeInfo.getFuncPrototype();
-		auto retType = findByTypeInfo(*(prototype.front()));
+		Datatype* retType = getTypeVoid();
 		std::vector<Datatype*> paramType;
-		auto paramIter = prototype.begin();
-		paramIter++;
-		std::transform(paramIter, prototype.end(), std::back_inserter(paramType),
-			[this](const std::unique_ptr<TypeInfo>& type)
-			{
-				return findByTypeInfo(*type);
-			}
-		);
+
+		if (prototype.size() > 0)
+		{
+			retType = findByTypeInfo(*(prototype.front()));
+
+			auto paramIter = prototype.begin();
+			paramIter++;
+			std::transform(paramIter, prototype.end(), std::back_inserter(paramType),
+				[this](const std::unique_ptr<TypeInfo>& type)
+				{
+					return findByTypeInfo(*type);
+				}
+			);
+		}
 
 		// handle calling convention conversion
 		std::string cc = "__fastcall";
@@ -217,8 +223,12 @@ namespace yagi
 		proto->getPieces(pieces);
 
 		// Update with param name if possible
-		pieces.innames = funcType.value()->getFuncParamName();
-		func.getFuncProto().setPieces(pieces);
+		auto newParamNames = funcType.value()->getFuncParamName();
+		if (newParamNames.size() == pieces.innames.size())
+		{
+			pieces.innames = funcType.value()->getFuncParamName();
+			func.getFuncProto().setPieces(pieces);
+		}
 
 		if (func.getName() == "__alloca_probe")
 		{

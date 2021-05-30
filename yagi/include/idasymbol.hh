@@ -40,6 +40,11 @@ namespace yagi
 		 */
 		uint64_t getFunctionSize() const override;
 
+		/*!
+		 * \brief	override the default name
+		 *			with IDA API
+		 */
+		std::string getName() const override;
 
 		/*!
 		 *	\brief	state of symbol
