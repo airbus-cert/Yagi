@@ -30,12 +30,12 @@ std::string MockFuncInfo::getCallingConv() const
 
 
 
-MockTypeInfo::MockTypeInfo(size_t size, std::string name, bool isInt, bool isBool, bool isFloat, bool isVoid, bool isConst, bool isChar)
-	: m_size{size}, m_name{name}, m_isInt{isInt}, m_isBool{isBool}, m_isFloat{isFloat}, m_isVoid{isVoid}, m_isConst{isConst}, m_isChar{isChar}, m_funcInfo{std::nullopt}
+MockTypeInfo::MockTypeInfo(size_t size, std::string name, bool isInt, bool isBool, bool isFloat, bool isVoid, bool isConst, bool isChar, bool isUnicode)
+	: m_size{ size }, m_name{ name }, m_isInt{ isInt }, m_isBool{ isBool }, m_isFloat{ isFloat }, m_isVoid{ isVoid }, m_isConst{ isConst }, m_isChar{ isChar }, m_isUnicode{ isUnicode }, m_funcInfo{ std::nullopt }
 {}
 
 MockTypeInfo::MockTypeInfo(size_t size, std::string name, MockFuncInfo funcInfo)
-	: m_size {size}, m_name {name}, m_funcInfo{std::make_optional<MockFuncInfo>(funcInfo)}, m_isInt{ false }, m_isBool{ false }, m_isFloat{ false }, m_isVoid{ false }, m_isConst{ false }, m_isChar{ false }
+	: m_size {size}, m_name {name}, m_funcInfo{std::make_optional<MockFuncInfo>(funcInfo)}, m_isInt{ false }, m_isBool{ false }, m_isFloat{ false }, m_isVoid{ false }, m_isConst{ false }, m_isChar{ false }, m_isUnicode{ false }
 {}
 
 size_t MockTypeInfo::getSize() const
@@ -76,6 +76,11 @@ bool MockTypeInfo::isConst() const
 bool MockTypeInfo::isChar() const
 {
 	return m_isChar;
+}
+
+bool MockTypeInfo::isUnicode() const
+{
+	return m_isUnicode;
 }
 
 std::optional<std::unique_ptr<yagi::FuncInfo>>MockTypeInfo::toFunc() const

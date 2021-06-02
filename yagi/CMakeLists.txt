@@ -1,7 +1,7 @@
 set(yagi_SRC
 	src/yagiarchitecture.cc
 	src/base.cc
-	src/decompiler.cc
+	src/ghidradecompiler.cc
 	src/exception.cc
 	src/yagi.cc
 	src/idatype.cc
@@ -20,6 +20,7 @@ set(yagi_INCLUDE
 	include/yagiarchitecture.hh
 	include/base.hh
 	include/decompiler.hh
+	include/ghidradecompiler.hh
 	include/idatype.hh
 	include/exception.hh
 	include/ghidra.hh
@@ -27,7 +28,6 @@ set(yagi_INCLUDE
 	include/idaloader.hh
 	include/idasymbol.hh
 	include/idatool.hh
-	include/idecompile.hh
 	include/logger.hh
 	include/loader.hh
 	include/plugin.hh
@@ -48,6 +48,9 @@ target_include_directories(
 	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${IDA_SDK_INCLUDE_DIRS}
 )
+
+set_target_properties(yagi PROPERTIES OUTPUT_NAME "yagi64")
+install(TARGETS yagi DESTINATION plugins)
 
 if(MSVC)
 	add_definitions(
@@ -84,7 +87,7 @@ set(yagi_TEST_INCLUDE
 	include/base.hh
 	include/exception.hh
 	include/ghidra.hh
-	include/idecompile.hh
+	include/decompiler.hh
 	include/loader.hh
 	include/logger.hh
 	include/scope.hh

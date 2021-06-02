@@ -21,11 +21,26 @@ namespace yagi
 
 		YagiArchitecture* m_archi;
 
+		/*!
+		 * \brief	find type by inner id
+		 * \param	n	name of the type
+		 * \param	id	id of the type
+		 * \return	found type
+		 */
 		Datatype* findById(const string& n, uint8 id) override;
+
+		/*!
+		 * \brief	inject API is not available throw normal API
+		 *			We need to use XML tricks...
+		 * \param	fd	function data to update
+		 * \param	inject_name	name of th injection
+		 */
+		void setInjectAttribute(Funcdata& fd, std::string inject_name);
 
 	public:
 		explicit TypeManager(YagiArchitecture* architecture);
-		virtual ~TypeManager();
+
+		virtual ~TypeManager() = default;
 
 		/*!
 		 *	\brief	Disable copy of IdaTypeFactory prefer moving
@@ -40,11 +55,31 @@ namespace yagi
 		TypeManager(TypeManager&&) noexcept = default;
 		TypeManager& operator=(TypeManager&&) noexcept = default;
 
+		/*!
+		 * \brief	Parse a function information type interface
+		 *			Try to create a Ghidra type code
+		 * \param	typeInfo	backend type information
+		 */
 		TypeCode* parseFunc(const FuncInfo& typeInfo);
+
+		/*!
+		 * \brief	parse a type information generic interface
+		 *			to transform into ghidra type
+		 * \param	backend type information interface
+		 * \return	ghidra type
+		 */
 		Datatype* parseTypeInfo(const TypeInfo& typeInfo);
 
+		/*!
+		 * \brief	Find a type from typeinformation interface
+		 * \param	typeInfo interface to find
+		 * \return	ghidra type
+		 */
 		Datatype* findByTypeInfo(const TypeInfo& typeInfo);
 
+		/*!
+		 * \brief	update function information data
+		 */
 		void update(Funcdata& func);
 	};
 }

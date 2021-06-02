@@ -31,7 +31,7 @@ message(STATUS "Project version              : ${PROJECT_VERSION}")
 
 # CPack part
 set(CPACK_GENERATOR "WIX")
-set(CPACK_WIX_UPGRADE_GUID "c64ed0aa-c54a-4590-93fb-72e152edefb7")
+set(CPACK_WIX_UPGRADE_GUID "3fceb3d1-542b-469d-a5af-7068f95e7a68")
 set(CPACK_WIX_UNINSTALL "1")
 set(CPACK_WIX_PATCH_FILE "${CMAKE_CURRENT_SOURCE_DIR}/install/patch.xml")
 include(CPack)

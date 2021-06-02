@@ -56,20 +56,24 @@ COLOR_FG_MAX = '\x28';         ///< Max color number
 
 namespace yagi 
 {
+	/**********************************************************************/
 	// Constructing this registers the capability
 	IdaPrintCapability IdaPrintCapability::inst;
 
+	/**********************************************************************/
 	IdaPrintCapability::IdaPrintCapability(void)
 	{
 		name = "yagi-c-language";
 		isdefault = false;
 	}
 
+	/**********************************************************************/
 	PrintLanguage* IdaPrintCapability::buildLanguage(Architecture* glb)
 	{
 		return new IdaPrint(glb, name);
 	}
 
+	/**********************************************************************/
 	IdaPrint::IdaPrint(Architecture* g, const string& nm)
 		: PrintC(g, nm)
 	{
@@ -77,12 +81,15 @@ namespace yagi
 		emit->setMaxLineSize(400);
 	}
 
+	/**********************************************************************/
 	void IdaEmit::startColorTag(char c)
 	{
 		std::stringstream ss;
 		ss << COLOR_ON << c;
 		EmitPrettyPrint::print(ss.str().c_str());
 	}
+
+	/**********************************************************************/
 	void IdaEmit::endColorTag(char c)
 	{
 		std::stringstream ss;
@@ -90,24 +97,28 @@ namespace yagi
 		EmitPrettyPrint::print(ss.str().c_str());
 	}
 
+	/**********************************************************************/
 	int4 IdaEmit::openParen(char o, int4 id)
 	{
 		EmitColorGuard guard(*this, COLOR_KEYWORD);
 		return EmitPrettyPrint::openParen(o, id);
 	}
 
+	/**********************************************************************/
 	void IdaEmit::closeParen(char c, int4 id)
 	{
 		EmitColorGuard guard(*this, COLOR_KEYWORD);
 		return EmitPrettyPrint::closeParen(c, id);
 	}
 
+	/**********************************************************************/
 	void IdaEmit::tagOp(const char* ptr, syntax_highlight hl, const PcodeOp* op)
 	{
 		EmitColorGuard guard(*this, COLOR_KEYWORD);
 		EmitPrettyPrint::tagOp(ptr, hl, op);
 	}
 
+	/**********************************************************************/
 	void IdaEmit::tagVariable(const char* ptr, syntax_highlight hl,
 		const Varnode* vn, const PcodeOp* op)
 	{
@@ -129,6 +140,12 @@ namespace yagi
 			EmitColorGuard guard(*this, COLOR_DSTR);
 			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
 		}
+		// Constant string
+		else if (*ptr == 'L' && ptr[1] != '\0' && ptr[1] == '\"')
+		{
+			EmitColorGuard guard(*this, COLOR_DSTR);
+			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
+		}
 		else
 		{
 			EmitColorGuard guard(*this, hl);
@@ -136,6 +153,7 @@ namespace yagi
 		}
 	}
 
+	/**********************************************************************/
 	void IdaEmit::tagFuncName(const char* ptr, syntax_highlight hl, const Funcdata* fd, const PcodeOp* op)
 	{
 		auto name = std::string(ptr);
@@ -151,6 +169,7 @@ namespace yagi
 		}
 	}
 
+	/**********************************************************************/
 	void IdaEmit::print(const char* str, syntax_highlight hl)
 	{
 		// handle C synthax token
@@ -169,18 +188,21 @@ namespace yagi
 		EmitPrettyPrint::print(str, hl);
 	}
 
+	/**********************************************************************/
 	void IdaEmit::tagType(const char* ptr, syntax_highlight hl, const Datatype* ct)
 	{
 		EmitColorGuard guard(*this, hl);
 		EmitPrettyPrint::tagType(ptr, hl, ct);
 	}
 
+	/**********************************************************************/
 	EmitColorGuard::EmitColorGuard(IdaEmit& emitter, char color)
 		: m_emitter(emitter), m_color(color)
 	{
 		m_emitter.startColorTag(m_color);
 	}
 
+	/**********************************************************************/
 	EmitColorGuard::EmitColorGuard(IdaEmit& emitter, EmitPrettyPrint::syntax_highlight color)
 		: m_emitter(emitter)
 	{
@@ -221,6 +243,7 @@ namespace yagi
 		m_emitter.startColorTag(m_color);
 	}
 
+	/**********************************************************************/
 	EmitColorGuard::~EmitColorGuard()
 	{
 		m_emitter.endColorTag(m_color);

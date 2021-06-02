@@ -4,26 +4,51 @@
 #include <idp.hpp>
 #include <memory>
 #include <sstream>
-#include "idecompile.hh"
+#include "decompiler.hh"
 
 namespace yagi {
 
+	/*!
+	 * \brief	IdaPlugin definition
+	 */
 	class Plugin : public plugmod_t {
 	protected:
-		std::unique_ptr<IDecompiler> m_decompiler;
-	public:
-		explicit Plugin(std::unique_ptr<IDecompiler> decompiler);
+		/*!
+		 * \brief	the Ghidra decompiler
+		 */
+		std::unique_ptr<Decompiler> m_decompiler;
 
+	public:
+		/*!
+		 * \brief	Plugin ctor
+		 */
+		explicit Plugin(std::unique_ptr<Decompiler> decompiler);
+
+		/*!
+		 * \brief	destructor
+		 */
+		virtual ~Plugin() = default;
+
+		/*!
+		 * \brief	copy id disable
+		 */
 		Plugin(const Plugin&) = delete;
 		Plugin& operator=(const Plugin&) = delete;
 
-		Plugin(Plugin&&) noexcept = default;
-		Plugin& operator=(Plugin&&) noexcept = default;
+		/*!
+		 * \brief	move is forbidden
+		 */
+		Plugin(Plugin&&) noexcept = delete;
+		Plugin& operator=(Plugin&&) noexcept = delete;
 
-		virtual ~Plugin() = default;
-
+		/*!
+		 * \brief	Run the plugin API
+		 */
 		virtual bool idaapi run(size_t) override;
 
+		/*!
+		 * \brief	View decompilation
+		 */
 		void view(const std::string& name, const std::string& code) const;
 	};
 }

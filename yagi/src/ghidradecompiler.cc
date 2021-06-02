@@ -1,4 +1,4 @@
-#include "decompiler.hh"
+#include "ghidradecompiler.hh"
 #include "architecture.hh"
 #include "scope.hh"
 #include "typeinfo.hh"
@@ -68,9 +68,35 @@ namespace yagi
 
 		switch (compilerType.language)
 		{
+		case Compiler::Language::X86:
+			language = "x86";
+			languageMeta = "default";
+			break;
+		case Compiler::Language::X86_GCC:
+			language = "x86";
+			languageMeta = "default:gcc";
+			break;
 		case Compiler::Language::X86_WINDOWS:
 			language = "x86";
 			languageMeta = "default:windows";
+			break;
+		case Compiler::Language::PPC:
+			language = "PowerPC";
+			languageMeta = "default";
+			break;
+		case Compiler::Language::ARM:
+			{
+				if (compilerType.mode == Compiler::Mode::M64)
+				{
+					language = "AARCH64";
+					languageMeta = "v8A:default";
+				}
+				else 
+				{
+					language = "ARM";
+					languageMeta = "v7";
+				}
+			}
 			break;
 		}
 		
@@ -102,7 +128,31 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::optional<std::unique_ptr<IDecompiler>> GhidraDecompiler::build(
+	std::string GhidraDecompiler::compute_default_cc(const Compiler& compilerType)
+	{
+		switch (compilerType.language)
+		{
+		case Compiler::Language::X86:
+		case Compiler::Language::X86_GCC:
+		case Compiler::Language::X86_WINDOWS:
+			return "__fastcall";
+		case Compiler::Language::ARM:
+			if (compilerType.mode == Compiler::Mode::M32)
+				return "__stdcall";
+			else
+				return "__cdecl";
+		case Compiler::Language::PPC:
+			return "__stdcall";
+			break;
+		default:
+			break;
+		}
+
+		throw NoDefaultCallingConvention();
+	}
+
+	/**********************************************************************/
+	std::optional<std::unique_ptr<Decompiler>> GhidraDecompiler::build(
 		const Compiler& compilerType,
 		std::unique_ptr<Logger> logger, 
 		std::unique_ptr<SymbolInfoFactory> symbolDatabase, 
@@ -118,7 +168,8 @@ namespace yagi
 			std::make_unique<IdaLoaderFactory>(),
 			std::move(logger), 
 			std::move(symbolDatabase), 
-			std::move(typeDatabase)
+			std::move(typeDatabase),
+			compute_default_cc(compilerType)
 		);
 
 		try

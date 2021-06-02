@@ -134,6 +134,12 @@ namespace yagi
 		virtual bool isChar() const = 0;
 
 		/*!
+		 * \brief	Is it an unicode type
+		 * \return	true if it's an unicode
+		 */
+		virtual bool isUnicode() const = 0;
+
+		/*!
 		 * \brief	Convert the current type, if it's possible
 		 *			into a function type info
 		 * \return	If it's a function type give the associated object

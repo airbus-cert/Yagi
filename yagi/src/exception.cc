@@ -79,4 +79,31 @@ namespace yagi
 		ss << "Unknown calling convention of method " << funcName;
 		m_reason = ss.str();
 	}
+
+	/**********************************************************************/
+	UnknownCompiler::UnknownCompiler(uint32_t compilerId)
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "Unknown the compiler ID " << compilerId;
+		m_reason = ss.str();
+	}
+
+	/**********************************************************************/
+	UnImplementedFunction::UnImplementedFunction(const std::string& funcName)
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "Unimplemented function " << funcName;
+		m_reason = ss.str();
+	}
+
+	/**********************************************************************/
+	NoDefaultCallingConvention::NoDefaultCallingConvention()
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "The current arch have no default calling convention ";
+		m_reason = ss.str();
+	}
 } // end of namespace yagi

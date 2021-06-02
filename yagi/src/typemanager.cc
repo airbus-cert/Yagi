@@ -14,12 +14,6 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	TypeManager::~TypeManager()
-	{
-
-	}
-
-	/**********************************************************************/
 	Datatype* TypeManager::findById(const string& n, uint8 id)
 	{
 		// find in cache
@@ -72,7 +66,7 @@ namespace yagi
 		if (!glb->hasModel(cc))
 		{
 			// by default we put __fastcall as calling convention
-			cc = "__fastcall";
+			cc = m_archi->getDefaultCC();
 		}
 
 		return getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
@@ -98,6 +92,13 @@ namespace yagi
 		if (typeInfo.isBool())
 		{
 			auto ct = new TypeBase(typeInfo.getSize(), TYPE_BOOL, name);
+			setName(ct, name);
+			return ct;
+		}
+
+		if (typeInfo.isUnicode())
+		{
+			auto ct = new TypeUnicode(name, typeInfo.getSize(), TYPE_INT);
 			setName(ct, name);
 			return ct;
 		}
@@ -230,21 +231,27 @@ namespace yagi
 			func.getFuncProto().setPieces(pieces);
 		}
 
-		if (func.getName() == "__alloca_probe")
+		if (func.getName() == "alloca_probe")
 		{
-			// inject interface is only available through
-			// XML API...
-			std::stringstream ss; 
-			func.getFuncProto().saveXml(ss);
-
-			auto document = xml_tree(ss);
-			Element inject(document->getRoot());
-			inject.setName("inject");
-			inject.addContent("alloca_probe", 0, 12);
-
-			document->getRoot()->addChild(&inject);
-			func.getFuncProto().restoreXml(document->getRoot(), m_archi);
+			setInjectAttribute(func, "alloca_probe");
 		}
+	}
+
+	/**********************************************************************/
+	void TypeManager::setInjectAttribute(Funcdata& fd, std::string inject_name)
+	{
+		// inject interface is only available through
+		// XML API...
+		std::stringstream ss;
+		fd.getFuncProto().saveXml(ss);
+
+		auto document = xml_tree(ss);
+		Element inject(document->getRoot());
+		inject.setName("inject");
+		inject.addContent(inject_name.c_str(), 0, inject_name.length());
+
+		document->getRoot()->addChild(&inject);
+		fd.getFuncProto().restoreXml(document->getRoot(), m_archi);
 	}
 
 } // end of namespace yagi

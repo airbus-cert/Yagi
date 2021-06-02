@@ -11,11 +11,12 @@
 #endif
 
 #include <loader.hpp>
-#include "ida.hpp"
-#include "idp.hpp"
-#include "plugin.hh"
-#include "idecompile.hh"
+#include <ida.hpp>
+#include <idp.hpp>
+#include <diskio.hpp>
+#include <plugin.hh>
 #include "decompiler.hh"
+#include "ghidradecompiler.hh"
 #include "ghidra.hh"
 #include "idatype.hh"
 #include "idasymbol.hh"
@@ -31,11 +32,44 @@ static int processor_id() {
 #endif
 }
 
+/*!
+ * \brief	try to detect compiler of the binary 
+ */
 static yagi::Compiler compute_compiler() {
 	compiler_info_t info;
 	inf_get_cc(&info);
 
-	return yagi::Compiler(yagi::Compiler::Language::X86_WINDOWS, yagi::Compiler::Endianess::LE, yagi::Compiler::Mode::M64);
+	auto language = yagi::Compiler::Language::X86;
+	switch (processor_id())
+	{
+	case PLFM_386:
+		{
+			switch (info.id)
+			{
+			case COMP_MS:
+				language = yagi::Compiler::Language::X86_WINDOWS;
+				break;
+			case COMP_GNU:
+				language = yagi::Compiler::Language::X86_GCC;
+				break;
+			}
+		}
+		break;
+	case PLFM_ARM:
+		language = yagi::Compiler::Language::ARM;
+		break;
+	case PLFM_PPC:
+		language = yagi::Compiler::Language::PPC;
+		break;
+	default:
+		throw yagi::UnknownCompiler(processor_id());
+	}
+
+	return yagi::Compiler(
+		language,
+		inf_is_be() ? yagi::Compiler::Endianess::BE : yagi::Compiler::Endianess::LE,
+		inf_is_64bit() ? yagi::Compiler::Mode::M64 : yagi::Compiler::Mode::M32
+	);
 }
 
 /*
@@ -43,24 +77,33 @@ static yagi::Compiler compute_compiler() {
  */
 static plugmod_t* idaapi yagi_init(void)
 {
-	yagi::ghidra::init();
-	
-	auto decompiler = yagi::GhidraDecompiler::build(
-		compute_compiler(),
-		std::make_unique<yagi::IdaLogger>(),
-		std::make_unique<yagi::IdaSymbolInfoFactory>(),
-		std::make_unique<yagi::IdaTypeInfoFactory>()
-	);
-	if (decompiler.has_value())
+	yagi::ghidra::init(idadir("plugins"));
+	auto logger = std::make_unique<yagi::IdaLogger>();
+	try
 	{
-		return new yagi::Plugin(std::move(decompiler.value()));
+		auto compilerId = compute_compiler();
+
+		auto decompiler = yagi::GhidraDecompiler::build(
+			compilerId,
+			std::move(logger),
+			std::make_unique<yagi::IdaSymbolInfoFactory>(),
+			std::make_unique<yagi::IdaTypeInfoFactory>()
+		);
+		if (decompiler.has_value())
+		{
+			return new yagi::Plugin(std::move(decompiler.value()));
+		}
 	}
-	else {
-		return nullptr;
+	catch (yagi::UnknownCompiler& e)
+	{
+		logger->error(e.what());
 	}
+	return nullptr;
 }
 
-// This is an export present into loader.hpp of IDA SDK
+/*!
+ * \brief	This is an export present into loader.hpp of IDA SDK
+ */
 plugin_t PLUGIN =
 {
 	IDP_INTERFACE_VERSION,

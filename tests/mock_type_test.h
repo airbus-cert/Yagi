@@ -62,12 +62,13 @@ protected:
 	bool m_isVoid;
 	bool m_isConst;
 	bool m_isChar;
+	bool m_isUnicode;
 
 	std::optional<MockFuncInfo> m_funcInfo;
 
 public:
 
-	MockTypeInfo(size_t size, std::string name, bool isInt, bool isBool, bool isFloat, bool isVoid, bool isConst, bool isChar);
+	MockTypeInfo(size_t size, std::string name, bool isInt, bool isBool, bool isFloat, bool isVoid, bool isConst, bool isChar, bool isUnicode);
 	MockTypeInfo(size_t size, std::string name, MockFuncInfo funcInfo);
 
 	MockTypeInfo(const MockTypeInfo&) = default;
@@ -81,6 +82,7 @@ public:
 	bool isVoid() const;
 	bool isConst() const;
 	bool isChar() const;
+	bool isUnicode() const;
 
 	std::optional<std::unique_ptr<yagi::FuncInfo>> toFunc() const;
 	std::optional<std::unique_ptr<yagi::StructInfo>> toStruct() const;

@@ -5,8 +5,9 @@
 
 namespace yagi 
 {
-	void ghidra::init()
+	/**********************************************************************/
+	void ghidra::init(const std::string& ghidraPath)
 	{
-		startDecompilerLibrary("C:\\work\\dev\\build\\");
+		startDecompilerLibrary(ghidraPath.c_str());
 	}
 } // end of namespace yagi

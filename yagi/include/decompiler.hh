@@ -1,80 +1,61 @@
-#ifndef __YAGI_DECOMPILER__
-#define __YAGI_DECOMPILER__
+#ifndef __YAGI_IDECOMPILE__
+#define __YAGI_IDECOMPILE__
 
-#include <memory>
-#include <optional>
-
-#include "idecompile.hh"
-#include "typeinfo.hh"
-#include "symbolinfo.hh"
-#include "logger.hh"
-#include "loader.hh"
+#include <string>
 
 namespace yagi 
 {
-	class YagiArchitecture;
+	/*!
+	 * \brief	Compiler configuration definition
+	 */
+	struct Compiler {
+		/*!
+		 * \brief	Language definition 
+		 */
+		enum class Language {
+			X86_WINDOWS,	// built using Windows
+			X86_GCC,		// built using GCC
+			X86,			// unknown compiler
+			ARM,			// ARM	arch
+			PPC				// PowerPC
+		};
+
+		enum class Endianess {
+			BE,				// Big Endian
+			LE				// Little Endian
+		};
+
+		enum class Mode {
+			M32,			// 32 bits
+			M64				// 64 bits
+		};
+
+		Language	language;
+		Endianess	endianess;
+		Mode		mode;
+
+		/*!
+		 * \brief	Constructor
+		 */
+		Compiler(Language language, Endianess endianess, Mode mode)
+			: language {language}, endianess{endianess}, mode{mode}
+		{}
+	};
 
 	/*!
-	 *	\brief	Implement the IDecompile interface for Ghidra
+	 * \brief	Decompile interface
 	 */
-	class GhidraDecompiler : public IDecompiler
+	class Decompiler
 	{
-	private:
-		/*!
-		 *	\brief	pointer to the main Ghidra architecture 
-		 */
-		std::unique_ptr<YagiArchitecture> m_architecture;
-
 	public:
-		/*!
-		 *	\brief	ctor
-		 *	\param	architecture	Ghidra architecture
-		 */
-		explicit GhidraDecompiler(std::unique_ptr<YagiArchitecture> architecture);
+		virtual ~Decompiler() = default;
 
 		/*!
-		 *	\brief	default deletor 
+		 * \brief	decompiler function interface
+		 * \param	funcAddress	address of the function to decompile
+		 * \return	decompiled source code
 		 */
-		virtual ~GhidraDecompiler() = default;
-
-		/*!
-		 *	\brief	Copy is forbidden 
-		 */
-		GhidraDecompiler(const GhidraDecompiler&) = delete;
-		GhidraDecompiler& operator=(const GhidraDecompiler&) = delete;
-
-		/*!
-		 *	\brief	Move is authorized 
-		 */
-		GhidraDecompiler(GhidraDecompiler&&) noexcept = default;
-		GhidraDecompiler& operator=(GhidraDecompiler&&) noexcept = default;
-
-		/*!
-		 * \brief	compute the Sleigh id from the computer type
-		 */
-		static std::string compute_sleigh_id(const Compiler& compilerType) noexcept;
-
-		/*!
-		 *	\brief	main function for decompiler
-		 *	\param	funcAddress	address of function to decompile
-		 */
-		std::string decompile(uint64_t funcAddress) override;
-
-		/*!
-		 *	\brief	factory
-		 *			Use to build a ghidra decompiler interface
-		 *	\param	compilerType	decompiler id to load
-		 *  \param	loaderFactory	Loader factory, use to interact with file or IDA
-		 *  \param	logger	logger use to inform state of the decompilation
-		 *	\param	symbolDatabase	symboles database use to increase the decompilation output
-		 *  \param	typeDatabase	type declared use to increase the decompilation output
-		 */
-		static std::optional<std::unique_ptr<IDecompiler>> build(
-			const Compiler& compilerType,
-			std::unique_ptr<Logger> logger, 
-			std::unique_ptr<SymbolInfoFactory> symbolDatabase, 
-			std::unique_ptr<TypeInfoFactory> typeDatabase
-		) noexcept;
+		virtual std::string decompile(uint64_t funcAddress) = 0;
 	};
 }
 

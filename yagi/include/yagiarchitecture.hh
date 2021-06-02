@@ -42,6 +42,12 @@ namespace yagi
 		std::stringstream m_err;
 
 		/*!
+		 * \brief	default calling convention when matching is not found 
+		 *			in ghidra models
+		 */
+		std::string m_defaultCC;
+
+		/*!
 		 *	\brief	Factory function override to build our internal scope
 		 *			Scopes are used to reselve symbols
 		 */
@@ -68,6 +74,7 @@ namespace yagi
 		 *	\param	logger	logger used by the entire program to print user informations
 		 *	\param	symbols	symbol factory backend, use to find symbol
 		 *	\param	type	type factory backend, use to find type informations
+		 *  \param	defaultCC	default calling convention
 		 */
 		explicit YagiArchitecture(
 			const std::string& name,
@@ -75,7 +82,8 @@ namespace yagi
 			std::unique_ptr<LoaderFactory> loaderFactory,
 			std::unique_ptr<Logger> logger,
 			std::unique_ptr<SymbolInfoFactory> symbols,
-			std::unique_ptr<TypeInfoFactory> type
+			std::unique_ptr<TypeInfoFactory> type,
+			std::string defaultCC
 		);
 
 		virtual ~YagiArchitecture() = default;
@@ -109,6 +117,11 @@ namespace yagi
 		 *	\return	An implementation of a logger
 		 */
 		Logger& getLogger() const;
+
+		/*!
+		 * \brief	return the default calling convention for this arch
+		 */
+		const std::string& getDefaultCC() const;
 	};
 }
 

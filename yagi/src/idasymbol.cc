@@ -8,6 +8,7 @@
 
 namespace yagi 
 {
+	/**********************************************************************/
 	std::optional<std::unique_ptr<SymbolInfo>> IdaSymbolInfoFactory::find(uint64_t ea)
 	{
 		qstring name;
@@ -18,6 +19,7 @@ namespace yagi
 		return std::make_unique<IdaSymbolInfo>(ea, name.c_str());
 	}
 
+	/**********************************************************************/
 	std::optional<std::unique_ptr<SymbolInfo>> IdaSymbolInfoFactory::find_function(uint64_t ea)
 	{
 		auto idaFunc = get_func(ea);
@@ -34,16 +36,19 @@ namespace yagi
 		return std::make_unique<IdaSymbolInfo>(idaFunc->start_ea, functionName);
 	}
 
+	/**********************************************************************/
 	IdaSymbolInfo::IdaSymbolInfo(uint64_t ea, std::string name)
 		: SymbolInfo(ea, name) 
 	{}
 
+	/**********************************************************************/
 	bool IdaSymbolInfo::isFunction() const noexcept
 	{
 		auto idaFunc = get_func(m_ea);
 		return idaFunc != nullptr && idaFunc->start_ea == m_ea;
 	}
 
+	/**********************************************************************/
 	bool IdaSymbolInfo::isImport() const noexcept
 	{
 		std::string importName = m_name;
@@ -72,6 +77,7 @@ namespace yagi
 		return false;
 	}
 
+	/**********************************************************************/
 	bool IdaSymbolInfo::isLabel() const noexcept
 	{
 		xrefblk_t xr;
@@ -88,6 +94,7 @@ namespace yagi
 		return false;
 	}
 
+	/**********************************************************************/
 	bool IdaSymbolInfo::isReadOnly() const noexcept
 	{
 		auto seg = getseg(m_ea);
@@ -120,7 +127,7 @@ namespace yagi
 	std::string IdaSymbolInfo::getName() const
 	{
 		qstring pname;
-		if (!cleanup_name(&pname, m_ea, m_name.c_str()))
+		if (m_name.substr(0, 4) == "sub_" || !cleanup_name(&pname, m_ea, m_name.c_str()))
 		{
 			pname = m_name.c_str();
 		}

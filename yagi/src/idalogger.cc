@@ -4,6 +4,7 @@
 
 namespace yagi 
 {
+	/**********************************************************************/
 	void IdaLogger::print(const std::string& message)
 	{
 		msg(message.c_str());

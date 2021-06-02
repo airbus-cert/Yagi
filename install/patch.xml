@@ -1,0 +1,5 @@
+<CPackWiXPatch>
+	<CPackWiXFragment Id="#PRODUCT">
+		<SetDirectory Id="INSTALL_ROOT" Value="[ProgramFiles64Folder]IDA Pro 7.6" />
+	</CPackWiXFragment>
+</CPackWiXPatch>

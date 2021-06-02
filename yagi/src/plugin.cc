@@ -19,6 +19,7 @@
 
 namespace yagi 
 {
+	/**********************************************************************/
 	static bool idaapi _KeyboardCallback(TWidget* w, int key, int shift, void* ud) 
 	{
 		/*int x, y;
@@ -46,6 +47,7 @@ namespace yagi
 		return true;
 	}
 
+	/**********************************************************************/
 	static const custom_viewer_handlers_t _ViewHandlers(
 		_KeyboardCallback,
 		nullptr,
@@ -58,13 +60,12 @@ namespace yagi
 		nullptr
 	);
 
-	Plugin::Plugin(std::unique_ptr<IDecompiler> decompiler)
+	/**********************************************************************/
+	Plugin::Plugin(std::unique_ptr<Decompiler> decompiler)
 		: m_decompiler(std::move(decompiler))
 	{}
 
-	/*
-	 * \brief	function called when plugin is called
-	 */
+	/**********************************************************************/
 	bool idaapi Plugin::run(size_t)
 	{
 		auto func_address = get_screen_ea();
@@ -86,6 +87,7 @@ namespace yagi
 		return true;
 	}
 
+	/**********************************************************************/
 	void Plugin::view(const std::string& name, const std::string& code) const
 	{
 		strvec_t* sv = new strvec_t();

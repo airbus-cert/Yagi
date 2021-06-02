@@ -94,6 +94,33 @@ namespace yagi
 	public:
 		explicit UnknownCallingConvention(std::string funcName);
 	};
+
+	/*!
+	 * \brief	The compiler is not handle by ghidra
+	 */
+	class UnknownCompiler : public Error
+	{
+	public:
+		explicit UnknownCompiler(uint32_t compilerId);
+	};
+
+	/*!
+	 * \brief	Function not implemented
+	 */
+	class UnImplementedFunction : public Error
+	{
+	public:
+		explicit UnImplementedFunction(const std::string& funcName);
+	};
+
+	/*!
+	 * \brief	Function not implemented
+	 */
+	class NoDefaultCallingConvention : public Error
+	{
+	public:
+		explicit NoDefaultCallingConvention();
+	};
 }
 
 #endif

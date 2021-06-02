@@ -239,6 +239,24 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	bool IdaTypeInfo::isUnicode() const
+	{
+		if (!isInt())
+		{
+			return false;
+		}
+
+		auto name = getName();
+		std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+		if (name.find("wchar") != std::string::npos)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**********************************************************************/
 	std::optional<std::unique_ptr<FuncInfo>> IdaTypeInfo::toFunc() const
 	{
 		if (!m_type.is_func())

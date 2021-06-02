@@ -157,14 +157,54 @@ set(SLEIGH_DIR "${CMAKE_CURRENT_BINARY_DIR}/sleigh")
 
 # Build processor specification
 # Install all source file
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/" DESTINATION "Processors")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/" DESTINATION "plugins/Ghidra/Processors")
 
 # compile file for x86
 SLA_TARGET(sla_x86 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/x86/data/languages/x86.slaspec" "${SLEIGH_DIR}/x86.sla")
 set_property(TARGET sla_x86 PROPERTY FOLDER "sleigh")
-install(FILES "${SLEIGH_DIR}/x86.sla" DESTINATION "Processors/x86/data/languages/")
+install(FILES "${SLEIGH_DIR}/x86.sla" DESTINATION "plugins/Ghidra/Processors/x86/data/languages/")
 
 # compile file for x86_64
 SLA_TARGET(sla_x86_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/x86/data/languages/x86-64.slaspec" "${SLEIGH_DIR}/x86-64.sla")
 set_property(TARGET sla_x86_64 PROPERTY FOLDER "sleigh")
-install(FILES "${SLEIGH_DIR}/x86-64.sla" DESTINATION "Processors/x86/data/languages/")
+install(FILES "${SLEIGH_DIR}/x86-64.sla" DESTINATION "plugins/Ghidra/Processors/x86/data/languages/")
+
+# compile file for ARM BE
+SLA_TARGET(sla_ARM_BE "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/ARM/data/languages/ARM7_be.slaspec" "${SLEIGH_DIR}/ARM7_be.sla")
+set_property(TARGET sla_ARM_BE PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/ARM7_be.sla" DESTINATION "plugins/Ghidra/Processors/ARM/data/languages/")
+
+# compile file for ARM LE
+SLA_TARGET(sla_ARM_LE "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/ARM/data/languages/ARM7_le.slaspec" "${SLEIGH_DIR}/ARM7_le.sla")
+set_property(TARGET sla_ARM_LE PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/ARM7_le.sla" DESTINATION "plugins/Ghidra/Processors/ARM/data/languages/")
+
+# compile file for AARCH64 LE
+SLA_TARGET(sla_AARCH64_LE "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/AARCH64/data/languages/AARCH64.slaspec" "${SLEIGH_DIR}/AARCH64.sla")
+set_property(TARGET sla_AARCH64_LE PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/AARCH64.sla" DESTINATION "plugins/Ghidra/Processors/AARCH64/data/languages/")
+
+# compile file for AARCH64 BE
+SLA_TARGET(sla_AARCH64_BE "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/AARCH64/data/languages/AARCH64BE.slaspec" "${SLEIGH_DIR}/AARCH64BE.sla")
+set_property(TARGET sla_AARCH64_BE PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/AARCH64BE.sla" DESTINATION "plugins/Ghidra/Processors/AARCH64/data/languages/")
+
+# compile file for PPC 32 LE
+SLA_TARGET(sla_PPC_LE_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC/data/languages/ppc_32_le.slaspec" "${SLEIGH_DIR}/ppc_32_le.sla")
+set_property(TARGET sla_PPC_LE_32 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/ppc_32_le.sla" DESTINATION "plugins/Ghidra/Processors/PowerPC/data/languages/")
+
+# compile file for PPC 64 LE
+SLA_TARGET(sla_PPC_LE_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC/data/languages/ppc_64_le.slaspec" "${SLEIGH_DIR}/ppc_64_le.sla")
+set_property(TARGET sla_PPC_LE_64 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/ppc_64_le.sla" DESTINATION "plugins/Ghidra/Processors/PowerPC/data/languages/")
+
+# compile file for PPC 32 BE
+SLA_TARGET(sla_PPC_BE_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC/data/languages/ppc_32_be.slaspec" "${SLEIGH_DIR}/ppc_32_be.sla")
+set_property(TARGET sla_PPC_BE_32 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/ppc_32_le.sla" DESTINATION "plugins/Ghidra/Processors/PowerPC/data/languages/")
+
+# compile file for PPC 64 BE
+SLA_TARGET(sla_PPC_BE_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC/data/languages/ppc_64_be.slaspec" "${SLEIGH_DIR}/ppc_64_be.sla")
+set_property(TARGET sla_PPC_BE_64 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/ppc_64_be.sla" DESTINATION "plugins/Ghidra/Processors/PowerPC/data/languages/")

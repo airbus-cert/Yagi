@@ -12,12 +12,14 @@ namespace yagi
 		std::unique_ptr<LoaderFactory> loaderFactory,
 		std::unique_ptr<Logger> logger,
 		std::unique_ptr<SymbolInfoFactory> symbols,
-		std::unique_ptr<TypeInfoFactory> type
+		std::unique_ptr<TypeInfoFactory> type,
+		std::string defaultCC
 	) : SleighArchitecture(name, sleighId, &m_err),
 		m_loaderFactory{ std::move(loaderFactory)},
 		m_logger{ std::move(logger) }, 
 		m_symbols{ std::move(symbols) }, 
-		m_type{ std::move(type) }
+		m_type{ std::move(type) },
+		m_defaultCC { defaultCC }
 	{
 	}
 
@@ -62,7 +64,7 @@ namespace yagi
 	Scope* YagiArchitecture::buildDatabase(DocumentStorage& store)
 	{
 		symboltab = new Database(this, false);
-		Scope* globscope = new IdaScope(0, this);
+		Scope* globscope = new YagiScope(0, this);
 		symboltab->attachScope(globscope, nullptr);
 		return globscope;
 	}
@@ -83,6 +85,12 @@ namespace yagi
 	Logger& YagiArchitecture::getLogger() const
 	{
 		return *m_logger.get();
+	}
+
+	/**********************************************************************/
+	const std::string& YagiArchitecture::getDefaultCC() const
+	{
+		return m_defaultCC;
 	}
 
 } // end of namespace yagi
