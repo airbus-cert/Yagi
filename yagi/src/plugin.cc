@@ -14,38 +14,113 @@
 #include "ghidra.hh"
 #include "symbolinfo.hh"
 #include "exception.hh"
+#include "idatype.hh"
 #include <kernwin.hpp>
 #include <sstream>
 
 namespace yagi 
 {
 	/**********************************************************************/
-	static bool idaapi _KeyboardCallback(TWidget* w, int key, int shift, void* ud) 
+	static std::optional<std::string> _ComputeKeyword(TWidget* w)
 	{
-		/*int x, y;
-		if (get_custom_viewer_place(w, false, &x, &y) == NULL) {
-			return false;
+		int x, y;
+		if (get_custom_viewer_place(w, false, &x, &y) == NULL) 
+		{
+			return std::nullopt;
 		}
 
 		auto cursor = get_custom_viewer_curline(w, false);
 		qstring result;
 		tag_remove(&result, cursor);
-		
+
 		char* start = result.begin() + x;
 		char* end = start;
 
-		while ((qisalnum(*end) || *end == '_') && *end != '\0') {
+		while (end <= result.end() && (qisalnum(*end) || *end == '_') && *end != '\0') {
 			end++;
 		}
 
-		while ((qisalnum(*start) || *start == '_')) {
+		while (start >= result.begin() && (qisalnum(*start) || *start == '_')) {
 			start--;
 		}
 
-		qstring keyword = qstring(start + 1, end - start - 1);*/		
+		if (start >= end)
+		{
+			return std::nullopt;
+		}
+
+		if (start >= result.end())
+		{
+			return std::nullopt;
+		}
+
+		return std::string(start + 1, end - start - 1);
+	}
+
+	/**********************************************************************/
+	static bool idaapi _KeyboardCallback(TWidget* w, int key, int shift, void* ud) 
+	{
+		if (shift != 0)
+		{
+			return false;
+		}
+
+		auto keyword = _ComputeKeyword(w);
+
+		if (!keyword.has_value())
+		{
+			return false;
+		}
+
+		auto code = static_cast<Decompiler::Result*>(ud);
+		auto addr = code->symbolAddress.find(keyword.value());
+
+		if (addr == code->symbolAddress.end())
+		{
+			return false;
+		}
+
+		switch (key)
+		{
+		case 'Y':
+			{
+				auto typeInfo = IdaTypeInfoFactory().build(addr->second);
+				if (!typeInfo.has_value())
+				{
+					return false;
+				}
+
+				auto name = qstring(typeInfo.value()->getName().c_str());
+				if (ask_str(&name, HIST_IDENT, "Please enter the type declaration"))
+				{
+				}
+			}
+			break;
+		}
 
 		return true;
 	}
+
+	/**********************************************************************/
+	static bool idaapi _DoubleClickCallback(TWidget* w, int shift, void* ud) 
+	{
+		auto code = static_cast<Decompiler::Result*>(ud);
+		auto keyword = _ComputeKeyword(w);
+		if (!keyword.has_value())
+		{
+			return false;
+		}
+
+		auto addr = code->symbolAddress.find(keyword.value());
+
+		if (addr == code->symbolAddress.end())
+		{
+			return false;
+		}
+
+		return jumpto(addr->second);
+	}
+
 
 	/**********************************************************************/
 	static const custom_viewer_handlers_t _ViewHandlers(
@@ -53,7 +128,7 @@ namespace yagi
 		nullptr,
 		nullptr,
 		nullptr,
-		nullptr,
+		_DoubleClickCallback,
 		nullptr,
 		nullptr,
 		nullptr,
@@ -74,7 +149,8 @@ namespace yagi
 		ss << "Ghidra" << std::hex << func_address;
 		try
 		{
-			view(ss.str(), m_decompiler->decompile(func_address));
+			auto decompilerResult = m_decompiler->decompile(func_address);
+			view(ss.str(), decompilerResult);
 		}
 		catch (Error& e)
 		{
@@ -88,10 +164,10 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	void Plugin::view(const std::string& name, const std::string& code) const
+	void Plugin::view(const std::string& name, const Decompiler::Result& code) const
 	{
 		strvec_t* sv = new strvec_t();
-		std::istringstream iss(code);
+		std::istringstream iss(code.cCode);
 		for (std::string line; std::getline(iss, line); )
 		{
 			sv->push_back(simpleline_t(line.c_str()));
@@ -100,7 +176,7 @@ namespace yagi
 		simpleline_place_t s1;
 		simpleline_place_t s2((int)(sv->size() - 1));
 		auto w = create_custom_viewer(name.c_str(), &s1, &s2,
-			&s1, nullptr, sv, &_ViewHandlers, sv);
+			&s1, nullptr, sv, &_ViewHandlers, new Decompiler::Result(code));
 		TWidget* code_view = create_code_viewer(w);
 		set_code_viewer_is_source(code_view);
 		display_widget(code_view, WOPN_DP_TAB);

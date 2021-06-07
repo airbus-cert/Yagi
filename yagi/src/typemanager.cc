@@ -23,7 +23,7 @@ namespace yagi
 			return result;
 		}
 
-		auto type = m_archi->getTypeInfoFactory()->build(n);
+		auto type = m_archi->getTypeInfoFactory().build(n);
 		
 		if (!type.has_value())
 		{
@@ -203,10 +203,17 @@ namespace yagi
 	/**********************************************************************/
 	void TypeManager::update(Funcdata& func)
 	{
-		auto typeInfo = m_archi->getTypeInfoFactory()->build(func.getAddress().getOffset());
+		auto typeInfo = m_archi->getTypeInfoFactory().build(func.getAddress().getOffset());
 		if (!typeInfo.has_value())
 		{
 			return;
+		}
+
+		// handle the pointer to function type
+		auto ptrType = typeInfo.value()->toPtr();
+		if (ptrType.has_value())
+		{
+			typeInfo = ptrType.value()->getPointedObject();
 		}
 
 		auto funcType = typeInfo.value()->toFunc();
@@ -231,6 +238,7 @@ namespace yagi
 			func.getFuncProto().setPieces(pieces);
 		}
 
+		// injection is now focused on x86
 		if (func.getName() == "alloca_probe")
 		{
 			setInjectAttribute(func, "alloca_probe");

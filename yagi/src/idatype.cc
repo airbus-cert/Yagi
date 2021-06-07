@@ -15,6 +15,7 @@ namespace yagi
 	{
 	}
 
+	/**********************************************************************/
 	const TypeInfo& IdaFuncInfo::getType() const
 	{
 		return m_info;

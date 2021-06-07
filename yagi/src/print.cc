@@ -1,5 +1,8 @@
 #include "print.hh"
 #include "symbolinfo.hh"
+#include "varnode.hh"
+#include "funcdata.hh"
+
 
 #define COLOR_ON        '\1'     ///< Escape character (ON).
 ///< Followed by a color code (::color_t).
@@ -82,6 +85,12 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	const IdaEmit& IdaPrint::getEmitter() const
+	{
+		return *static_cast<IdaEmit*>(emit);
+	}
+
+	/**********************************************************************/
 	void IdaEmit::startColorTag(char c)
 	{
 		std::stringstream ss;
@@ -95,6 +104,13 @@ namespace yagi
 		std::stringstream ss;
 		ss << COLOR_OFF << c;
 		EmitPrettyPrint::print(ss.str().c_str());
+	}
+
+	/**********************************************************************/
+	int4 IdaEmit::beginFunction(const Funcdata* fd)
+	{
+		m_symbolMap.clear();
+		return EmitPrettyPrint::beginFunction(fd);
 	}
 
 	/**********************************************************************/
@@ -128,6 +144,12 @@ namespace yagi
 			hl = syntax_highlight::keyword_color;
 		}
 
+		// handle classic variable, we put it into symbol database
+		if (vn != nullptr)
+		{
+			m_symbolMap.emplace(ptr, vn->getAddr().getOffset());
+		}
+
 		auto name = std::string(ptr);
 		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
 		{
@@ -157,6 +179,25 @@ namespace yagi
 	void IdaEmit::tagFuncName(const char* ptr, syntax_highlight hl, const Funcdata* fd, const PcodeOp* op)
 	{
 		auto name = std::string(ptr);
+
+		// handle function into symbol
+		if (fd != nullptr)
+		{
+			m_symbolMap.emplace(ptr, fd->getAddress().getOffset());
+		}
+		else if (op != nullptr)
+		{
+			auto parentFd = op->getParent()->getFuncdata();
+			for (int i = 0; i < parentFd->numCalls(); i++)
+			{
+				auto currentCall = parentFd->getCallSpecs(i);
+				if (currentCall->getName() == ptr)
+				{
+					m_symbolMap.emplace(ptr, currentCall->getEntryAddress().getOffset());
+				}
+			}
+		}
+		
 		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
 		{
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
@@ -193,6 +234,12 @@ namespace yagi
 	{
 		EmitColorGuard guard(*this, hl);
 		EmitPrettyPrint::tagType(ptr, hl, ct);
+	}
+
+	/**********************************************************************/
+	const std::map<std::string, uint64_t>& IdaEmit::getSymbolAddr() const
+	{
+		return m_symbolMap;
 	}
 
 	/**********************************************************************/

@@ -70,15 +70,15 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	SymbolInfoFactory* YagiArchitecture::getSymbolDatabase() const
+	SymbolInfoFactory& YagiArchitecture::getSymbolDatabase() const
 	{
-		return m_symbols.get();
+		return *m_symbols.get();
 	}
 
 	/**********************************************************************/
-	TypeInfoFactory* YagiArchitecture::getTypeInfoFactory() const
+	TypeInfoFactory& YagiArchitecture::getTypeInfoFactory() const
 	{
-		return m_type.get();
+		return *m_type.get();
 	}
 
 	/**********************************************************************/

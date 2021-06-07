@@ -49,7 +49,7 @@ namespace yagi {
 		/*!
 		 * \brief	View decompilation
 		 */
-		void view(const std::string& name, const std::string& code) const;
+		void view(const std::string& name, const Decompiler::Result& code) const;
 	};
 }
 

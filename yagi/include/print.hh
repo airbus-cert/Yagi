@@ -44,25 +44,16 @@ namespace yagi
 	};
 
 	/*!
-	 * \brief	Derive from c language
-	 *			Use ida emit
-	 */
-	class IdaPrint : public PrintC
-	{
-	public:
-		/*!
-		 * \brief	ctor
-		 */
-		IdaPrint(Architecture* g, const string& nm);
-	};
-
-	/*!
 	 * \brief	IDA emitter to follow IDA print
 	 */
 	class IdaEmit : public EmitPrettyPrint
 	{
 	protected:
 		friend class EmitColorGuard;
+		/*!
+		 * \brief	Sympbol map
+		 */
+		std::map<std::string, uint64_t> m_symbolMap;
 
 		/*!
 		 * \brief	start a color tag for each kind of token
@@ -75,6 +66,11 @@ namespace yagi
 		virtual void endColorTag(char c);
 
 	public:
+		/*!
+		 * \brief	use to clear cache
+		 */
+		int4 beginFunction(const Funcdata* fd) override;
+
 		/*!
 		 * \brief	Open parenthese
 		 * \param	o	token use for parenthesis
@@ -128,6 +124,12 @@ namespace yagi
 		 * \param	ct	associated datatype
 		 */
 		void tagType(const char* ptr, syntax_highlight hl, const Datatype* ct) override;
+
+		/*!
+		 * \brief	Return the symbol database
+		 * \return	the associated map between the token name and it's associated address
+		 */
+		const std::map<std::string, uint64_t>& getSymbolAddr() const;
 	};
 
 	/*!
@@ -164,6 +166,25 @@ namespace yagi
 		 * \brief	destructor that will end the job
 		 */
 		~EmitColorGuard();
+	};
+
+	/*!
+	 * \brief	Derive from c language
+	 *			Use ida emit
+	 */
+	class IdaPrint : public PrintC
+	{
+	public:
+		/*!
+		 * \brief	ctor
+		 */
+		IdaPrint(Architecture* g, const string& nm);
+
+		/*!
+		 * \brief	Return the token emitter
+		 * \return	Token emitter
+		 */
+		const IdaEmit& getEmitter() const;
 	};
 }
 

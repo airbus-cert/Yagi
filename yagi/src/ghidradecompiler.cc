@@ -5,6 +5,7 @@
 #include "symbolinfo.hh"
 #include "exception.hh"
 #include "idaloader.hh"
+#include "print.hh"
 
 namespace yagi 
 {
@@ -16,9 +17,9 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::string GhidraDecompiler::decompile(uint64_t funcAddress)
+	Decompiler::Result GhidraDecompiler::decompile(uint64_t funcAddress)
 	{
-		auto funcSym = m_architecture->getSymbolDatabase()->find_function(funcAddress);
+		auto funcSym = m_architecture->getSymbolDatabase().find_function(funcAddress);
 
 		if (!funcSym.has_value())
 		{
@@ -30,7 +31,10 @@ namespace yagi
 		scope->clear();
 
 		auto func = scope->findFunction(
-			Address(m_architecture->getDefaultCodeSpace(), funcSym.value()->getAddress())
+			Address(
+				m_architecture->getDefaultCodeSpace(), 
+				funcSym.value()->getAddress()
+			)
 		);
 
 		try
@@ -47,13 +51,16 @@ namespace yagi
 
 			//print as C
 			m_architecture->print->docFunction(func);
-			return ss.str();
+
+			// get back context information
+			auto idaPrint = static_cast<IdaPrint*>(m_architecture->print);
+			return Decompiler::Result(ss.str(), idaPrint->getEmitter().getSymbolAddr());
 		}
 		
 		catch (LowlevelError& e)
 		{
 			m_architecture->getLogger().error(e.explain);
-			return "";
+			return Decompiler::Result("", map<std::string, uint64_t>{});
 		}
 	}
 

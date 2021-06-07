@@ -136,14 +136,10 @@ namespace yagi
 		if (idaName != "")
 		{
 			auto pp = idaName.find('(', 0);
-			size_t sp = pp;
-			while (sp > 0)
+			size_t sp = idaName.find(' ', 0);;
+			if (sp == qstring::npos)
 			{
-				if (idaName.c_str()[sp] == ' ')
-				{
-					break;
-				}
-				sp--;
+				sp = 0;
 			}
 			pname = idaName.substr(sp, pp);
 		}
