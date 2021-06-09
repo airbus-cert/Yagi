@@ -111,6 +111,23 @@ namespace yagi
 		void tagFuncName(const char* ptr, syntax_highlight hl, const Funcdata* fd, const PcodeOp* op) override;
 
 		/*!
+		 * \brief	tag a field member of a struct
+		 * \param	ptr	name of the field
+		 * \param	hl	color highlight
+		 * \param	ct	type of parent
+		 * \param	off	offset of the field
+		 */
+		void tagField(const char* ptr, syntax_highlight hl, const Datatype* ct, int4 off) override;
+
+		/*!
+		 * \brief	tag a label
+		 * \param	ptr	name of the label
+		 * \param	spc
+		 * \param	off	offset of the label
+		 */
+		void tagLabel(const char* ptr, syntax_highlight hl, const AddrSpace* spc, uintb off) override;
+
+		/*!
 		 * \print	When any print is done, emitter will call print function
 		 * \param	str	string to print
 		 * \param	hl	color highlight

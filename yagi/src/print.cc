@@ -138,6 +138,15 @@ namespace yagi
 	void IdaEmit::tagVariable(const char* ptr, syntax_highlight hl,
 		const Varnode* vn, const PcodeOp* op)
 	{
+		auto name = std::string(ptr);
+		bool isImport = false;
+
+		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
+		{
+			isImport = true;
+			name = name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length());
+		}
+
 		// case of variable declaration
 		if (op == nullptr)
 		{
@@ -147,31 +156,44 @@ namespace yagi
 		// handle classic variable, we put it into symbol database
 		if (vn != nullptr)
 		{
-			m_symbolMap.emplace(ptr, vn->getAddr().getOffset());
+			m_symbolMap.emplace(name, vn->getAddr().getOffset());
+		}
+		else if (op != nullptr && op->code() == CPUI_PTRSUB)
+		{
+			auto inref = op->getIn(1);
+			if (inref != nullptr)
+			{
+				m_symbolMap.emplace(name, inref->getAddr().getOffset());
+			}
 		}
 
-		auto name = std::string(ptr);
-		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
+		if (isImport)
 		{
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
-			EmitPrettyPrint::tagVariable(name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length()).c_str(), hl, vn, op);
+			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
 		}
 		// Constant string
 		else if (*ptr == '\"')
 		{
 			EmitColorGuard guard(*this, COLOR_DSTR);
-			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
+			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
+		}
+		// char
+		else if (*ptr == '\'')
+		{
+			EmitColorGuard guard(*this, COLOR_DSTR);
+			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
 		}
 		// Constant string
 		else if (*ptr == 'L' && ptr[1] != '\0' && ptr[1] == '\"')
 		{
 			EmitColorGuard guard(*this, COLOR_DSTR);
-			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
+			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
 		}
 		else
 		{
 			EmitColorGuard guard(*this, hl);
-			EmitPrettyPrint::tagVariable(ptr, hl, vn, op);
+			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
 		}
 	}
 
@@ -179,11 +201,18 @@ namespace yagi
 	void IdaEmit::tagFuncName(const char* ptr, syntax_highlight hl, const Funcdata* fd, const PcodeOp* op)
 	{
 		auto name = std::string(ptr);
+		bool isImport = false;
+
+		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
+		{
+			isImport = true;
+			name = name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length());
+		}
 
 		// handle function into symbol
 		if (fd != nullptr)
 		{
-			m_symbolMap.emplace(ptr, fd->getAddress().getOffset());
+			m_symbolMap.emplace(name, fd->getAddress().getOffset());
 		}
 		else if (op != nullptr)
 		{
@@ -191,23 +220,36 @@ namespace yagi
 			for (int i = 0; i < parentFd->numCalls(); i++)
 			{
 				auto currentCall = parentFd->getCallSpecs(i);
-				if (currentCall->getName() == ptr)
+				if (currentCall->getName() == name || (isImport && currentCall->getName() == SymbolInfo::IMPORT_PREFIX + name))
 				{
-					m_symbolMap.emplace(ptr, currentCall->getEntryAddress().getOffset());
+					m_symbolMap.emplace(name, currentCall->getEntryAddress().getOffset());
 				}
 			}
 		}
 		
-		if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
+		if (isImport)
 		{
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
-			EmitPrettyPrint::tagFuncName(name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length()).c_str(), hl, fd, op);
+			EmitPrettyPrint::tagFuncName(name.c_str(), hl, fd, op);
 		}
 		else
 		{
 			EmitColorGuard guard(*this, hl);
-			EmitPrettyPrint::tagFuncName(ptr, hl, fd, op);
+			EmitPrettyPrint::tagFuncName(name.c_str(), hl, fd, op);
 		}
+	}
+
+	/**********************************************************************/
+	void IdaEmit::tagField(const char* ptr, syntax_highlight hl, const Datatype* ct, int4 off)
+	{
+		EmitColorGuard guard(*this, COLOR_KEYWORD);
+		EmitPrettyPrint::tagField(ptr, hl, ct, off);
+	}
+
+	void IdaEmit::tagLabel(const char* ptr, syntax_highlight hl, const AddrSpace* spc, uintb off)
+	{
+		EmitColorGuard guard(*this, COLOR_KEYWORD);
+		EmitPrettyPrint::tagLabel(ptr, hl, spc, off);
 	}
 
 	/**********************************************************************/

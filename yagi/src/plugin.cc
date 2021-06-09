@@ -15,11 +15,73 @@
 #include "symbolinfo.hh"
 #include "exception.hh"
 #include "idatype.hh"
+#include "idasymbol.hh"
 #include <kernwin.hpp>
+#include <loader.hpp>
 #include <sstream>
 
 namespace yagi 
 {
+	/**********************************************************************/
+	static void _RunYagi()
+	{
+		auto plugins = get_plugins();
+		while (plugins != nullptr)
+		{
+			if (plugins->name == std::string("yagi"))
+			{
+				run_plugin(plugins->entry, 0);
+				break;
+			}
+			plugins = plugins->next;
+		}
+	}
+
+	/**********************************************************************/
+	/*!
+	 * \brief	Print a string for type declaration for IDA
+	 * \param	name	name of the symbol
+	 * \param	typeInfo	Type informations associated
+	 * \return	a compatible decl type
+	 */
+	static std::string _PrintDeclType(const std::string& name, const TypeInfo& typeInfo)
+	{
+		auto typeFunc = typeInfo.toFunc();
+		if (typeFunc.has_value())
+		{
+			auto prototype = typeFunc.value()->getFuncPrototype();
+			std::string cc = "";
+			try
+			{
+				cc = typeFunc.value()->getCallingConv();
+			}
+			catch (UnknownCallingConvention&) {}
+
+			auto paramIter = prototype.begin();
+
+			if (prototype.size() > 0)
+			{
+				paramIter++;
+				std::string parametersDecl = "";
+
+				std::for_each(paramIter, prototype.end(), [&parametersDecl](const std::unique_ptr<TypeInfo>& info) {
+					parametersDecl += info->getName() + ",";
+					});
+
+				// remove last char if present
+				if (parametersDecl.size() > 0 && parametersDecl.back() == ',')
+				{
+					parametersDecl = parametersDecl.substr(0, parametersDecl.size() - 1);
+				}
+
+				return prototype[0]->getName() + " " + cc + " " + name + "(" + parametersDecl + ");";
+			}
+		}
+
+		// normal case
+		return typeInfo.getName() + ";";
+	}
+
 	/**********************************************************************/
 	static std::optional<std::string> _ComputeKeyword(TWidget* w)
 	{
@@ -82,23 +144,56 @@ namespace yagi
 
 		switch (key)
 		{
-		case 'Y':
+		case 'X':
+			open_xrefs_window(addr->second);
+			break;
+		case 'N':
 			{
-				auto typeInfo = IdaTypeInfoFactory().build(addr->second);
-				if (!typeInfo.has_value())
+				auto symbolInfo = IdaSymbolInfoFactory().find(addr->second);
+				if (!symbolInfo.has_value())
 				{
 					return false;
 				}
 
-				auto name = qstring(typeInfo.value()->getName().c_str());
-				if (ask_str(&name, HIST_IDENT, "Please enter the type declaration"))
+				auto name = qstring(symbolInfo.value()->getName().c_str());
+				if (ask_str(&name, HIST_IDENT, "Please enter item name"))
 				{
+					set_name(addr->second, name.c_str());
+					_RunYagi();
+				}
+			}
+			break;
+		case 'Y':
+			{
+				auto typeInfo = IdaTypeInfoFactory().build(addr->second);
+				auto name = qstring(keyword.value().c_str()) + ";";
+				if (typeInfo.has_value())
+				{
+					name = qstring(_PrintDeclType(keyword.value(), *typeInfo.value().get()).c_str());
+				}
+
+				if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
+				{
+					tinfo_t idaTypeInfo;
+					qstring parsedName;
+					if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+					{
+						set_tinfo(addr->second, &idaTypeInfo);
+						_RunYagi();
+					}
 				}
 			}
 			break;
 		}
 
 		return true;
+	}
+
+	/**********************************************************************/
+	static void idaapi _Close(TWidget* cv, void* ud)
+	{
+		auto code = static_cast<Decompiler::Result*>(ud);
+		delete code;
 	}
 
 	/**********************************************************************/
@@ -121,7 +216,6 @@ namespace yagi
 		return jumpto(addr->second);
 	}
 
-
 	/**********************************************************************/
 	static const custom_viewer_handlers_t _ViewHandlers(
 		_KeyboardCallback,
@@ -130,7 +224,7 @@ namespace yagi
 		nullptr,
 		_DoubleClickCallback,
 		nullptr,
-		nullptr,
+		_Close,
 		nullptr,
 		nullptr
 	);
@@ -145,12 +239,13 @@ namespace yagi
 	{
 		auto func_address = get_screen_ea();
 
-		std::stringstream ss;
-		ss << "Ghidra" << std::hex << func_address;
 		try
 		{
 			auto decompilerResult = m_decompiler->decompile(func_address);
-			view(ss.str(), decompilerResult);
+			if (decompilerResult.has_value())
+			{
+				view(decompilerResult.value().name, decompilerResult.value());
+			}
 		}
 		catch (Error& e)
 		{
@@ -175,6 +270,12 @@ namespace yagi
 
 		simpleline_place_t s1;
 		simpleline_place_t s2((int)(sv->size() - 1));
+		auto oldWidget = find_widget(name.c_str());
+		if (oldWidget != nullptr)
+		{
+			close_widget(oldWidget, 0);
+		}
+
 		auto w = create_custom_viewer(name.c_str(), &s1, &s2,
 			&s1, nullptr, sv, &_ViewHandlers, new Decompiler::Result(code));
 		TWidget* code_view = create_code_viewer(w);

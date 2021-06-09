@@ -64,7 +64,7 @@ namespace yagi
 		 *	\brief	main function for decompiler
 		 *	\param	funcAddress	address of function to decompile
 		 */
-		Decompiler::Result decompile(uint64_t funcAddress) override;
+		std::optional<Decompiler::Result> decompile(uint64_t funcAddress) override;
 
 		/*!
 		 *	\brief	factory

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <optional>
 
 namespace yagi 
 {
@@ -61,6 +62,11 @@ namespace yagi
 			std::string	cCode;
 
 			/*!
+			 * \brief	name of the function
+			 */
+			std::string name;
+
+			/*!
 			 * \brief	a mapping between token symbol and address
 			 */
 			std::map<std::string, uint64_t>	symbolAddress;
@@ -68,8 +74,8 @@ namespace yagi
 			/*!
 			 * \brief	ctor
 			 */
-			Result(std::string cCode, std::map<std::string, uint64_t> symbolAddress)
-				: cCode{ cCode }, symbolAddress{ symbolAddress }
+			Result(std::string name, std::string cCode, std::map<std::string, uint64_t> symbolAddress)
+				: name{ name }, cCode{ cCode }, symbolAddress{ symbolAddress }
 			{}
 		};
 
@@ -80,7 +86,7 @@ namespace yagi
 		 * \param	funcAddress	address of the function to decompile
 		 * \return	decompiled source code
 		 */
-		virtual Result decompile(uint64_t funcAddress) = 0;
+		virtual std::optional<Result> decompile(uint64_t funcAddress) = 0;
 	};
 }
 

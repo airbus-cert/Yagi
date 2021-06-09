@@ -22,7 +22,6 @@ namespace yagi
 	/**********************************************************************/
 	Funcdata* YagiScope::findFunction(const Address& addr) const
 	{
-		// don't check cache to force symbol database update
 		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
 
 		auto result = proxy->findFunction(addr);

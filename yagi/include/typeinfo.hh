@@ -19,25 +19,54 @@ namespace yagi
 		std::unique_ptr<TypeInfo> type;
 	};
 
+	/*!
+	 * \brief	Structure informations
+	 */
 	class StructInfo
 	{
 	public:
 		virtual ~StructInfo() = default;
+
+		/*!
+		 * \brief	get fields member of the structure
+		 * \return	all type members with meta information of type declaration
+		 */
 		virtual std::vector<TypeStructField> getFields() const = 0;
 	};
 
+	/*!
+	 * \brief	Type is pointer to another type
+	 */
 	class PtrInfo
 	{
 	public:
 		virtual ~PtrInfo() = default;
+
+		/*!
+		 * \brief	compute the target type information
+		 * \return	the pointed type information
+		 */
 		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
 	};
 
+	/*!
+	 * \brief	Type information is an Array
+	 */
 	class ArrayInfo
 	{
 	public:
 		virtual ~ArrayInfo() = default;
+
+		/*!
+		 * \brief	array is not very different from pointer type
+		 *			But have a number of elements
+		 * \return	type of one element of the array
+		 */
 		virtual std::unique_ptr<TypeInfo> getPointedObject() const = 0;
+
+		/*!
+		 * \brief	return the number of elements of the array
+		 */
 		virtual uint64_t getSize() const = 0;
 	};
 
