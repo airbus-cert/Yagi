@@ -173,19 +173,13 @@ namespace yagi
 			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
 		}
 		// Constant string
-		else if (*ptr == '\"')
+		else if (*ptr == '\"' || *ptr == '\'')
 		{
 			EmitColorGuard guard(*this, COLOR_DSTR);
 			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
 		}
-		// char
-		else if (*ptr == '\'')
-		{
-			EmitColorGuard guard(*this, COLOR_DSTR);
-			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);
-		}
-		// Constant string
-		else if (*ptr == 'L' && ptr[1] != '\0' && ptr[1] == '\"')
+		// unicode string
+		else if (*ptr == 'L' && ptr[1] != '\0' && (ptr[1] == '\"' || ptr[1] == '\''))
 		{
 			EmitColorGuard guard(*this, COLOR_DSTR);
 			EmitPrettyPrint::tagVariable(name.c_str(), hl, vn, op);

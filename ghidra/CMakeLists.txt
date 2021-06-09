@@ -158,7 +158,7 @@ set(SLEIGH_DIR "${CMAKE_CURRENT_BINARY_DIR}/sleigh")
 #######################
 ######### x86 #########
 #######################
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/x86" DESTINATION "plugins/Ghidra/Processors/x86")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/x86" DESTINATION "plugins/Ghidra/Processors/")
 
 SLA_TARGET(sla_x86 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/x86/data/languages/x86.slaspec" "${SLEIGH_DIR}/x86.sla")
 set_property(TARGET sla_x86 PROPERTY FOLDER "sleigh")
@@ -172,7 +172,7 @@ install(FILES "${SLEIGH_DIR}/x86-64.sla" DESTINATION "plugins/Ghidra/Processors/
 #######################
 ######### ARM #########
 #######################
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/ARM" DESTINATION "plugins/Ghidra/Processors/ARM")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/ARM" DESTINATION "plugins/Ghidra/Processors/")
 
 # compile file for ARM BE
 SLA_TARGET(sla_ARM_BE "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/ARM/data/languages/ARM7_be.slaspec" "${SLEIGH_DIR}/ARM7_be.sla")
@@ -187,7 +187,7 @@ install(FILES "${SLEIGH_DIR}/ARM7_le.sla" DESTINATION "plugins/Ghidra/Processors
 ###########################
 ######### AARCH64 #########
 ###########################
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/AARCH64" DESTINATION "plugins/Ghidra/Processors/AARCH64")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/AARCH64" DESTINATION "plugins/Ghidra/Processors/")
 
 # compile file for AARCH64 LE
 SLA_TARGET(sla_AARCH64_LE "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/AARCH64/data/languages/AARCH64.slaspec" "${SLEIGH_DIR}/AARCH64.sla")
@@ -202,7 +202,7 @@ install(FILES "${SLEIGH_DIR}/AARCH64BE.sla" DESTINATION "plugins/Ghidra/Processo
 #######################
 ######### PPC #########
 #######################
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC" DESTINATION "plugins/Ghidra/Processors/PowerPC")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC" DESTINATION "plugins/Ghidra/Processors/")
 
 # compile file for PPC 32 LE
 SLA_TARGET(sla_PPC_LE_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC/data/languages/ppc_32_le.slaspec" "${SLEIGH_DIR}/ppc_32_le.sla")
