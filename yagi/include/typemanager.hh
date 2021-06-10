@@ -19,6 +19,9 @@ namespace yagi
 	{
 	protected:
 
+		/*!
+		 * \brief	pointer the global architecture
+		 */
 		YagiArchitecture* m_archi;
 
 		/*!
@@ -38,6 +41,9 @@ namespace yagi
 		void setInjectAttribute(Funcdata& fd, std::string inject_name);
 
 	public:
+		/*!
+		 * \brief	ctor
+		 */
 		explicit TypeManager(YagiArchitecture* architecture);
 
 		virtual ~TypeManager() = default;

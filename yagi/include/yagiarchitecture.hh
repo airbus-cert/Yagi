@@ -18,6 +18,9 @@ namespace yagi
 	class YagiArchitecture : public SleighArchitecture
 	{
 	protected:
+		/*!
+		 * \brief	Loader factory
+		 */
 		std::unique_ptr<LoaderFactory> m_loaderFactory;
 
 		/*!
@@ -46,6 +49,11 @@ namespace yagi
 		 *			in ghidra models
 		 */
 		std::string m_defaultCC;
+
+		/*!
+		 * \brief	Use to manage injection map
+		 */
+		std::map<std::string, std::string> m_injectionMap;
 
 		/*!
 		 *	\brief	Factory function override to build our internal scope
@@ -122,6 +130,20 @@ namespace yagi
 		 * \brief	return the default calling convention for this arch
 		 */
 		const std::string& getDefaultCC() const;
+
+		/*!
+		 * \brief	Injection use to improve readability
+		 * \param	functionName	name of the fucntion that will be injected
+		 * \param	injection		name of the injection
+		 */
+		void addInjection(std::string functionName, std::string injection);
+
+		/*!
+		 * \brief	Injection are processed by function name
+		 * \param	functionName	name of the function
+		 * \return	if exist the injection type
+		 */
+		std::optional<std::string> findInjection(const std::string& functionName);
 	};
 }
 

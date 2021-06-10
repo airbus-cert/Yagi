@@ -65,7 +65,7 @@ namespace yagi
 			
 		if (!glb->hasModel(cc))
 		{
-			// by default we put __fastcall as calling convention
+			// by default we check configuration as calling convention
 			cc = m_archi->getDefaultCC();
 		}
 
@@ -238,10 +238,11 @@ namespace yagi
 			func.getFuncProto().setPieces(pieces);
 		}
 
-		// injection is now focused on x86
-		if (func.getName() == "alloca_probe")
+		auto injection = m_archi->findInjection(func.getName());
+		if (injection.has_value())
 		{
-			setInjectAttribute(func, "alloca_probe");
+			m_archi->getLogger().info("Perform injection ", injection.value());
+			setInjectAttribute(func, injection.value());
 		}
 	}
 

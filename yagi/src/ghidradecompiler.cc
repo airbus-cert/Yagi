@@ -181,6 +181,17 @@ namespace yagi
 			compute_default_cc(compilerType)
 		);
 
+		// compute injection
+		switch (compilerType.language)
+		{
+		case Compiler::Language::X86:
+		case Compiler::Language::X86_GCC:
+		case Compiler::Language::X86_WINDOWS:
+			architecture->addInjection("alloca_probe", "alloca_probe");
+			architecture->addInjection("guard_dispatch_icall_fptr", "guard_dispatch_icall");
+			break;
+		}
+
 		try
 		{
 			DocumentStorage store;

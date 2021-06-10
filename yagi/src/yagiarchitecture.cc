@@ -93,4 +93,21 @@ namespace yagi
 		return m_defaultCC;
 	}
 
+	/**********************************************************************/
+	void YagiArchitecture::addInjection(std::string functionName, std::string injection)
+	{
+		m_injectionMap.emplace(functionName, injection);
+	}
+
+	/**********************************************************************/
+	std::optional<std::string> YagiArchitecture::findInjection(const std::string& functionName)
+	{
+		auto iter = m_injectionMap.find(functionName);
+		if (iter == m_injectionMap.end())
+		{
+			return nullopt;
+		}
+		return iter->second;
+	}
+
 } // end of namespace yagi
