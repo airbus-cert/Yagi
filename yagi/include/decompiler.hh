@@ -19,7 +19,8 @@ namespace yagi
 			X86_GCC,		// built using GCC
 			X86,			// unknown compiler
 			ARM,			// ARM	arch
-			PPC				// PowerPC
+			PPC,			// PowerPC
+			MIPS
 		};
 
 		enum class Endianess {

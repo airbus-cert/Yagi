@@ -32,6 +32,7 @@ add_executable(
   x86_payload_64bits_parameters.cc
   ARM_payload_32bits_test.cc
   PPC_payload_32bits_test.cc
+  MIPS_payload_32bits_test.cc
   ${yagi_TEST_INCLUDE}
 )
 
@@ -66,7 +67,11 @@ add_custom_target(copy_sla_files ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/ppc_32_be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/ppc_64_le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/ppc_64_be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
-    DEPENDS sla_x86 sla_x86_64 sla_ARM_BE sla_ARM_LE sla_AARCH64_LE sla_AARCH64_BE sla_PPC_LE_32 sla_PPC_LE_64 sla_PPC_BE_32 sla_PPC_BE_64
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips32le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips32be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips64le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips64be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
+    DEPENDS sla_x86 sla_x86_64 sla_ARM_BE sla_ARM_LE sla_AARCH64_LE sla_AARCH64_BE sla_PPC_LE_32 sla_PPC_LE_64 sla_PPC_BE_32 sla_PPC_BE_64 sla_MIPS_LE_32 sla_MIPS_BE_32 sla_MIPS_LE_64 sla_MIPS_BE_64
 )
 
 add_dependencies(yagi_unit_test copy_sla_files)

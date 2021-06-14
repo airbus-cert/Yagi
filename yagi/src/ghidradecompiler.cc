@@ -93,6 +93,10 @@ namespace yagi
 			language = "PowerPC";
 			languageMeta = "default";
 			break;
+		case Compiler::Language::MIPS:
+			language = "MIPS";
+			languageMeta = "default";
+			break;
 		case Compiler::Language::ARM:
 			{
 				if (compilerType.mode == Compiler::Mode::M64)
@@ -152,7 +156,8 @@ namespace yagi
 				return "__cdecl";
 		case Compiler::Language::PPC:
 			return "__stdcall";
-			break;
+		case Compiler::Language::MIPS:
+			return "__stdcall";
 		default:
 			break;
 		}

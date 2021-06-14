@@ -223,3 +223,28 @@ install(FILES "${SLEIGH_DIR}/ppc_32_be.sla" DESTINATION "plugins/Ghidra/Processo
 SLA_TARGET(sla_PPC_BE_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/PowerPC/data/languages/ppc_64_be.slaspec" "${SLEIGH_DIR}/ppc_64_be.sla")
 set_property(TARGET sla_PPC_BE_64 PROPERTY FOLDER "sleigh")
 install(FILES "${SLEIGH_DIR}/ppc_64_be.sla" DESTINATION "plugins/Ghidra/Processors/PowerPC/data/languages/")
+
+#######################
+######### MIPS ########
+#######################
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/MIPS" DESTINATION "plugins/Ghidra/Processors/")
+
+# compile file for MIPS 32 LE
+SLA_TARGET(sla_MIPS_LE_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/MIPS/data/languages/mips32le.slaspec" "${SLEIGH_DIR}/mips32le.sla")
+set_property(TARGET sla_MIPS_LE_32 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/mips32le.sla" DESTINATION "plugins/Ghidra/Processors/MIPS/data/languages/")
+
+# compile file for MIPS 32 BE
+SLA_TARGET(sla_MIPS_BE_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/MIPS/data/languages/mips32be.slaspec" "${SLEIGH_DIR}/mips32be.sla")
+set_property(TARGET sla_MIPS_BE_32 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/mips32be.sla" DESTINATION "plugins/Ghidra/Processors/MIPS/data/languages/")
+
+# compile file for MIPS 64 LE
+SLA_TARGET(sla_MIPS_LE_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/MIPS/data/languages/mips64le.slaspec" "${SLEIGH_DIR}/mips64le.sla")
+set_property(TARGET sla_MIPS_LE_64 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/mips64le.sla" DESTINATION "plugins/Ghidra/Processors/MIPS/data/languages/")
+
+# compile file for MIPS 64 BE
+SLA_TARGET(sla_MIPS_BE_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/MIPS/data/languages/mips64be.slaspec" "${SLEIGH_DIR}/mips64be.sla")
+set_property(TARGET sla_MIPS_BE_64 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/mips64be.sla" DESTINATION "plugins/Ghidra/Processors/MIPS/data/languages/")
