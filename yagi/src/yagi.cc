@@ -117,5 +117,5 @@ plugin_t PLUGIN =
 	"Yet Another Ghidra Integration",
 	"Airbus CERT.\n",
 	"yagi",
-	"Alt-F5"
+	"F7"
 };
