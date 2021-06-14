@@ -55,7 +55,7 @@ namespace yagi
 		}
 
 		// handle calling convention conversion
-		std::string cc = "__fastcall";
+		std::string cc = "__stdcall";
 		try
 		{
 			cc = typeInfo.getCallingConv();
@@ -68,6 +68,8 @@ namespace yagi
 			// by default we check configuration as calling convention
 			cc = m_archi->getDefaultCC();
 		}
+
+		m_archi->getLogger().info("use ", cc, std::string("as default calling convention for "), typeInfo.getName());
 
 		return getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
 	}
@@ -221,7 +223,8 @@ namespace yagi
 		// it's not a function
 		if (!funcType.has_value())
 		{
-			throw SymbolIsNotAFunction(typeInfo.value()->getName());
+			m_archi->getLogger().error("Unable to update function ", func.getName(), std::string(" : symbol is not a function"));
+			return;
 		}
 
 		auto type = parseFunc(*(funcType.value()));

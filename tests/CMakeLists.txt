@@ -47,7 +47,9 @@ target_compile_features(yagi_unit_test PRIVATE cxx_std_17)
 # This is a trick for compiling on visual studio
 # static initializer are stripped because libdecomp are a static library
 # and no PrintLanguage are registred because singleton ctor are never called
-target_link_options(yagi_unit_test PRIVATE /WHOLEARCHIVE:libbase.lib)
+if(MSVC)
+	target_link_options(yagi_unit_test PRIVATE /WHOLEARCHIVE:libbase.lib)
+endif()
 
 
 # Try to install files for loading test
@@ -67,7 +69,7 @@ add_custom_target(copy_sla_files ALL
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/ppc_32_be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/ppc_64_le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/ppc_64_be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips32le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips32le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips32be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips64le.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SLEIGH_DIR}/mips64be.sla" "${CMAKE_CURRENT_BINARY_DIR}/Ghidra/Processors/PowerPC/data/languages/"

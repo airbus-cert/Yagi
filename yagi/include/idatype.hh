@@ -207,6 +207,11 @@ namespace yagi
 		 * \brief	Get the calling convention of the function 
 		 */
 		std::string getCallingConv() const override;
+
+		/*!
+		 * \brief	Return name of the function
+		 */
+		std::string getName() const override;
 	};
 
 	/*!

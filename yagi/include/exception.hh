@@ -28,7 +28,7 @@ namespace yagi
 		 */
 		virtual ~Error() = default;
 
-		virtual char const* what() const override;
+		virtual char const* what() const noexcept override;
 	};
 
 	/*!

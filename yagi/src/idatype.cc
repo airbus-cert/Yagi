@@ -104,6 +104,12 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	std::string IdaFuncInfo::getName() const
+	{
+		return m_info.getName();
+	}
+
+	/**********************************************************************/
 	bool IdaFuncInfo::isDotDotDot() const
 	{
 		return m_info.m_type.is_vararg_cc();

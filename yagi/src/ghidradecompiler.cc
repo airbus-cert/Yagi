@@ -20,27 +20,27 @@ namespace yagi
 	/**********************************************************************/
 	std::optional<Decompiler::Result> GhidraDecompiler::decompile(uint64_t funcAddress)
 	{
-		auto funcSym = m_architecture->getSymbolDatabase().find_function(funcAddress);
-
-		if (!funcSym.has_value())
-		{
-			m_architecture->getLogger().info("Unable to find a function at ", to_hex(funcAddress));
-			return nullopt;
-		}
-
-		auto scope = m_architecture->symboltab->getGlobalScope();
-		// clear scope to update all symbols
-		scope->clear();
-
-		auto func = scope->findFunction(
-			Address(
-				m_architecture->getDefaultCodeSpace(), 
-				funcSym.value()->getAddress()
-			)
-		);
-
 		try
 		{
+			auto funcSym = m_architecture->getSymbolDatabase().find_function(funcAddress);
+
+			if (!funcSym.has_value())
+			{
+				m_architecture->getLogger().info("Unable to find a function at ", to_hex(funcAddress));
+				return nullopt;
+			}
+
+			auto scope = m_architecture->symboltab->getGlobalScope();
+			// clear scope to update all symbols
+			scope->clear();
+
+			auto func = scope->findFunction(
+				Address(
+					m_architecture->getDefaultCodeSpace(), 
+					funcSym.value()->getAddress()
+				)
+			);
+
 			m_architecture->clearAnalysis(func);
 			m_architecture->allacts.getCurrent()->reset(*func);
 
@@ -62,6 +62,16 @@ namespace yagi
 		catch (LowlevelError& e)
 		{
 			m_architecture->getLogger().error(e.explain);
+			return nullopt;
+		}
+		catch (Error& e)
+		{
+			m_architecture->getLogger().error(e.what());
+			return nullopt;
+		}
+		catch(std::exception& e)
+		{
+			m_architecture->getLogger().error(e.what());
 			return nullopt;
 		}
 	}
@@ -148,7 +158,7 @@ namespace yagi
 		case Compiler::Language::X86:
 		case Compiler::Language::X86_GCC:
 		case Compiler::Language::X86_WINDOWS:
-			return "__fastcall";
+			return "__stdcall";
 		case Compiler::Language::ARM:
 			if (compilerType.mode == Compiler::Mode::M32)
 				return "__stdcall";

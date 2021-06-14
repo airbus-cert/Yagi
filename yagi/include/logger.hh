@@ -2,6 +2,8 @@
 #define __YAGI_ILOGGER__
 
 #include <string>
+#include <sstream>
+#include <ostream>
 
 namespace yagi
 {

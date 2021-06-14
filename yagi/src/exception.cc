@@ -12,7 +12,7 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	char const* Error::what() const
+	char const* Error::what() const noexcept
 	{
 		return m_reason.c_str();
 	}

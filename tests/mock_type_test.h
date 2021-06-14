@@ -49,6 +49,7 @@ public:
 
 	std::vector<std::string> getFuncParamName() const;
 	std::string getCallingConv() const;
+	std::string getName() const;
 };
 
 class MockTypeInfo : public yagi::TypeInfo

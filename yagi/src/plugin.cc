@@ -239,22 +239,12 @@ namespace yagi
 	{
 		auto func_address = get_screen_ea();
 
-		try
+		auto decompilerResult = m_decompiler->decompile(func_address);
+		if (decompilerResult.has_value())
 		{
-			auto decompilerResult = m_decompiler->decompile(func_address);
-			if (decompilerResult.has_value())
-			{
-				view(decompilerResult.value().name, decompilerResult.value());
-			}
+			view(decompilerResult.value().name, decompilerResult.value());
 		}
-		catch (Error& e)
-		{
-			msg(e.what());
-		}
-		catch (...)
-		{
-			msg("Error during decompilation\n");
-		}
+		
 		return true;
 	}
 

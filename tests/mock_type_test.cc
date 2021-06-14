@@ -23,12 +23,16 @@ std::vector<std::string> MockFuncInfo::getFuncParamName() const
 {
 	return m_paramName;
 }
+
 std::string MockFuncInfo::getCallingConv() const
 {
 	return m_callingConvention;
 }
 
-
+std::string MockFuncInfo::getName() const
+{
+	return "";
+}
 
 MockTypeInfo::MockTypeInfo(size_t size, std::string name, bool isInt, bool isBool, bool isFloat, bool isVoid, bool isConst, bool isChar, bool isUnicode)
 	: m_size{ size }, m_name{ name }, m_isInt{ isInt }, m_isBool{ isBool }, m_isFloat{ isFloat }, m_isVoid{ isVoid }, m_isConst{ isConst }, m_isChar{ isChar }, m_isUnicode{ isUnicode }, m_funcInfo{ std::nullopt }

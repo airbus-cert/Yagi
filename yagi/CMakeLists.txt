@@ -45,12 +45,19 @@ target_compile_features(yagi PRIVATE cxx_std_17)
 
 target_include_directories(
 	yagi
-	PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>
-	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${IDA_SDK_INCLUDE_DIRS}
+	INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${IDA_SDK_INCLUDE_DIRS} include
 )
 
-set_target_properties(yagi PROPERTIES OUTPUT_NAME "yagi64")
-install(TARGETS yagi DESTINATION plugins)
+set_target_properties(yagi PROPERTIES 
+	OUTPUT_NAME "yagi64"
+	PREFIX ""
+)
+
+install(TARGETS yagi
+       RUNTIME DESTINATION plugins
+       LIBRARY DESTINATION plugins
+)
 
 if(MSVC)
 	add_definitions(
@@ -65,7 +72,9 @@ target_link_libraries(yagi libdecomp ${IDA_SDK_LIBS})
 # This is a trick for compiling on visual studio
 # static initializer are stripped because libdecomp are a static library
 # and no PrintLanguage are registred because singleton ctor are never called
+if(MSVC)
 target_link_options(yagi PRIVATE /WHOLEARCHIVE:libbase.lib)
+endif()
 
 # use to set address in 64 bits, must be set only for IDA 64 bits (sizeof ea_t)
 target_compile_definitions(yagi PRIVATE __EA64__)
