@@ -158,7 +158,10 @@ namespace yagi
 		case Compiler::Language::X86:
 		case Compiler::Language::X86_GCC:
 		case Compiler::Language::X86_WINDOWS:
-			return "__stdcall";
+			if (compilerType.mode == Compiler::Mode::M32)
+				return "__stdcall";
+			else
+				return "__fastcall";
 		case Compiler::Language::ARM:
 			if (compilerType.mode == Compiler::Mode::M32)
 				return "__stdcall";
