@@ -33,6 +33,7 @@ add_executable(
   ARM_payload_32bits_test.cc
   PPC_payload_32bits_test.cc
   MIPS_payload_32bits_test.cc
+  x86_payload_64bits_gcc_test.cc
   ${yagi_TEST_INCLUDE}
 )
 
