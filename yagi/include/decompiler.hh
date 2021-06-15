@@ -20,7 +20,8 @@ namespace yagi
 			X86,			// unknown compiler
 			ARM,			// ARM	arch
 			PPC,			// PowerPC
-			MIPS
+			MIPS,			// MIPS
+			SPARC			// Sparc
 		};
 
 		enum class Endianess {

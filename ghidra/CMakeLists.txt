@@ -248,3 +248,18 @@ install(FILES "${SLEIGH_DIR}/mips64le.sla" DESTINATION "plugins/Ghidra/Processor
 SLA_TARGET(sla_MIPS_BE_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/MIPS/data/languages/mips64be.slaspec" "${SLEIGH_DIR}/mips64be.sla")
 set_property(TARGET sla_MIPS_BE_64 PROPERTY FOLDER "sleigh")
 install(FILES "${SLEIGH_DIR}/mips64be.sla" DESTINATION "plugins/Ghidra/Processors/MIPS/data/languages/")
+
+#######################
+######### SPARC #######
+#######################
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Sparc" DESTINATION "plugins/Ghidra/Processors/")
+
+# compile file for Sparc 64
+SLA_TARGET(sla_SPARC_64 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Sparc/data/languages/SparcV9_64.slaspec" "${SLEIGH_DIR}/SparcV9_64.sla")
+set_property(TARGET sla_SPARC_64 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/SparcV9_64.sla" DESTINATION "plugins/Ghidra/Processors/Sparc/data/languages/")
+
+# compile file for Sparc 32
+SLA_TARGET(sla_SPARC_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Sparc/data/languages/SparcV9_32.slaspec" "${SLEIGH_DIR}/SparcV9_32.sla")
+set_property(TARGET sla_SPARC_32 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/SparcV9_32.sla" DESTINATION "plugins/Ghidra/Processors/Sparc/data/languages/")

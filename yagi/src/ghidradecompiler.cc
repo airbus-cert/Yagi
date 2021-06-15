@@ -107,6 +107,10 @@ namespace yagi
 			language = "MIPS";
 			languageMeta = "default";
 			break;
+		case Compiler::Language::SPARC:
+			language = "sparc";
+			languageMeta = "default";
+			break;
 		case Compiler::Language::ARM:
 			{
 				if (compilerType.mode == Compiler::Mode::M64)
@@ -169,6 +173,8 @@ namespace yagi
 		case Compiler::Language::PPC:
 			return "__stdcall";
 		case Compiler::Language::MIPS:
+			return "__stdcall";
+		case Compiler::Language::SPARC:
 			return "__stdcall";
 		default:
 			break;

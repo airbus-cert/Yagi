@@ -64,6 +64,9 @@ static yagi::Compiler compute_compiler() {
 	case PLFM_MIPS:
 		language = yagi::Compiler::Language::MIPS;
 		break;
+	case PLFM_SPARC:
+		language = yagi::Compiler::Language::SPARC;
+		break;
 	default:
 		throw yagi::UnknownCompiler(processor_id());
 	}
