@@ -156,12 +156,11 @@ namespace yagi
 		switch (compilerType.language)
 		{
 		case Compiler::Language::X86:
+			return "__stdcall";
 		case Compiler::Language::X86_GCC:
+			return "__stdcall";
 		case Compiler::Language::X86_WINDOWS:
-			if (compilerType.mode == Compiler::Mode::M32)
-				return "__stdcall";
-			else
-				return "__fastcall";
+			return "__fastcall";
 		case Compiler::Language::ARM:
 			if (compilerType.mode == Compiler::Mode::M32)
 				return "__stdcall";
