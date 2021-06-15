@@ -6,6 +6,7 @@ project(yagi LANGUAGES CXX VERSION 1.0.0)
 
 # Opions
 option(BUILD_TESTS "Build test programs" OFF)
+option(EA64 "Build for IDA 64" ON)
 
 # Config
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

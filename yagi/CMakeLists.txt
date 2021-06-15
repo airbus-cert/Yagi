@@ -49,11 +49,6 @@ target_include_directories(
 	PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${IDA_SDK_INCLUDE_DIRS} include
 )
 
-set_target_properties(yagi PROPERTIES 
-	OUTPUT_NAME "yagi64"
-	PREFIX ""
-)
-
 install(TARGETS yagi
        RUNTIME DESTINATION plugins
        LIBRARY DESTINATION plugins
@@ -76,8 +71,20 @@ if(MSVC)
 target_link_options(yagi PRIVATE /WHOLEARCHIVE:libbase.lib)
 endif()
 
-# use to set address in 64 bits, must be set only for IDA 64 bits (sizeof ea_t)
-target_compile_definitions(yagi PRIVATE __EA64__)
+target_compile_definitions(yagi PRIVATE __NT__)
+if(EA64)
+	# use to set address in 64 bits, must be set only for IDA 64 bits (sizeof ea_t)
+	target_compile_definitions(yagi PRIVATE __EA64__)
+	set_target_properties(yagi PROPERTIES 
+		OUTPUT_NAME "yagi64"
+		PREFIX ""
+	)
+else()
+	set_target_properties(yagi PROPERTIES 
+		OUTPUT_NAME "yagi"
+		PREFIX ""
+	)
+endif()
 
 
 # Use for tests
@@ -108,7 +115,6 @@ set(yagi_TEST_INCLUDE
 add_library(yagi_static STATIC ${yagi_TEST_INCLUDE} ${yagi_TEST_SRC})
 
 target_compile_features(yagi_static PRIVATE cxx_std_17)
-target_compile_definitions(yagi_static PRIVATE __EA64__)
 
 target_include_directories(
 	yagi_static
