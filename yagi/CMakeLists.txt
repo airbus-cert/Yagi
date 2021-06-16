@@ -69,9 +69,9 @@ target_link_libraries(yagi libdecomp ${IDA_SDK_LIBS})
 # and no PrintLanguage are registred because singleton ctor are never called
 if(MSVC)
 target_link_options(yagi PRIVATE /WHOLEARCHIVE:libbase.lib)
+target_compile_definitions(yagi PRIVATE __NT__)
 endif()
 
-target_compile_definitions(yagi PRIVATE __NT__)
 if(EA64)
 	# use to set address in 64 bits, must be set only for IDA 64 bits (sizeof ea_t)
 	target_compile_definitions(yagi PRIVATE __EA64__)
