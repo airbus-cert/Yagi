@@ -66,11 +66,13 @@ set(yagi_INCLUDE
 # needs IDA SDK for backend
 find_package(IdaSdk)
 
-add_definitions(
-	/wd4267
-	/wd4244
-	/wd4099
-)
+if(MSVC)
+	add_definitions(
+		/wd4267
+		/wd4244
+		/wd4099
+	)
+endif()
 
 #####################################################
 ############### build tager yagi64 ##################
