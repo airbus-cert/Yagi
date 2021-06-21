@@ -173,15 +173,9 @@ namespace yagi
 				setName(ct, name);
 				return ct;
 			}
-			// if an array of size 0 convert to pointer
+			// if an array of size 0 doesn't handle by ghidra
 			else {
-				auto ct = new TypePointer(
-					glb->getDefaultCodeSpace()->getAddrSize(),
-					findByTypeInfo(*arrayType.value()->getPointedObject()),
-					glb->getDefaultCodeSpace()->getWordSize()
-				);
-				setName(ct, name);
-				return ct;
+				return findByTypeInfo(*arrayType.value()->getPointedObject());
 			}
 		}
 

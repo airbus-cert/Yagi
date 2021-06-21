@@ -108,7 +108,7 @@ namespace yagi
 			}
 		}
 
-		return seg->perm == SEGPERM_READ;
+		return seg->perm == SEGPERM_READ || seg->perm == SEGPERM_READ + SEGPERM_EXEC;
 	}
 
 	/**********************************************************************/
