@@ -19,6 +19,7 @@
 #include <kernwin.hpp>
 #include <loader.hpp>
 #include <sstream>
+#include <algorithm>
 
 namespace yagi 
 {
