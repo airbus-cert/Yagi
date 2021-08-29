@@ -260,6 +260,11 @@ namespace yagi
 			return true;
 		}
 
+		if (name.find("wstr") != std::string::npos)
+		{
+			return true;
+		}
+
 		return false;
 	}
 

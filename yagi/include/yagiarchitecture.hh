@@ -19,6 +19,12 @@ namespace yagi
 	{
 	protected:
 		/*!
+		 * \brief	Static object use in parent class
+		 *			Don't delete it
+		 */
+		Translate* m_translate;
+
+		/*!
 		 * \brief	Loader factory
 		 */
 		std::unique_ptr<LoaderFactory> m_loaderFactory;
@@ -73,6 +79,12 @@ namespace yagi
 		 *			Use to set our own type factory
 		 */
 		void buildTypegrp(DocumentStorage& store) override;
+
+		/*!
+		 *	\brief	Overriden factory function
+		 *			Use to get back the private static translator
+		 */
+		Translate* buildTranslator(DocumentStorage& store) override;
 
 	public:
 		/*!

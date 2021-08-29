@@ -164,22 +164,26 @@ namespace yagi
 		auto arrayType = typeInfo.toArray();
 		if (arrayType.has_value())
 		{
-			if (typeInfo.getSize() > 0)
-			{
-				auto ct = new TypeArray(
-					typeInfo.getSize(), 
-					findByTypeInfo(*arrayType.value()->getPointedObject())
-				);
-				setName(ct, name);
-				return ct;
-			}
 			// if an array of size 0 doesn't handle by ghidra
-			else {
+			if (typeInfo.getSize() == 0)
+			{
 				return findByTypeInfo(*arrayType.value()->getPointedObject());
 			}
+			
+			auto ct = new TypeArray(
+				typeInfo.getSize(), 
+				findByTypeInfo(*arrayType.value()->getPointedObject())
+			);
+			setName(ct, name);
+			return ct;
 		}
 
-		auto ct = new TypeBase(typeInfo.getSize(), TYPE_UNKNOWN, name);
+		auto unknownSize = typeInfo.getSize();
+		if (unknownSize == (size_t)(-1))
+		{
+			unknownSize = glb->getDefaultCodeSpace()->getAddrSize();
+		}
+		auto ct = new TypeBase(unknownSize, TYPE_UNKNOWN, name);
 		setName(ct, name);
 		return ct;
 	}

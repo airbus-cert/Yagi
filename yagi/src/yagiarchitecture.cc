@@ -70,6 +70,13 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	Translate* YagiArchitecture::buildTranslator(DocumentStorage& store)
+	{
+		m_translate = SleighArchitecture::buildTranslator(store);
+		return m_translate;
+	}
+
+	/**********************************************************************/
 	SymbolInfoFactory& YagiArchitecture::getSymbolDatabase() const
 	{
 		return *m_symbols.get();

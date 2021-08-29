@@ -136,7 +136,7 @@ namespace yagi
 		if (idaName != "")
 		{
 			auto pp = idaName.find('(', 0);
-			size_t sp = idaName.find(' ', 0);;
+			size_t sp = idaName.find(' ', 0);
 			if (sp == qstring::npos)
 			{
 				sp = 0;

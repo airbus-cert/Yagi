@@ -69,6 +69,12 @@ namespace yagi
 					parametersDecl += info->getName() + ",";
 					});
 
+				// Varargs management
+				if(typeFunc.value()->isDotDotDot())
+				{
+					parametersDecl += "...";
+				}
+
 				// remove last char if present
 				if (parametersDecl.size() > 0 && parametersDecl.back() == ',')
 				{
