@@ -67,7 +67,7 @@ namespace yagi
 
 				std::for_each(paramIter, prototype.end(), [&parametersDecl](const std::unique_ptr<TypeInfo>& info) {
 					parametersDecl += info->getName() + ",";
-					});
+				});
 
 				// Varargs management
 				if(typeFunc.value()->isDotDotDot())
@@ -99,17 +99,34 @@ namespace yagi
 		}
 
 		auto cursor = get_custom_viewer_curline(w, false);
-		qstring result;
-		tag_remove(&result, cursor);
+		qstring result(cursor);
 
-		char* start = result.begin() + x;
+		char* start = result.begin();
+		while (x > 0)
+		{
+			if (*start == COLOR_ON)
+			{
+				start += 2;
+				continue;
+			}
+			
+			if (*start == COLOR_OFF)
+			{
+				start += 2;
+				continue;
+			}
+
+			start++;
+			x--;
+		}
+
 		char* end = start;
 
-		while (end <= result.end() && (qisalnum(*end) || *end == '_') && *end != '\0') {
+		while (end <= result.end() && *end != COLOR_OFF && *end != COLOR_ON && *end != '\0') {
 			end++;
 		}
 
-		while (start >= result.begin() && (qisalnum(*start) || *start == '_')) {
+		while (start >= result.begin() && !(*start == COLOR_ON && !qisalnum(*(start+1)))) {
 			start--;
 		}
 
@@ -123,7 +140,7 @@ namespace yagi
 			return std::nullopt;
 		}
 
-		return std::string(start + 1, end - start - 1);
+		return std::string(start + 2, end - start - 2);
 	}
 
 	/**********************************************************************/
@@ -152,11 +169,14 @@ namespace yagi
 		switch (key)
 		{
 		case 'X':
-			open_xrefs_window(addr->second);
+			if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
+			{
+				open_xrefs_window(addr->second.offset);
+			}
 			break;
 		case 'N':
 			{
-				auto symbolInfo = IdaSymbolInfoFactory().find(addr->second);
+				auto symbolInfo = IdaSymbolInfoFactory().find(addr->second.offset);
 				if (!symbolInfo.has_value())
 				{
 					return false;
@@ -165,30 +185,29 @@ namespace yagi
 				auto name = qstring(symbolInfo.value()->getName().c_str());
 				if (ask_str(&name, HIST_IDENT, "Please enter item name"))
 				{
-					set_name(addr->second, name.c_str());
+					set_name(addr->second.offset, name.c_str());
 					_RunYagi();
 				}
 			}
 			break;
 		case 'Y':
 			{
-				auto typeInfo = IdaTypeInfoFactory().build(addr->second);
-				auto name = qstring(keyword.value().c_str()) + ";";
+				auto typeInfo = IdaTypeInfoFactory().build(addr->second.offset);
 				if (typeInfo.has_value())
 				{
-					name = qstring(_PrintDeclType(keyword.value(), *typeInfo.value().get()).c_str());
-				}
-
-				if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
-				{
-					tinfo_t idaTypeInfo;
-					qstring parsedName;
-					if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+					auto name = qstring(_PrintDeclType(keyword.value(), *typeInfo.value().get()).c_str());
+				
+					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
 					{
-						set_tinfo(addr->second, &idaTypeInfo);
-						_RunYagi();
+						tinfo_t idaTypeInfo;
+						qstring parsedName;
+						if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+						{
+							set_tinfo(addr->second.offset, &idaTypeInfo);
+							_RunYagi();
+						}
 					}
-				}
+					}
 			}
 			break;
 		}
@@ -220,7 +239,23 @@ namespace yagi
 			return false;
 		}
 
-		return jumpto(addr->second);
+		if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
+		{
+			return jumpto(addr->second.offset);
+		}
+		else if (addr->second.type == MemoryLocation::MemoryLocationType::Stack)
+		{
+			auto idaFunc = get_func(code->ea);
+			auto offset = addr->second.offset;
+			if (addr->second.addrSize == 4 && (int32_t)addr->second.offset < 0)
+			{
+				offset = 0xFFFFFFFF00000000 | offset;
+			}
+
+			open_frame_window(idaFunc, offset + (idaFunc->frsize + idaFunc->frregs));
+		}
+		
+		return false;
 	}
 
 	/**********************************************************************/

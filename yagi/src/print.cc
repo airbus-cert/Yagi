@@ -153,17 +153,57 @@ namespace yagi
 			hl = syntax_highlight::keyword_color;
 		}
 
-		// handle classic variable, we put it into symbol database
-		if (vn != nullptr)
+		auto vnSearch = vn;
+		if (op != nullptr && op->code() == CPUI_PTRSUB)
 		{
-			m_symbolMap.emplace(name, vn->getAddr().getOffset());
+			vnSearch = op->getIn(1);
 		}
-		else if (op != nullptr && op->code() == CPUI_PTRSUB)
+
+		// handle classic variable, we put it into symbol database
+		if (vnSearch != nullptr)
 		{
-			auto inref = op->getIn(1);
-			if (inref != nullptr)
+			auto high = vnSearch->getHigh();
+			if (high != nullptr)
 			{
-				m_symbolMap.emplace(name, inref->getAddr().getOffset());
+				auto sym = high->getSymbolEntry();
+				if (sym != nullptr)
+				{
+					auto space = sym->getAddr().getSpace();
+					if (space != nullptr) {
+						auto iter = m_symbolMap.find(name);
+						if (iter == m_symbolMap.end())
+						{
+							m_symbolMap.emplace(
+								name,
+								MemoryLocation(
+									space->getName(),
+									sym->getAddr().getOffset(),
+									sym->getAddr().getAddrSize()
+								)
+							);
+						}
+						else
+						{
+							iter->second = MemoryLocation(
+								space->getName(),
+								sym->getAddr().getOffset(),
+								sym->getAddr().getAddrSize()
+							);
+						}
+					}
+						
+				}
+				else if (vn == nullptr && m_symbolMap.find(name) == m_symbolMap.end())
+				{
+					m_symbolMap.emplace(
+						name, 
+						MemoryLocation(
+							vnSearch->getAddr().getSpace()->getName(), 
+							vnSearch->getAddr().getOffset(), 
+							vnSearch->getAddr().getAddrSize()
+						)
+					);
+				}
 			}
 		}
 
@@ -206,7 +246,13 @@ namespace yagi
 		// handle function into symbol
 		if (fd != nullptr)
 		{
-			m_symbolMap.emplace(name, fd->getAddress().getOffset());
+			m_symbolMap.emplace(name, 
+				MemoryLocation(
+					MemoryLocation::MemoryLocationType::RAM, 
+					fd->getAddress().getOffset(), 
+					fd->getAddress().getSpace()->getAddrSize()
+				)
+			);
 		}
 		else if (op != nullptr)
 		{
@@ -216,7 +262,13 @@ namespace yagi
 				auto currentCall = parentFd->getCallSpecs(i);
 				if (currentCall->getName() == name || (isImport && currentCall->getName() == SymbolInfo::IMPORT_PREFIX + name))
 				{
-					m_symbolMap.emplace(name, currentCall->getEntryAddress().getOffset());
+					m_symbolMap.emplace(name, 
+						MemoryLocation(
+							MemoryLocation::MemoryLocationType::RAM, 
+							currentCall->getEntryAddress().getOffset(),
+							currentCall->getEntryAddress().getAddrSize()
+						)
+					);
 				}
 			}
 		}
@@ -273,7 +325,7 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	const std::map<std::string, uint64_t>& IdaEmit::getSymbolAddr() const
+	const std::map<std::string, MemoryLocation>& IdaEmit::getSymbolAddr() const
 	{
 		return m_symbolMap;
 	}

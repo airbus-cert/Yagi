@@ -8,7 +8,6 @@
 
 namespace yagi 
 {
-
 	class SymbolInfo
 	{
 	protected:
@@ -113,6 +112,8 @@ namespace yagi
 		 *			Use to espand static data from read only memory space
 		 */
 		virtual bool isReadOnly() const noexcept = 0;
+
+		virtual std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) = 0;
 	};
 
 	/*!

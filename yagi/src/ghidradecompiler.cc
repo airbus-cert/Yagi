@@ -7,6 +7,7 @@
 #include "idaloader.hh"
 #include "print.hh"
 #include "base.hh"
+#include "yagiaction.hh"
 
 namespace yagi 
 {
@@ -42,9 +43,8 @@ namespace yagi
 			);
 
 			m_architecture->clearAnalysis(func);
-			m_architecture->allacts.getCurrent()->reset(*func);
+			m_architecture->performActions(*func);
 
-			auto res = m_architecture->allacts.getCurrent()->perform(*func); 
 			m_architecture->setPrintLanguage("yagi-c-language");
 
 			stringstream ss;
@@ -56,7 +56,12 @@ namespace yagi
 
 			// get back context information
 			auto idaPrint = static_cast<IdaPrint*>(m_architecture->print);
-			return Decompiler::Result(funcSym.value()->getName(), ss.str(), idaPrint->getEmitter().getSymbolAddr());
+			return Decompiler::Result(
+				funcSym.value()->getName(), 
+				funcSym.value()->getAddress(),
+				ss.str(), 
+				idaPrint->getEmitter().getSymbolAddr()
+			);
 		}
 		
 		catch (LowlevelError& e)
@@ -227,4 +232,4 @@ namespace yagi
 			return std::nullopt;
 		}
 	}
-} // end of namespace ghidra
+} // end of namespace yagi

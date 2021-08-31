@@ -40,6 +40,11 @@ namespace yagi
 		std::unique_ptr<TypeInfoFactory> m_type;
 
 		/*!
+		 * \brief	custom action list made by Yagi dev apply after all universal action
+		 */
+		ActionGroup m_customAction;
+
+		/*!
 		 *	\brief	allow object that have access to the core
 		 *			to print informations message to the end user
 		 */
@@ -79,6 +84,11 @@ namespace yagi
 		 *			Use to set our own type factory
 		 */
 		void buildTypegrp(DocumentStorage& store) override;
+
+		/*!
+		 * \brief build the universal action database and the custom
+		 */
+		void buildAction(DocumentStorage& store) override;
 
 		/*!
 		 *	\brief	Overriden factory function
@@ -156,6 +166,11 @@ namespace yagi
 		 * \return	if exist the injection type
 		 */
 		std::optional<std::string> findInjection(const std::string& functionName);
+
+		/*!
+		 * \brief apply universal action and custom action
+		 */
+		int4 performActions(Funcdata & data);
 	};
 }
 

@@ -69,6 +69,8 @@ namespace yagi
 		 *			Use to espand static data from read only memory space
 		 */
 		bool isReadOnly() const noexcept override;
+
+		std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override;
 	};
 
 	/*!

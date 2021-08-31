@@ -1,4 +1,5 @@
 #include "architecture.hh"
+#include "yagiaction.hh"
 #include "loader.hh"
 #include "scope.hh"
 #include "typemanager.hh"
@@ -19,7 +20,8 @@ namespace yagi
 		m_logger{ std::move(logger) }, 
 		m_symbols{ std::move(symbols) }, 
 		m_type{ std::move(type) },
-		m_defaultCC { defaultCC }
+		m_defaultCC { defaultCC },
+		m_customAction(Action::rule_onceperfunc, "yagiactiongroup")
 	{
 	}
 
@@ -74,6 +76,28 @@ namespace yagi
 	{
 		m_translate = SleighArchitecture::buildTranslator(store);
 		return m_translate;
+	}
+
+	/**********************************************************************/
+	void YagiArchitecture::buildAction(DocumentStorage& store)
+	{
+		SleighArchitecture::buildAction(store);
+		m_customAction.addAction(new ActionRenameStackVar("yagiidasyncstackvar"));
+	}
+
+	/**********************************************************************/
+	int4 YagiArchitecture::performActions(Funcdata& data)
+	{
+		allacts.getCurrent()->reset(data);
+		m_customAction.reset(data);
+
+		auto res = allacts.getCurrent()->perform(data);
+		if (res < 0)
+		{
+			return res;
+		}
+
+		return res + m_customAction.perform(data);
 	}
 
 	/**********************************************************************/

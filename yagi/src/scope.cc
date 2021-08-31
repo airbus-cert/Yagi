@@ -39,9 +39,8 @@ namespace yagi
 
 		// found a function
 		auto sym = proxy->addFunction(addr, data.value()->getName());
-
 		auto funcData = sym->getFunction();
-		
+
 		// Try to set model type
 		static_cast<TypeManager*>(glb->types)->update(*funcData);
 
@@ -59,18 +58,19 @@ namespace yagi
 	{
 		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
 
-		if (addr.getSpace() != glb->getDefaultCodeSpace())
-		{
-			return nullptr;
-		}
-
 		auto result = proxy->findContainer(addr, size, usepoint);
 		if (result != nullptr)
 		{
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		std::optional<std::unique_ptr<SymbolInfo>> data = nullopt;
+
+		if (addr.getSpace() == glb->getDefaultCodeSpace())
+		{
+			data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		}
+		
 		if (data.has_value())
 		{
 			auto scope = glb->symboltab->getGlobalScope();
@@ -223,7 +223,7 @@ namespace yagi
 	/**********************************************************************/
 	Scope* YagiScope::buildSubScope(uint8 id, const string& nm)
 	{ 
-		return new ScopeInternal(id, nm, this->glb); 
+		return new YagiScope(id, static_cast<YagiArchitecture*>(glb));
 	}
 
 	/**********************************************************************/
@@ -337,7 +337,7 @@ namespace yagi
 	/**********************************************************************/
 	void YagiScope::clearCategory(int4 cat)
 	{
-		UNIMPLEMENTED;
+		m_proxy.clearCategory(cat);
 	}
 
 	/**********************************************************************/
@@ -409,19 +409,19 @@ namespace yagi
 	/**********************************************************************/
 	int4 YagiScope::getCategorySize(int4 cat) const
 	{
-		UNIMPLEMENTED;
+		return m_proxy.getCategorySize(cat);
 	}
 
 	/**********************************************************************/
 	Symbol* YagiScope::getCategorySymbol(int4 cat, int4 ind) const
 	{
-		UNIMPLEMENTED;
+		return m_proxy.getCategorySymbol(cat, ind);
 	}
 
 	/**********************************************************************/
 	void YagiScope::setCategory(Symbol* sym, int4 cat, int4 ind)
 	{
-		UNIMPLEMENTED;
+		m_proxy.setCategory(sym, cat, ind);
 	}
 
 } // end of namespace yagi

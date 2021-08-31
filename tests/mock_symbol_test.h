@@ -70,6 +70,11 @@ public:
 	{
 		return m_isReadOnly;
 	}
+
+	std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override
+	{
+		return nullopt;
+	}
 };
 
 #endif

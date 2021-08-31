@@ -21,4 +21,4 @@ namespace yagi
 		}
 		return tokens;
 	}
-} // end of namespace ghidra
+} // end of namespace yagi

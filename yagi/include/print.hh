@@ -2,6 +2,7 @@
 #define __YAGI_PRINT__
 
 #include <printc.hh>
+#include "decompiler.hh"
 
 namespace yagi 
 {
@@ -53,7 +54,7 @@ namespace yagi
 		/*!
 		 * \brief	Sympbol map
 		 */
-		std::map<std::string, uint64_t> m_symbolMap;
+		std::map<std::string, MemoryLocation> m_symbolMap;
 
 		/*!
 		 * \brief	start a color tag for each kind of token
@@ -146,7 +147,7 @@ namespace yagi
 		 * \brief	Return the symbol database
 		 * \return	the associated map between the token name and it's associated address
 		 */
-		const std::map<std::string, uint64_t>& getSymbolAddr() const;
+		const std::map<std::string, MemoryLocation>& getSymbolAddr() const;
 	};
 
 	/*!

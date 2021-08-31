@@ -12,6 +12,7 @@
 
 namespace yagi 
 {
+
 	class YagiArchitecture;
 
 	/*!

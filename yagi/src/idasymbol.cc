@@ -3,6 +3,8 @@
 #include "exception.hh"
 #include "idatool.hh"
 #include <idp.hpp>
+#include <frame.hpp>
+#include <struct.hpp>
 #include <name.hpp>
 #include <sstream>
 
@@ -132,16 +134,16 @@ namespace yagi
 			pname = m_name.c_str();
 		}
 
-		qstring idaName = demangle_name(pname.c_str(), 0);
+		qstring idaName = demangle_name(pname.c_str(), 0x0EA3BE67);
 		if (idaName != "")
 		{
 			auto pp = idaName.find('(', 0);
-			size_t sp = idaName.find(' ', 0);
-			if (sp == qstring::npos)
+			if (pp == qstring::npos)
 			{
-				sp = 0;
+				pp = idaName.size();
 			}
-			pname = idaName.substr(sp, pp);
+
+			pname = idaName.substr(0, pp);
 		}
 
 		// Mark import symbol with IDA convention
@@ -151,4 +153,28 @@ namespace yagi
 
 		return pname.c_str();
 	}
+
+	/**********************************************************************/
+	std::optional<std::string> IdaSymbolInfo::findStackVar(uint64_t offset, uint32_t addrSize)
+	{
+		auto idaFunc = get_func(m_ea);
+		auto frame = get_frame(idaFunc);
+		for (uint32_t i = 0; i < frame->memqty; i++)
+		{
+			auto member = frame->members[i];
+			auto name = std::string(get_struc_name(member.id, STRNFL_REGEX).c_str());
+			auto sofset = member.get_soff() - (idaFunc->frsize + idaFunc->frregs);
+			if (sofset == offset || (addrSize == 4 && ((uint32_t)sofset == (uint32_t)offset)))
+			{
+				auto pp = name.find(".");
+				if (pp != std::string::npos)
+				{
+					return name.substr(pp + 1);
+				}
+				return name;
+			}
+		}
+		return std::nullopt;
+	}
+
 } // end of namespace yagi

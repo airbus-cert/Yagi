@@ -2,6 +2,7 @@
 ########### Static library use for test #############
 #####################################################
 set(yagi_STATIC_SRC
+	src/yagiaction.cc
 	src/yagiarchitecture.cc
 	src/base.cc
 	src/exception.cc
@@ -12,6 +13,7 @@ set(yagi_STATIC_SRC
 )
 
 set(yagi_STATIC_INCLUDE
+	include/yagiaction.hh
 	include/yagiarchitecture.hh
 	include/base.hh
 	include/exception.hh

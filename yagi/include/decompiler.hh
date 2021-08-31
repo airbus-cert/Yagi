@@ -8,6 +8,44 @@
 namespace yagi 
 {
 	/*!
+	 * \brief Memory location
+	 */
+	struct MemoryLocation
+	{
+		enum class MemoryLocationType
+		{
+			RAM,
+			Register,
+			Stack
+		};
+
+		MemoryLocationType type;
+		uint64_t offset;
+		uint32_t addrSize;
+
+		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize)
+			: type{ type }, offset { offset }, addrSize { addrSize }
+		{}
+
+
+		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize)
+			: offset{ offset }, addrSize { addrSize }
+		{
+			if (name == "register")
+			{
+				type = MemoryLocationType::Register;
+			}
+			else if (name == "stack")
+			{
+				type = MemoryLocationType::Stack;
+			}
+			else {
+				type = MemoryLocationType::RAM;
+			}
+		}
+	};
+
+	/*!
 	 * \brief	Compiler configuration definition
 	 */
 	struct Compiler {
@@ -69,15 +107,20 @@ namespace yagi
 			std::string name;
 
 			/*!
+			 * \brief	address of function
+			 */
+			uint64_t ea;
+
+			/*!
 			 * \brief	a mapping between token symbol and address
 			 */
-			std::map<std::string, uint64_t>	symbolAddress;
+			std::map<std::string, MemoryLocation> symbolAddress;
 
 			/*!
 			 * \brief	ctor
 			 */
-			Result(std::string name, std::string cCode, std::map<std::string, uint64_t> symbolAddress)
-				: name{ name }, cCode{ cCode }, symbolAddress{ symbolAddress }
+			Result(std::string name, uint64_t ea, std::string cCode, std::map<std::string, MemoryLocation> symbolAddress)
+				: name{ name }, ea { ea }, cCode{ cCode }, symbolAddress{ symbolAddress }
 			{}
 		};
 
