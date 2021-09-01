@@ -169,6 +169,7 @@ namespace yagi
 		switch (key)
 		{
 		case 'X':
+			// RAM xref
 			if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
 			{
 				open_xrefs_window(addr->second.offset);
@@ -176,38 +177,46 @@ namespace yagi
 			break;
 		case 'N':
 			{
-				auto symbolInfo = IdaSymbolInfoFactory().find(addr->second.offset);
-				if (!symbolInfo.has_value())
+				// RAM rename
+				if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
 				{
-					return false;
-				}
+					auto symbolInfo = IdaSymbolInfoFactory().find(addr->second.offset);
+					if (!symbolInfo.has_value())
+					{
+						return false;
+					}
 
-				auto name = qstring(symbolInfo.value()->getName().c_str());
-				if (ask_str(&name, HIST_IDENT, "Please enter item name"))
-				{
-					set_name(addr->second.offset, name.c_str());
-					_RunYagi();
+					auto name = qstring(symbolInfo.value()->getName().c_str());
+					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
+					{
+						set_name(addr->second.offset, name.c_str());
+						_RunYagi();
+					}
 				}
 			}
 			break;
 		case 'Y':
 			{
-				auto typeInfo = IdaTypeInfoFactory().build(addr->second.offset);
-				if (typeInfo.has_value())
+				// RAM retype
+				if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
 				{
-					auto name = qstring(_PrintDeclType(keyword.value(), *typeInfo.value().get()).c_str());
-				
-					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
+					auto typeInfo = IdaTypeInfoFactory().build(addr->second.offset);
+					if (typeInfo.has_value())
 					{
-						tinfo_t idaTypeInfo;
-						qstring parsedName;
-						if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+						auto name = qstring(_PrintDeclType(keyword.value(), *typeInfo.value().get()).c_str());
+
+						if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
 						{
-							set_tinfo(addr->second.offset, &idaTypeInfo);
-							_RunYagi();
+							tinfo_t idaTypeInfo;
+							qstring parsedName;
+							if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+							{
+								set_tinfo(addr->second.offset, &idaTypeInfo);
+								_RunYagi();
+							}
 						}
 					}
-					}
+				}
 			}
 			break;
 		}
@@ -247,6 +256,8 @@ namespace yagi
 		{
 			auto idaFunc = get_func(code->ea);
 			auto offset = addr->second.offset;
+			// As ghidra handle 32 bit address even in 64 bits
+			// and stack address cound be negative
 			if (addr->second.addrSize == 4 && (int32_t)addr->second.offset < 0)
 			{
 				offset = 0xFFFFFFFF00000000 | offset;

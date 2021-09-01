@@ -95,6 +95,7 @@ namespace yagi
 		case CM_CC_THISCALL:
 			return "__thiscall";
 		case CM_CC_CDECL:
+		case CM_CC_ELLIPSIS:
 			return "__cdecl";
 		case CM_CC_INVALID:
 		case CM_CC_UNKNOWN:

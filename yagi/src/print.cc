@@ -166,43 +166,24 @@ namespace yagi
 			if (high != nullptr)
 			{
 				auto sym = high->getSymbolEntry();
+				if (sym == nullptr && high->getSymbol() != nullptr)
+				{
+					sym = high->getSymbol()->getFirstWholeMap();
+				}
+
 				if (sym != nullptr)
 				{
 					auto space = sym->getAddr().getSpace();
 					if (space != nullptr) {
-						auto iter = m_symbolMap.find(name);
-						if (iter == m_symbolMap.end())
-						{
-							m_symbolMap.emplace(
-								name,
-								MemoryLocation(
-									space->getName(),
-									sym->getAddr().getOffset(),
-									sym->getAddr().getAddrSize()
-								)
-							);
-						}
-						else
-						{
-							iter->second = MemoryLocation(
+						m_symbolMap.emplace(
+							name,
+							MemoryLocation(
 								space->getName(),
 								sym->getAddr().getOffset(),
 								sym->getAddr().getAddrSize()
-							);
-						}
+							)
+						);
 					}
-						
-				}
-				else if (vn == nullptr && m_symbolMap.find(name) == m_symbolMap.end())
-				{
-					m_symbolMap.emplace(
-						name, 
-						MemoryLocation(
-							vnSearch->getAddr().getSpace()->getName(), 
-							vnSearch->getAddr().getOffset(), 
-							vnSearch->getAddr().getAddrSize()
-						)
-					);
 				}
 			}
 		}
