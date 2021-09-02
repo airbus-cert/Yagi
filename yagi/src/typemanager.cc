@@ -67,9 +67,8 @@ namespace yagi
 		{
 			// by default we check configuration as calling convention
 			cc = m_archi->getDefaultCC();
+			m_archi->getLogger().info("use ", cc, std::string("as default calling convention for "), typeInfo.getName());
 		}
-
-		m_archi->getLogger().info("use ", cc, std::string("as default calling convention for "), typeInfo.getName());
 
 		return getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
 	}

@@ -80,12 +80,15 @@ namespace yagi
 			switch (data.value()->getType())
 			{
 			case SymbolInfo::Type::Function:
+				static_cast<YagiArchitecture*>(glb)->getLogger().info("Found function symbol ", name);
 				symbol = proxy->addFunction(addr, name);
 				break;
 			case SymbolInfo::Type::Import:
+				static_cast<YagiArchitecture*>(glb)->getLogger().info("Found import symbol ", name);
 				symbol = proxy->addExternalRef(addr, addr, name);
 				break;
 			case SymbolInfo::Type::Label:
+				static_cast<YagiArchitecture*>(glb)->getLogger().info("Found label symbol ", name);
 				symbol = proxy->addCodeLabel(addr, name);
 				break;
 			case SymbolInfo::Type::Other:
@@ -93,10 +96,12 @@ namespace yagi
 				auto type = static_cast<YagiArchitecture*>(glb)->getTypeInfoFactory().build(addr.getOffset());
 				if (type.has_value())
 				{
+					static_cast<YagiArchitecture*>(glb)->getLogger().info("Found type", type.value()->getName(),  std::string("for"), name);
 					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->findByTypeInfo(*(type.value())));
 				}
 				else 
 				{
+					static_cast<YagiArchitecture*>(glb)->getLogger().info("Unknown type for ", name);
 					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->getBase(size, TYPE_UNKNOWN));
 				}
 				break;
@@ -107,6 +112,7 @@ namespace yagi
 
 			if (data.value()->isReadOnly())
 			{
+				static_cast<YagiArchitecture*>(glb)->getLogger().info("Apply readonly type for ", name);
 				proxy->setAttribute(symbol, Varnode::readonly);
 			}
 
@@ -138,6 +144,7 @@ namespace yagi
 			return nullptr;
 		}
 
+		static_cast<YagiArchitecture*>(glb)->getLogger().info("Find external ref ", data.value()->getName());
 		return proxy->addExternalRef(addr, addr, data.value()->getName());
 	}
 

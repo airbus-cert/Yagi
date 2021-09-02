@@ -22,7 +22,7 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::optional<std::unique_ptr<SymbolInfo>> IdaSymbolInfoFactory::find_function(uint64_t ea)
+	std::optional<std::unique_ptr<FunctionSymbolInfo>> IdaSymbolInfoFactory::find_function(uint64_t ea)
 	{
 		auto idaFunc = get_func(ea);
 		if (idaFunc == nullptr)
@@ -35,7 +35,7 @@ namespace yagi
 		auto beginParameter = idaName.find("(");
 		auto functionName = split(idaName.substr(0, beginParameter).c_str(), ' ').back();
 
-		return std::make_unique<IdaSymbolInfo>(idaFunc->start_ea, functionName);
+		return std::make_unique<IdaFunctionSymbolInfo>(std::make_unique<IdaSymbolInfo>(idaFunc->start_ea, functionName));
 	}
 
 	/**********************************************************************/
@@ -155,9 +155,9 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::optional<std::string> IdaSymbolInfo::findStackVar(uint64_t offset, uint32_t addrSize)
+	std::optional<std::string> IdaFunctionSymbolInfo::findStackVar(uint64_t offset, uint32_t addrSize)
 	{
-		auto idaFunc = get_func(m_ea);
+		auto idaFunc = get_func(m_symbol->getAddress());
 		auto frame = get_frame(idaFunc);
 		for (uint32_t i = 0; i < frame->memqty; i++)
 		{
@@ -175,6 +175,33 @@ namespace yagi
 			}
 		}
 		return std::nullopt;
+	}
+
+	/**********************************************************************/
+	std::optional<std::string> IdaFunctionSymbolInfo::findRegVar(const std::string& name)
+	{
+		std::stringstream ss;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << name;
+		netnode n(ss.str().c_str(), 0, true);
+		
+		qstring res;
+		auto size = n.valstr(&res);
+
+		if (res.size() == 0)
+		{
+			return std::nullopt;
+		}
+
+		return res.c_str();
+	}
+
+	/**********************************************************************/
+	void IdaFunctionSymbolInfo::saveRegVar(const std::string& name, const std::string& value)
+	{
+		std::stringstream ss;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << name;
+		netnode n(ss.str().c_str(), 0, true);
+		n.set(value.c_str());
 	}
 
 } // end of namespace yagi

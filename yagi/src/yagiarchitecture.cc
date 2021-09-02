@@ -83,6 +83,7 @@ namespace yagi
 	{
 		SleighArchitecture::buildAction(store);
 		m_customAction.addAction(new ActionRenameStackVar("yagiidasyncstackvar"));
+		m_customAction.addAction(new ActionRenameRegistryVar("yagiidaregstackvar"));
 	}
 
 	/**********************************************************************/

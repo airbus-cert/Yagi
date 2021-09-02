@@ -193,6 +193,21 @@ namespace yagi
 						_RunYagi();
 					}
 				}
+				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
+				{
+					auto symbolInfo = IdaSymbolInfoFactory().find_function(code->ea);
+					if (!symbolInfo.has_value())
+					{
+						return false;
+					}
+
+					auto name = qstring(keyword.value().c_str());
+					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
+					{
+						symbolInfo.value()->saveRegVar(keyword.value(), name.c_str());
+						_RunYagi();
+					}
+				}
 			}
 			break;
 		case 'Y':

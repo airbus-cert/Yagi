@@ -112,8 +112,58 @@ namespace yagi
 		 *			Use to espand static data from read only memory space
 		 */
 		virtual bool isReadOnly() const noexcept = 0;
+	};
 
+	class FunctionSymbolInfo
+	{
+	protected:
+		std::unique_ptr<SymbolInfo> m_symbol;
+
+	public:
+		explicit FunctionSymbolInfo(std::unique_ptr<SymbolInfo> symbol)
+			: m_symbol{ std::move(symbol) }
+		{
+		}
+
+		/*!
+		 *	\brief	Copy is forbidden due to unique ptr
+		 */
+		FunctionSymbolInfo(const FunctionSymbolInfo&) = delete;
+		FunctionSymbolInfo& operator=(const FunctionSymbolInfo&) = delete;
+
+		/*!
+		 *	\brief	moving is allowed
+		 */
+		FunctionSymbolInfo(FunctionSymbolInfo&&) noexcept = default;
+		FunctionSymbolInfo& operator=(FunctionSymbolInfo&&) noexcept = default;
+
+		/*!
+		 *	\brief	destructor
+		 */
+		virtual ~FunctionSymbolInfo() = default;
+
+		/*!
+		 * \brief	Get inner symbol
+		 */
+		SymbolInfo& getSymbol()
+		{
+			return *m_symbol;
+		}
+
+		/*!
+		 * \brief	Find a stack variable at a particular offset
+		 * \param	offset		offset in the frame
+		 * \param	addrSize	address space
+		 * \return	name of the stack var
+		 */
 		virtual std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) = 0;
+
+		/*!
+		 * \brief	try to find a registry name
+		 */
+		virtual std::optional<std::string> findRegVar(const std::string& name) = 0;
+
+		virtual void saveRegVar(const std::string& name, const std::string& value) = 0;
 	};
 
 	/*!
@@ -137,9 +187,8 @@ namespace yagi
 		 * \brief	Find a function symbol from an address anywhere in the function
 		 * \param	ea	any address that is handle by a function
 		 */
-		virtual std::optional<std::unique_ptr<SymbolInfo>> find_function(uint64_t ea) = 0;
+		virtual std::optional<std::unique_ptr<FunctionSymbolInfo>> find_function(uint64_t ea) = 0;
 	};
-
 }
 
 #endif

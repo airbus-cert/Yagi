@@ -7,14 +7,15 @@
 #include <memory>
 
 using MockSymbolInfoFactoryFind = std::function<std::optional<std::unique_ptr<yagi::SymbolInfo>>(uint64_t)>;
+using MockSymbolInfoFactoryFindFunction = std::function<std::optional<std::unique_ptr<yagi::FunctionSymbolInfo>>(uint64_t)>;
 class MockSymbolInfoFactory : public yagi::SymbolInfoFactory
 {
 protected:
 	MockSymbolInfoFactoryFind m_findCallback;
-	MockSymbolInfoFactoryFind m_findFunctionCallback;
+	MockSymbolInfoFactoryFindFunction m_findFunctionCallback;
 
 public:
-	explicit MockSymbolInfoFactory(MockSymbolInfoFactoryFind findCallback, MockSymbolInfoFactoryFind findFunctionCallback)
+	explicit MockSymbolInfoFactory(MockSymbolInfoFactoryFind findCallback, MockSymbolInfoFactoryFindFunction findFunctionCallback)
 		: m_findCallback { findCallback }, m_findFunctionCallback { findFunctionCallback }
 	{}
 
@@ -23,13 +24,13 @@ public:
 		return m_findCallback(ea);
 	}
 
-	std::optional<std::unique_ptr<yagi::SymbolInfo>> find_function(uint64_t ea) override
+	std::optional<std::unique_ptr<yagi::FunctionSymbolInfo>> find_function(uint64_t ea) override
 	{
 		return m_findFunctionCallback(ea);
 	}
 };
 
-class MockFunctionSymbolInfo : public yagi::SymbolInfo
+class MockSymbolInfo : public yagi::SymbolInfo
 {
 protected:
 	uint64_t m_size;
@@ -39,7 +40,7 @@ protected:
 	bool m_isReadOnly;
 
 public:
-	MockFunctionSymbolInfo(uint64_t ea, std::string name, uint64_t size, 
+	MockSymbolInfo(uint64_t ea, std::string name, uint64_t size, 
 		bool isFunction, bool isLabel, bool isImport, bool isReadOnly)
 		: SymbolInfo(ea, name), m_size{ size }, 
 		m_isFunction{isImport}, m_isLabel{isLabel}, 
@@ -70,8 +71,22 @@ public:
 	{
 		return m_isReadOnly;
 	}
+};
+
+class MockFunctionSymbolInfo : public yagi::FunctionSymbolInfo
+{
+public:
+	explicit MockFunctionSymbolInfo(std::unique_ptr<yagi::SymbolInfo> symbol)
+		: yagi::FunctionSymbolInfo{ std::move(symbol) }
+	{
+	}
 
 	std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override
+	{
+		return nullopt;
+	}
+
+	std::optional<std::string> findRegVar(const std::string& name) override
 	{
 		return nullopt;
 	}

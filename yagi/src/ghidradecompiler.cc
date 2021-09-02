@@ -38,13 +38,13 @@ namespace yagi
 			auto func = scope->findFunction(
 				Address(
 					m_architecture->getDefaultCodeSpace(), 
-					funcSym.value()->getAddress()
+					funcSym.value()->getSymbol().getAddress()
 				)
 			);
 
 			m_architecture->clearAnalysis(func);
 			m_architecture->performActions(*func);
-
+			
 			m_architecture->setPrintLanguage("yagi-c-language");
 
 			stringstream ss;
@@ -57,8 +57,8 @@ namespace yagi
 			// get back context information
 			auto idaPrint = static_cast<IdaPrint*>(m_architecture->print);
 			return Decompiler::Result(
-				funcSym.value()->getName(), 
-				funcSym.value()->getAddress(),
+				funcSym.value()->getSymbol().getName(), 
+				funcSym.value()->getSymbol().getAddress(),
 				ss.str(), 
 				idaPrint->getEmitter().getSymbolAddr()
 			);

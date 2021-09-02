@@ -34,13 +34,13 @@ TEST(TestDecompilationPayload_MIPS_32, DecompileWithoutType) {
 		std::make_unique<MockSymbolInfoFactory>([](uint64_t ea) -> std::optional<std::unique_ptr<yagi::SymbolInfo>> {
 			if (ea == FUNC_ADDR)
 			{
-				return std::make_unique<MockFunctionSymbolInfo>(
+				return std::make_unique<MockSymbolInfo>(
 					FUNC_ADDR, FUNC_NAME, FUNC_SIZE, true, false, false, false
 				);
 			}
 			return std::nullopt; 
 		}, 
-		[](uint64_t func_addr) -> std::optional<std::unique_ptr<yagi::SymbolInfo>> { 
+		[](uint64_t func_addr) -> std::optional<std::unique_ptr<yagi::FunctionSymbolInfo>> {
 			return std::nullopt;
 		}),
 		std::make_unique<MockTypeInfoFactory>([](uint64_t) { return std::nullopt; }, [](const std::string&) { return std::nullopt; }),
