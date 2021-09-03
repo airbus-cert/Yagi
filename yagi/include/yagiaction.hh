@@ -40,6 +40,20 @@ namespace yagi
 		 */
 		int4 apply(Funcdata& data) override;
 	};
+
+	class ActionRetypeRegistryVar : public Action
+	{
+	public:
+		ActionRetypeRegistryVar(const string& g) : Action(Action::ruleflags::rule_onceperfunc, "retypereg", g) {}
+		virtual Action* clone(const ActionGroupList& grouplist) const {
+			if (!grouplist.contains(getGroup())) return (Action*)0;
+			return new ActionRenameStackVar(getGroup());
+		}
+		/*!
+		 * \brief	Will apply the stack rename
+		 */
+		int4 apply(Funcdata& data) override;
+	};
 }
 
 #endif

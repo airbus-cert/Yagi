@@ -166,6 +166,8 @@ namespace yagi
 			return false;
 		}
 
+		auto functionSymbolInfo = IdaSymbolInfoFactory().find_function(code->ea);
+
 		switch (key)
 		{
 		case 'X':
@@ -195,8 +197,7 @@ namespace yagi
 				}
 				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
 				{
-					auto symbolInfo = IdaSymbolInfoFactory().find_function(code->ea);
-					if (!symbolInfo.has_value())
+					if (!functionSymbolInfo.has_value())
 					{
 						return false;
 					}
@@ -204,7 +205,7 @@ namespace yagi
 					auto name = qstring(keyword.value().c_str());
 					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
 					{
-						symbolInfo.value()->saveRegVar(keyword.value(), name.c_str());
+						functionSymbolInfo.value()->saveRegVar(keyword.value(), name.c_str());
 						_RunYagi();
 					}
 				}
@@ -232,6 +233,24 @@ namespace yagi
 						}
 					}
 				}
+				/*else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
+				{
+					qstring name;
+					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
+					{
+						tinfo_t idaTypeInfo;
+						qstring parsedName;
+						if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+						{
+							auto typeInfo = IdaTypeInfoFactory().build(idaTypeInfo);
+							if (typeInfo.has_value())
+							{
+								functionSymbolInfo.value()->saveSymbolType(keyword.value(), *(typeInfo.value()), addr->second);
+								_RunYagi();
+							}
+						}
+					}
+				}*/
 			}
 			break;
 		}

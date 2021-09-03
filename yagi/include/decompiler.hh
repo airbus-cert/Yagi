@@ -23,12 +23,12 @@ namespace yagi
 		uint64_t offset;
 		uint32_t addrSize;
 
-		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize)
-			: type{ type }, offset { offset }, addrSize { addrSize }
+		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize, uint64_t address = 0, uint64_t hash = 0)
+			: type{ type }, offset{ offset }, addrSize{ addrSize }
 		{}
 
 
-		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize)
+		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize, uint64_t address = 0, uint64_t hash = 0)
 			: offset{ offset }, addrSize { addrSize }
 		{
 			if (name == "register")

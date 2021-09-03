@@ -67,6 +67,10 @@ namespace yagi
 		{
 			// by default we check configuration as calling convention
 			cc = m_archi->getDefaultCC();
+			if (!glb->hasModel(cc))
+			{
+				cc = (*m_archi->protoModels.begin()).first;
+			}
 			m_archi->getLogger().info("use ", cc, std::string("as default calling convention for "), typeInfo.getName());
 		}
 

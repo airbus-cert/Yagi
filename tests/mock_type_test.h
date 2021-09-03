@@ -77,6 +77,7 @@ public:
 
 	size_t getSize() const;
 	std::string getName() const;
+	std::string getRawName() const;
 	bool isInt() const;
 	bool isBool() const;
 	bool isFloat() const;

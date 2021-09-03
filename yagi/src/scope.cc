@@ -57,7 +57,7 @@ namespace yagi
 	SymbolEntry* YagiScope::findContainer(const Address& addr, int4 size, const Address& usepoint) const
 	{
 		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
-
+		
 		auto result = proxy->findContainer(addr, size, usepoint);
 		if (result != nullptr)
 		{

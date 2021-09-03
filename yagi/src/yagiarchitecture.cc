@@ -3,6 +3,7 @@
 #include "loader.hh"
 #include "scope.hh"
 #include "typemanager.hh"
+#include "coreaction.hh"
 
 namespace yagi 
 {
@@ -82,8 +83,8 @@ namespace yagi
 	void YagiArchitecture::buildAction(DocumentStorage& store)
 	{
 		SleighArchitecture::buildAction(store);
-		m_customAction.addAction(new ActionRenameStackVar("yagiidasyncstackvar"));
-		m_customAction.addAction(new ActionRenameRegistryVar("yagiidaregstackvar"));
+		m_customAction.addAction(new ActionRenameStackVar("yagistackvarrename"));
+		m_customAction.addAction(new ActionRenameRegistryVar("yagiregrename"));
 	}
 
 	/**********************************************************************/
@@ -93,6 +94,7 @@ namespace yagi
 		m_customAction.reset(data);
 
 		auto res = allacts.getCurrent()->perform(data);
+		
 		if (res < 0)
 		{
 			return res;

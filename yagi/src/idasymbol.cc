@@ -2,6 +2,7 @@
 #include "base.hh"
 #include "exception.hh"
 #include "idatool.hh"
+#include "idatype.hh"
 #include <idp.hpp>
 #include <frame.hpp>
 #include <struct.hpp>
@@ -204,4 +205,30 @@ namespace yagi
 		n.set(value.c_str());
 	}
 
+	/**********************************************************************/
+	void IdaFunctionSymbolInfo::saveSymbolType(const std::string& name, const TypeInfo& newType, const MemoryLocation& loc)
+	{
+		std::stringstream ss;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << name;
+		netnode n(ss.str().c_str(), 0, true);
+		n.set(newType.getName().c_str());
+	}
+
+	/**********************************************************************/
+	std::optional<std::unique_ptr<TypeInfo>> IdaFunctionSymbolInfo::findSymbolType(const std::string& name)
+	{
+		std::stringstream ss;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << name;
+		netnode n(ss.str().c_str(), 0, true);
+
+		qstring res;
+		auto size = n.valstr(&res);
+
+		if (res.size() == 0)
+		{
+			return std::nullopt;
+		}
+
+		return IdaTypeInfoFactory().build_decl(res.c_str());
+	}
 } // end of namespace yagi

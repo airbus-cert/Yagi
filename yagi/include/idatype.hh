@@ -68,6 +68,7 @@ namespace yagi
 		 */
 		std::string getName() const override;
 
+
 		/*!
 		 * \brief	Is the type is linked to an integer
 		 * \warning	Any interger type, uint16 uin8 etc..., are integer
@@ -364,6 +365,8 @@ namespace yagi
 		 */
 		std::optional<std::unique_ptr<TypeInfo>> build(uint64_t ea) override;
 
+		std::optional<std::unique_ptr<TypeInfo>> build(tinfo_t info);
+		std::optional<std::unique_ptr<TypeInfo>> build_decl(const std::string& name);
 	};
 }
 

@@ -52,6 +52,11 @@ std::string MockTypeInfo::getName() const
 	return m_name;
 }
 
+std::string MockTypeInfo::getRawName() const
+{
+	return m_name;
+}
+
 bool MockTypeInfo::isInt() const
 {
 	return m_isInt;

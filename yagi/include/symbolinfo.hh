@@ -5,9 +5,11 @@
 #include <tuple>
 #include <string>
 #include <memory>
+#include "decompiler.hh"
 
 namespace yagi 
 {
+	class TypeInfo;
 	class SymbolInfo
 	{
 	protected:
@@ -163,7 +165,15 @@ namespace yagi
 		 */
 		virtual std::optional<std::string> findRegVar(const std::string& name) = 0;
 
+		/*!
+		 * \brief	Save a registry variable name
+		 *			It will be used by ActionRenameRegistryVar to rename variable
+		 */
 		virtual void saveRegVar(const std::string& name, const std::string& value) = 0;
+
+		virtual void saveSymbolType(const std::string& name, const TypeInfo& newType, const MemoryLocation& loc) = 0;
+
+		virtual std::optional<std::unique_ptr<TypeInfo>> findSymbolType(const std::string& name) = 0;
 	};
 
 	/*!

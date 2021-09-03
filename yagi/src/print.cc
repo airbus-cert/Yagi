@@ -166,13 +166,14 @@ namespace yagi
 			if (high != nullptr)
 			{
 				auto sym = high->getSymbolEntry();
+				
 				if (sym == nullptr && high->getSymbol() != nullptr)
 				{
 					sym = high->getSymbol()->getFirstWholeMap();
 				}
 
 				if (sym != nullptr)
-				{
+				{			
 					auto space = sym->getAddr().getSpace();
 					if (space != nullptr) {
 						m_symbolMap.emplace(

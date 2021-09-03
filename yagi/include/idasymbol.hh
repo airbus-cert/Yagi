@@ -93,6 +93,8 @@ namespace yagi
 		std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override;
 		std::optional<std::string> findRegVar(const std::string& name) override;
 		void saveRegVar(const std::string& name, const std::string& value) override;
+		void saveSymbolType(const std::string& name, const TypeInfo& newType, const MemoryLocation& loc) override;
+		std::optional<std::unique_ptr<TypeInfo>> findSymbolType(const std::string& name) override;
 	};
 
 	/*!

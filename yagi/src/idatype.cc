@@ -316,7 +316,6 @@ namespace yagi
 	/**********************************************************************/
 	std::optional<std::unique_ptr<TypeInfo>> IdaTypeInfoFactory::build(const std::string& name)
 	{
-		// Rewrite raw type
 		tinfo_t idaTypeInfo;
 
 		if (!idaTypeInfo.get_named_type(get_idati(), name.c_str()))
@@ -333,6 +332,28 @@ namespace yagi
 		tinfo_t idaTypeInfo;
 
 		if (!get_tinfo(&idaTypeInfo, ea) && !guess_tinfo(&idaTypeInfo, ea))
+		{
+			return std::nullopt;
+		}
+
+		return std::make_unique<IdaTypeInfo>(idaTypeInfo);
+	}
+
+	/**********************************************************************/
+	std::optional<std::unique_ptr<TypeInfo>> IdaTypeInfoFactory::build(tinfo_t info)
+	{
+		return std::make_unique<IdaTypeInfo>(info);
+	}
+
+	/**********************************************************************/
+	std::optional<std::unique_ptr<TypeInfo>> IdaTypeInfoFactory::build_decl(const std::string& name)
+	{
+		tinfo_t idaTypeInfo;
+		qstring parsedName;
+		std::stringstream ss;
+		ss << name << ";";
+
+		if (!parse_decl(&idaTypeInfo, &parsedName, nullptr, ss.str().c_str(), PT_TYP | PT_SIL))
 		{
 			return std::nullopt;
 		}
