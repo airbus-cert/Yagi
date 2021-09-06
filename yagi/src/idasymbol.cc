@@ -179,10 +179,10 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::optional<std::string> IdaFunctionSymbolInfo::findRegVar(const std::string& name)
+	std::optional<std::string> IdaFunctionSymbolInfo::findRegVar(uint64_t pc)
 	{
 		std::stringstream ss;
-		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << name;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << to_hex(pc);
 		netnode n(ss.str().c_str(), 0, true);
 		
 		qstring res;
@@ -197,10 +197,10 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	void IdaFunctionSymbolInfo::saveRegVar(const std::string& name, const std::string& value)
+	void IdaFunctionSymbolInfo::saveRegVar(uint64_t pc, const std::string& value)
 	{
 		std::stringstream ss;
-		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << name;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << to_hex(pc);
 		netnode n(ss.str().c_str(), 0, true);
 		n.set(value.c_str());
 	}

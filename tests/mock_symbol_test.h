@@ -86,7 +86,7 @@ public:
 		return nullopt;
 	}
 
-	std::optional<std::string> findRegVar(const std::string& name) override
+	std::optional<std::string> findRegVar(uint64_t pc) override
 	{
 		return nullopt;
 	}

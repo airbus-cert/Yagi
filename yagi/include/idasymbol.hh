@@ -91,8 +91,8 @@ namespace yagi
 		IdaFunctionSymbolInfo& operator=(IdaFunctionSymbolInfo&&) noexcept = default;
 
 		std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override;
-		std::optional<std::string> findRegVar(const std::string& name) override;
-		void saveRegVar(const std::string& name, const std::string& value) override;
+		std::optional<std::string> findRegVar(uint64_t pc) override;
+		void saveRegVar(uint64_t pc, const std::string& value) override;
 		void saveType(const MemoryLocation& loc, const TypeInfo& newType) override;
 		std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, uint64_t& offset) override;
 	};

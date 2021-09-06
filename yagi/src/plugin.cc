@@ -205,7 +205,7 @@ namespace yagi
 					auto name = qstring(keyword.value().c_str());
 					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
 					{
-						functionSymbolInfo.value()->saveRegVar(keyword.value(), name.c_str());
+						functionSymbolInfo.value()->saveRegVar(addr->second.pc, name.c_str());
 						_RunYagi();
 					}
 				}

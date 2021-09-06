@@ -49,6 +49,9 @@ namespace yagi
 	 */
 	int4 ActionRenameRegistryVar::apply(Funcdata& data)
 	{
+		// to handle multiple var define at the same position
+		std::map<std::string, uint64_t> localIndex;
+		
 		auto arch = static_cast<YagiArchitecture*>(data.getArch());
 		auto funcSym = arch->getSymbolDatabase().find_function(data.getAddress().getOffset());
 
@@ -56,19 +59,31 @@ namespace yagi
 		while (iter != data.getScopeLocal()->end())
 		{
 			auto sym = *iter;
-			if (sym->getAddr().getSpace()->getName() == "register")
+
+			auto high = data.findHigh(sym->getSymbol()->getName());
+			if (high != nullptr && high->getNameRepresentative() != nullptr && high->getNameRepresentative()->getDef() != nullptr)
 			{
-				auto newName = funcSym.value()->findRegVar(sym->getSymbol()->getName());
+				auto newName = funcSym.value()->findRegVar(high->getNameRepresentative()->getDef()->getAddr().getOffset());
 				if (newName.has_value())
 				{
-					auto high = data.findHigh(sym->getSymbol()->getName());
-					if (high != nullptr)
+					std::stringstream ss;
+					ss << newName.value();
+					auto index = localIndex.find(newName.value());
+					if (index == localIndex.end())
 					{
-						arch->getLogger().info("Apply registry sync var between ", sym->getSymbol()->getName(), newName.value());
-						data.getScopeLocal()->renameSymbol(high->getSymbol(), newName.value());
+						localIndex.emplace(newName.value(), 0);
 					}
+					else 
+					{
+						ss << "_" << index->second;
+						index->second++;
+					}
+
+					auto computeName = ss.str();
+					arch->getLogger().info("Apply registry sync var between ", sym->getSymbol()->getName(), computeName);
+					data.getScopeLocal()->renameSymbol(high->getSymbol(), computeName);
 				}
-			}
+			}		
 			iter++;
 		}
 		return 0;
@@ -90,7 +105,13 @@ namespace yagi
 
 			if (newType.has_value())
 			{
-				if (op->getOut() != nullptr && (op->code() == CPUI_LOAD || op->code() == CPUI_CALL || op->code() == CPUI_COPY || op->code() == CPUI_CALLIND))
+				if (op->getOut() != nullptr && 
+					(		op->code() == CPUI_LOAD
+						||	op->code() == CPUI_CALL 
+						||	op->code() == CPUI_COPY 
+						||	op->code() == CPUI_CALLIND 
+						||	op->code() == CPUI_MULTIEQUAL 
+						||	op->code() == CPUI_INDIRECT))
 				{
 					op->getOut()->updateType(static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())), true, true);
 				}
