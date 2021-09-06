@@ -233,7 +233,7 @@ namespace yagi
 						}
 					}
 				}
-				/*else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
+				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
 				{
 					qstring name;
 					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
@@ -243,14 +243,14 @@ namespace yagi
 						if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
 						{
 							auto typeInfo = IdaTypeInfoFactory().build(idaTypeInfo);
-							if (typeInfo.has_value())
+							if (typeInfo.has_value() && typeInfo.value()->getSize() == addr->second.typeSize)
 							{
-								functionSymbolInfo.value()->saveSymbolType(keyword.value(), *(typeInfo.value()), addr->second);
+								functionSymbolInfo.value()->saveType(addr->second, *(typeInfo.value()));
 								_RunYagi();
 							}
 						}
 					}
-				}*/
+				}
 			}
 			break;
 		}

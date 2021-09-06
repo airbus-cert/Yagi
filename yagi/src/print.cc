@@ -109,6 +109,7 @@ namespace yagi
 	/**********************************************************************/
 	int4 IdaEmit::beginFunction(const Funcdata* fd)
 	{
+		m_fd = (Funcdata*)fd;
 		m_symbolMap.clear();
 		return EmitPrettyPrint::beginFunction(fd);
 	}
@@ -154,19 +155,17 @@ namespace yagi
 		}
 
 		auto vnSearch = vn;
-		if (op != nullptr && op->code() == CPUI_PTRSUB)
-		{
-			vnSearch = op->getIn(1);
-		}
 
 		// handle classic variable, we put it into symbol database
 		if (vnSearch != nullptr)
 		{
+			
 			auto high = vnSearch->getHigh();
+			vnSearch = high->getNameRepresentative();
 			if (high != nullptr)
 			{
 				auto sym = high->getSymbolEntry();
-				
+
 				if (sym == nullptr && high->getSymbol() != nullptr)
 				{
 					sym = high->getSymbol()->getFirstWholeMap();
@@ -174,16 +173,32 @@ namespace yagi
 
 				if (sym != nullptr)
 				{			
-					auto space = sym->getAddr().getSpace();
+					auto defCode = vnSearch->getDef();
+					auto space = sym->getAddr().getSpace();					
 					if (space != nullptr) {
-						m_symbolMap.emplace(
-							name,
-							MemoryLocation(
-								space->getName(),
-								sym->getAddr().getOffset(),
-								sym->getAddr().getAddrSize()
-							)
-						);
+						if (defCode != nullptr)
+						{
+							m_symbolMap.emplace( 
+								sym->getSymbol()->getName(),
+								MemoryLocation(
+									space->getName(),
+									sym->getAddr().getOffset(),
+									sym->getAddr().getAddrSize(),
+									defCode->getAddr().getOffset(),
+									sym->getSymbol()->getType()->getSize()
+								)
+							);
+						}
+						else {
+							m_symbolMap.emplace(
+								sym->getSymbol()->getName(),
+								MemoryLocation(
+									space->getName(),
+									sym->getAddr().getOffset(),
+									sym->getAddr().getAddrSize()
+								)
+							);
+						}
 					}
 				}
 			}

@@ -52,6 +52,8 @@ namespace yagi
 	protected:
 		friend class EmitColorGuard;
 
+		Funcdata* m_fd;
+
 		/*!
 		 * \brief	Sympbol map
 		 */

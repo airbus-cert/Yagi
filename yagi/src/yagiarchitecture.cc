@@ -93,8 +93,14 @@ namespace yagi
 		allacts.getCurrent()->reset(data);
 		m_customAction.reset(data);
 
-		auto res = allacts.getCurrent()->perform(data);
 		
+		allacts.getCurrent()->setBreakPoint(Action::break_start, "infertypes");
+
+		auto res = allacts.getCurrent()->perform(data);
+		ActionRetypeRegistryVar("foo").perform(data);
+		allacts.getCurrent()->clearBreakPoints();
+		res = allacts.getCurrent()->perform(data);
+
 		if (res < 0)
 		{
 			return res;

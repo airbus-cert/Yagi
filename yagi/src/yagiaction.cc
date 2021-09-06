@@ -80,45 +80,23 @@ namespace yagi
 		auto arch = static_cast<YagiArchitecture*>(data.getArch());
 		auto funcSym = arch->getSymbolDatabase().find_function(data.getAddress().getOffset());
 
-		std::vector<std::string> retypeCandidate;
-		auto iter = data.getScopeLocal()->begin();
-		while (iter != data.getScopeLocal()->end())
+		auto iter = data.beginOpAll();
+		while (iter != data.endOpAll())
 		{
-			auto sym = *iter;
-			auto newType = funcSym.value()->findSymbolType(sym->getSymbol()->getName());
+			auto op = iter->second;
+			
+			uint64_t offset;
+			auto newType = funcSym.value()->findType(op->getAddr().getOffset(), offset);
+
 			if (newType.has_value())
 			{
-				retypeCandidate.push_back(sym->getSymbol()->getName());
+				if (op->getOut() != nullptr && (op->code() == CPUI_LOAD || op->code() == CPUI_CALL || op->code() == CPUI_COPY || op->code() == CPUI_CALLIND))
+				{
+					op->getOut()->updateType(static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())), true, true);
+				}
 			}
 			iter++;
 		}
-
-		for (auto candidate : retypeCandidate)
-		{
-			std::vector<Symbol*> res;
-			data.getScopeLocal()->findByName(candidate, res);
-
-			for (auto sym : res)
-			{
-				try
-				{
-					auto newType = funcSym.value()->findSymbolType(candidate);
-					auto high = data.findHigh(sym->getName());
-					if (high != nullptr)
-					{
-						data.getScopeLocal()->retypeSymbol(high->getSymbol(), static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())));
-						data.getScopeLocal()->setAttribute(high->getSymbol(), Varnode::typelock);
-						break;
-					}
-				}
-				catch (LowlevelError& e)
-				{
-					arch->getLogger().error(e.explain);
-				}
-			}
-
-		}
-		
 		return 0;
 	}
 } // end of namespace yagi

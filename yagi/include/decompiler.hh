@@ -22,14 +22,16 @@ namespace yagi
 		MemoryLocationType type;
 		uint64_t offset;
 		uint32_t addrSize;
+		uint64_t pc;
+		uint64_t typeSize;
 
-		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize, uint64_t address = 0, uint64_t hash = 0)
-			: type{ type }, offset{ offset }, addrSize{ addrSize }
+		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize, uint64_t pc = 0, uint64_t tyepSz = 0)
+			: type{ type }, offset{ offset }, addrSize{ addrSize }, pc { pc }, typeSize { tyepSz }
 		{}
 
 
-		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize, uint64_t address = 0, uint64_t hash = 0)
-			: offset{ offset }, addrSize { addrSize }
+		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize, uint64_t pc = 0, uint64_t tyepSz = 0)
+			: offset{ offset }, addrSize { addrSize }, pc{ pc }, typeSize{ tyepSz }
 		{
 			if (name == "register")
 			{

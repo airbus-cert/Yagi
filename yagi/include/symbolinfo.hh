@@ -171,9 +171,8 @@ namespace yagi
 		 */
 		virtual void saveRegVar(const std::string& name, const std::string& value) = 0;
 
-		virtual void saveSymbolType(const std::string& name, const TypeInfo& newType, const MemoryLocation& loc) = 0;
-
-		virtual std::optional<std::unique_ptr<TypeInfo>> findSymbolType(const std::string& name) = 0;
+		virtual void saveType(const MemoryLocation& loc, const TypeInfo& newType) = 0;
+		virtual std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, uint64_t& offset) = 0;
 	};
 
 	/*!
