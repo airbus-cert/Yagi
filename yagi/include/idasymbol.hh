@@ -94,7 +94,7 @@ namespace yagi
 		std::optional<std::string> findRegVar(uint64_t pc) override;
 		void saveRegVar(uint64_t pc, const std::string& value) override;
 		void saveType(const MemoryLocation& loc, const TypeInfo& newType) override;
-		std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, uint64_t& offset) override;
+		std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc) override;
 	};
 
 	/*!

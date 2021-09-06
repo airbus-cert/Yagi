@@ -212,12 +212,12 @@ namespace yagi
 		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << to_hex(loc.pc);
 		netnode n(ss.str().c_str(), 0, true);
 
-		os << newType.getName() << "|" << to_hex(loc.offset);
+		os << newType.getName();
 		n.set(os.str().c_str());
 	}
 
 	/**********************************************************************/
-	std::optional<std::unique_ptr<TypeInfo>> IdaFunctionSymbolInfo::findType(uint64_t pc, uint64_t& offset)
+	std::optional<std::unique_ptr<TypeInfo>> IdaFunctionSymbolInfo::findType(uint64_t pc)
 	{
 		std::stringstream ss;
 		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << to_hex(pc);
@@ -231,15 +231,6 @@ namespace yagi
 			return std::nullopt;
 		}
 
-		auto pb = res.find('|');
-		if (pb == qstring::npos)
-		{
-			return std::nullopt;
-		}
-
-		std::string typeName = res.substr(0, pb).c_str();
-		offset = std::stoull(res.substr(pb + 1).c_str(), nullptr, 16);
-
-		return IdaTypeInfoFactory().build_decl(typeName);
+		return IdaTypeInfoFactory().build_decl(res.c_str());
 	}
 } // end of namespace yagi

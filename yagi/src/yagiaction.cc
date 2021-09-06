@@ -49,9 +49,6 @@ namespace yagi
 	 */
 	int4 ActionRenameRegistryVar::apply(Funcdata& data)
 	{
-		// to handle multiple var define at the same position
-		std::map<std::string, uint64_t> localIndex;
-		
 		auto arch = static_cast<YagiArchitecture*>(data.getArch());
 		auto funcSym = arch->getSymbolDatabase().find_function(data.getAddress().getOffset());
 
@@ -64,24 +61,10 @@ namespace yagi
 			if (high != nullptr && high->getNameRepresentative() != nullptr && high->getNameRepresentative()->getDef() != nullptr)
 			{
 				auto newName = funcSym.value()->findRegVar(high->getNameRepresentative()->getDef()->getAddr().getOffset());
-				if (newName.has_value())
+				if (newName.has_value() && newName.value() != sym->getSymbol()->getName())
 				{
-					std::stringstream ss;
-					ss << newName.value();
-					auto index = localIndex.find(newName.value());
-					if (index == localIndex.end())
-					{
-						localIndex.emplace(newName.value(), 0);
-					}
-					else 
-					{
-						ss << "_" << index->second;
-						index->second++;
-					}
-
-					auto computeName = ss.str();
-					arch->getLogger().info("Apply registry sync var between ", sym->getSymbol()->getName(), computeName);
-					data.getScopeLocal()->renameSymbol(high->getSymbol(), computeName);
+					arch->getLogger().info("Apply registry sync var between ", sym->getSymbol()->getName(), newName.value());
+					data.getScopeLocal()->renameSymbol(high->getSymbol(), newName.value());
 				}
 			}		
 			iter++;
@@ -99,19 +82,17 @@ namespace yagi
 		while (iter != data.endOpAll())
 		{
 			auto op = iter->second;
-			
-			uint64_t offset;
-			auto newType = funcSym.value()->findType(op->getAddr().getOffset(), offset);
+			auto newType = funcSym.value()->findType(op->getAddr().getOffset());
 
 			if (newType.has_value())
 			{
-				if (op->getOut() != nullptr && 
-					(		op->code() == CPUI_LOAD
-						||	op->code() == CPUI_CALL 
-						||	op->code() == CPUI_COPY 
-						||	op->code() == CPUI_CALLIND 
-						||	op->code() == CPUI_MULTIEQUAL 
-						||	op->code() == CPUI_INDIRECT))
+				if (op->getOut() != nullptr && (		
+						op->code() == CPUI_LOAD
+					||	op->code() == CPUI_CALL 
+					||	op->code() == CPUI_COPY 
+					||	op->code() == CPUI_CALLIND 
+					||	op->code() == CPUI_MULTIEQUAL 
+					||	op->code() == CPUI_INDIRECT))
 				{
 					op->getOut()->updateType(static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())), true, true);
 				}

@@ -172,7 +172,7 @@ namespace yagi
 		virtual void saveRegVar(uint64_t pc, const std::string& value) = 0;
 
 		virtual void saveType(const MemoryLocation& loc, const TypeInfo& newType) = 0;
-		virtual std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, uint64_t& offset) = 0;
+		virtual std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc) = 0;
 	};
 
 	/*!

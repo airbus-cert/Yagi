@@ -97,7 +97,7 @@ namespace yagi
 		allacts.getCurrent()->setBreakPoint(Action::break_start, "infertypes");
 
 		auto res = allacts.getCurrent()->perform(data);
-		ActionRetypeRegistryVar("foo").perform(data);
+		ActionRetypeRegistryVar("yagiassignlocaltype").perform(data);
 		allacts.getCurrent()->clearBreakPoints();
 		res = allacts.getCurrent()->perform(data);
 
