@@ -116,6 +116,7 @@ namespace yagi
 				proxy->setAttribute(symbol, Varnode::readonly);
 			}
 
+			static_cast<YagiArchitecture*>(glb)->getLogger().info("Found symbol ", name, std::string(" at "), to_hex(addr.getOffset()));
 			return proxy->addMapPoint(symbol, addr, usepoint);
 		}
 

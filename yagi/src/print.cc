@@ -156,15 +156,14 @@ namespace yagi
 
 		auto vnSearch = vn;
 
-		if (op != nullptr && op->code() == CPUI_PTRSUB)
+		/*if (op != nullptr && op->code() == CPUI_PTRSUB)
 		{
 			vnSearch = op->getOut();
-		}
+		}*/
 
 		// handle classic variable, we put it into symbol database
 		if (vnSearch != nullptr)
 		{
-			
 			auto high = vnSearch->getHigh();
 			vnSearch = high->getNameRepresentative();
 			if (high != nullptr)

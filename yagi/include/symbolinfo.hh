@@ -163,16 +163,14 @@ namespace yagi
 		/*!
 		 * \brief	try to find a registry name
 		 */
-		virtual std::optional<std::string> findRegVar(uint64_t pc) = 0;
+		virtual std::optional<std::string> findName(uint64_t pc, const std::string& space) = 0;
 
 		/*!
-		 * \brief	Save a registry variable name
-		 *			It will be used by ActionRenameRegistryVar to rename variable
 		 */
-		virtual void saveRegVar(uint64_t pc, const std::string& value) = 0;
+		virtual void saveName(uint64_t pc, const std::string& value, const std::string& space) = 0;
 
 		virtual void saveType(const MemoryLocation& loc, const TypeInfo& newType) = 0;
-		virtual std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc) = 0;
+		virtual std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, const std::string& from, uint64_t& offset) = 0;
 	};
 
 	/*!

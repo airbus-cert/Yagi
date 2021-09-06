@@ -16,6 +16,7 @@
 #include "exception.hh"
 #include "idatype.hh"
 #include "idasymbol.hh"
+#include "idalogger.hh"
 #include <kernwin.hpp>
 #include <loader.hpp>
 #include <sstream>
@@ -130,7 +131,7 @@ namespace yagi
 			start--;
 		}
 
-		if (start >= end)
+		if (start + 2 >= end)
 		{
 			return std::nullopt;
 		}
@@ -205,7 +206,21 @@ namespace yagi
 					auto name = qstring(keyword.value().c_str());
 					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
 					{
-						functionSymbolInfo.value()->saveRegVar(addr->second.pc, name.c_str());
+						functionSymbolInfo.value()->saveName(addr->second.pc, "register", name.c_str());
+						_RunYagi();
+					}
+				}
+				else if (addr->second.type == MemoryLocation::MemoryLocationType::Stack)
+				{
+					if (!functionSymbolInfo.has_value())
+					{
+						return false;
+					}
+
+					auto name = qstring(keyword.value().c_str());
+					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
+					{
+						functionSymbolInfo.value()->saveName(addr->second.offset, "stack", name.c_str());
 						_RunYagi();
 					}
 				}
@@ -233,7 +248,8 @@ namespace yagi
 						}
 					}
 				}
-				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
+				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register
+					|| addr->second.type == MemoryLocation::MemoryLocationType::Stack)
 				{
 					qstring name;
 					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
@@ -247,6 +263,10 @@ namespace yagi
 							{
 								functionSymbolInfo.value()->saveType(addr->second, *(typeInfo.value()));
 								_RunYagi();
+							}
+							else
+							{
+								IdaLogger().error("Unable to retype : type must have the same size");
 							}
 						}
 					}

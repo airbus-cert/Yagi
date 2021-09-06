@@ -20,6 +20,7 @@ namespace yagi
 		};
 
 		MemoryLocationType type;
+
 		uint64_t offset;
 		uint32_t addrSize;
 		uint64_t pc;
@@ -33,7 +34,7 @@ namespace yagi
 		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize, uint64_t pc = 0, uint64_t tyepSz = 0)
 			: offset{ offset }, addrSize { addrSize }, pc{ pc }, typeSize{ tyepSz }
 		{
-			if (name == "register")
+			if (name == "register" || name == "unique")
 			{
 				type = MemoryLocationType::Register;
 			}
@@ -44,6 +45,23 @@ namespace yagi
 			else {
 				type = MemoryLocationType::RAM;
 			}
+		}
+		static std::string to_string(MemoryLocationType type)
+		{
+			switch (type)
+			{
+
+			case yagi::MemoryLocation::MemoryLocationType::RAM:
+				return "ram";
+			case yagi::MemoryLocation::MemoryLocationType::Register:
+				return "register";
+			case yagi::MemoryLocation::MemoryLocationType::Stack:
+				return "stack";
+			default:
+				break;
+			}
+
+			return "ram";
 		}
 	};
 

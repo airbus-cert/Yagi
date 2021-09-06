@@ -40,9 +40,16 @@ namespace yagi
 		std::unique_ptr<TypeInfoFactory> m_type;
 
 		/*!
-		 * \brief	custom action list made by Yagi dev apply after all universal action
+		 * \brief	Action grou^p performed after all actions
+		 *			This include all renaming process
 		 */
-		ActionGroup m_customAction;
+		ActionGroup m_renameAction;
+
+		/*!
+		 * \brief	List of action performed just after the start action
+		 *			Is to update local scope for var retyping
+		 */
+		ActionGroup m_retypeAction;
 
 		/*!
 		 *	\brief	allow object that have access to the core

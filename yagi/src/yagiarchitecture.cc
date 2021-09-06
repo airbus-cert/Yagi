@@ -22,7 +22,8 @@ namespace yagi
 		m_symbols{ std::move(symbols) }, 
 		m_type{ std::move(type) },
 		m_defaultCC { defaultCC },
-		m_customAction(Action::rule_onceperfunc, "yagiactiongroup")
+		m_renameAction(Action::rule_onceperfunc, "yagirename"),
+		m_retypeAction(Action::rule_onceperfunc, "yagiretype")
 	{
 	}
 
@@ -83,21 +84,28 @@ namespace yagi
 	void YagiArchitecture::buildAction(DocumentStorage& store)
 	{
 		SleighArchitecture::buildAction(store);
-		m_customAction.addAction(new ActionRenameStackVar("yagistackvarrename"));
-		m_customAction.addAction(new ActionRenameRegistryVar("yagiregrename"));
+		m_renameAction.addAction(new ActionRenameStackVar("yagi"));
+		m_renameAction.addAction(new ActionSyncStackVar("yagi"));
+		m_renameAction.addAction(new ActionRenameRegistryVar("yagi"));
+
+		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "register"));
+		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "stack"));
 	}
 
 	/**********************************************************************/
 	int4 YagiArchitecture::performActions(Funcdata& data)
 	{
 		allacts.getCurrent()->reset(data);
-		m_customAction.reset(data);
+		m_renameAction.reset(data);
+		m_retypeAction.reset(data);
 
-		
-		allacts.getCurrent()->setBreakPoint(Action::break_start, "infertypes");
+		// Break just after start action
+		// to have the CFG built
+		allacts.getCurrent()->setBreakPoint(Action::break_start, "constbase");
 
 		auto res = allacts.getCurrent()->perform(data);
-		ActionRetypeRegistryVar("yagiassignlocaltype").perform(data);
+		m_retypeAction.perform(data);
+
 		allacts.getCurrent()->clearBreakPoints();
 		res = allacts.getCurrent()->perform(data);
 
@@ -106,7 +114,7 @@ namespace yagi
 			return res;
 		}
 
-		return res + m_customAction.perform(data);
+		return res + m_renameAction.perform(data);
 	}
 
 	/**********************************************************************/
