@@ -66,7 +66,11 @@ TEST(TestDecompilationPayload_x86_64, DecompileWithoutType) {
 			return std::nullopt; 
 		}, 
 		[](uint64_t func_addr) -> std::optional<std::unique_ptr<yagi::FunctionSymbolInfo>> {
-			return std::nullopt;
+			return std::make_unique<MockFunctionSymbolInfo>(
+				std::make_unique<MockSymbolInfo>(
+					FUNC_ADDR, FUNC_NAME, FUNC_SIZE, true, false, false, false
+					)
+				);
 		}),
 		std::make_unique<MockTypeInfoFactory>([](uint64_t) { return std::nullopt; }, [](const std::string&) { return std::nullopt; }),
 		"__fastcall"
@@ -79,7 +83,7 @@ TEST(TestDecompilationPayload_x86_64, DecompileWithoutType) {
 	auto func = scope->findFunction(
 		Address(arch->getDefaultCodeSpace(), FUNC_ADDR)
 	);
-	arch->allacts.getCurrent()->perform(*func);
+	arch->performActions(*func);
 
 	arch->setPrintLanguage("c-language");
 
@@ -113,7 +117,11 @@ TEST(TestDecompilationPayload_x86_64, DecompileWithFunctionType) {
 		return std::nullopt;
 		},
 		[](uint64_t func_addr) -> std::optional<std::unique_ptr<yagi::FunctionSymbolInfo>> {
-			return std::nullopt;
+			return std::make_unique<MockFunctionSymbolInfo>(
+				std::make_unique<MockSymbolInfo>(
+					FUNC_ADDR, FUNC_NAME, FUNC_SIZE, true, false, false, false
+					)
+				);
 		}),
 		std::make_unique<MockTypeInfoFactory>(
 			[](uint64_t ea)  -> std::optional<std::unique_ptr<yagi::TypeInfo>> {
@@ -148,7 +156,7 @@ TEST(TestDecompilationPayload_x86_64, DecompileWithFunctionType) {
 	auto func = scope->findFunction(
 		Address(arch->getDefaultCodeSpace(), FUNC_ADDR)
 	);
-	arch->allacts.getCurrent()->perform(*func);
+	arch->performActions(*func);
 
 	arch->setPrintLanguage("c-language");
 

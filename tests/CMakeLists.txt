@@ -35,6 +35,7 @@ add_executable(
   MIPS_payload_32bits_test.cc
   x86_payload_64bits_gcc_test.cc
   Sparc_payload_32bits_test.cc
+  x86_payload_32bits_test_local_var.cc
   ${yagi_TEST_INCLUDE}
 )
 

@@ -90,10 +90,49 @@ namespace yagi
 		IdaFunctionSymbolInfo(IdaFunctionSymbolInfo&&) noexcept = default;
 		IdaFunctionSymbolInfo& operator=(IdaFunctionSymbolInfo&&) noexcept = default;
 
+		/*!
+		 * \brief	Try to find a stored var definition at stack offset
+		 *			Typically use to search in frame
+		 * \param	offset		offset in the stack frame
+		 * \param	addrSize	size of address in stack space
+		 * \return	if found the name of the stack var
+		 */
 		std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override;
+
+		/*!
+		 *	\brief	Find a custom stored name use at a particular address for this space
+		 *			use to staore registry or stack var name
+		 * \param	pc		use address
+		 * \param	space	name of memory space
+		 * \return	if found the name of var
+		 */
 		std::optional<std::string> findName(uint64_t pc, const std::string& space) override;
+
+		/*!
+		 * \brief	Save a var name use at pc for the space memory
+		 *			use to save local stack or registry var name
+		 * \param	pc		use address
+		 * \param	value	new name
+		 * \param	space	name of the memory space where var come from
+		 */
 		void saveName(uint64_t pc, const std::string& value, const std::string& space) override;
+
+		/*!
+		 * \brief	Save a type ref use at memory location
+		 *			Use to retype local (registry or stack) variables
+		 * \param	loc		memory location
+		 * \param	newType	new type associated to memory 
+		 */
 		void saveType(const MemoryLocation& loc, const TypeInfo& newType) override;
+
+		/*!
+		 * \brief	retrieve a local type use at pc address from a particular offset
+		 *			Use to store local def into dedicated netnode
+		 * \param	pc		use address
+		 * \param	from	from wich space
+		 * \param	offset	offset	in address space [out]
+		 * \return	if found the offset into memory space and the linked type
+		 */
 		std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, const std::string& from, uint64_t& offset) override;
 	};
 

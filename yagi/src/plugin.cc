@@ -299,6 +299,7 @@ namespace yagi
 
 		if (addr == code->symbolAddress.end())
 		{
+			IdaLogger().info("Symbol not found : ", keyword.value());
 			return false;
 		}
 

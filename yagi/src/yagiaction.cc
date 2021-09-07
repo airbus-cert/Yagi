@@ -29,14 +29,14 @@ namespace yagi
 					auto high = data.findHigh(sym->getSymbol()->getName());
 					if (high != nullptr)
 					{
+						arch->getLogger().info("Apply stack name override from frame ", high->getSymbol()->getName(), name.value());
 						data.getScopeLocal()->renameSymbol(high->getSymbol(), name.value());
 					}
 					else
 					{
+						arch->getLogger().info("Apply stack name override from frame ", sym->getSymbol()->getName(), name.value());
 						data.getScopeLocal()->renameSymbol(sym->getSymbol(), name.value());
 					}
-					arch->getLogger().info("Apply stack sync var between ", sym->getSymbol()->getName(), name.value());
-
 				}
 			}
 			iter++;

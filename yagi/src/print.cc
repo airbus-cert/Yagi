@@ -156,10 +156,10 @@ namespace yagi
 
 		auto vnSearch = vn;
 
-		/*if (op != nullptr && op->code() == CPUI_PTRSUB)
+		if (vnSearch == nullptr && op != nullptr && op->code() == CPUI_PTRSUB)
 		{
-			vnSearch = op->getOut();
-		}*/
+			vnSearch = op->getIn(1);
+		}
 
 		// handle classic variable, we put it into symbol database
 		if (vnSearch != nullptr)

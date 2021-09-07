@@ -161,15 +161,39 @@ namespace yagi
 		virtual std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) = 0;
 
 		/*!
-		 * \brief	try to find a registry name
+		 *	\brief	Find a custom stored name use at a particular address for this space
+		 *			use to store registry or stack var name
+		 * \param	pc		use address
+		 * \param	space	name of memory space
+		 * \return	if found the name of var
 		 */
 		virtual std::optional<std::string> findName(uint64_t pc, const std::string& space) = 0;
 
 		/*!
+		 * \brief	Save a var name use at pc for the space memory
+		 *			use to save local stack or registry var name
+		 * \param	pc		use address
+		 * \param	value	new name
+		 * \param	space	name of the memory space where var come from
 		 */
 		virtual void saveName(uint64_t pc, const std::string& value, const std::string& space) = 0;
 
+		/*!
+		 * \brief	Save a type ref use at memory location
+		 *			Use to retype local (registry or stack) variables
+		 * \param	loc		memory location
+		 * \param	newType	new type associated to memory
+		 */
 		virtual void saveType(const MemoryLocation& loc, const TypeInfo& newType) = 0;
+
+		/*!
+		 * \brief	retrieve a local type use at pc address from a particular offset
+		 *			Use to store local def into dedicated netnode
+		 * \param	pc		use address
+		 * \param	from	from wich space
+		 * \param	offset	offset	in address space [out]
+		 * \return	if found the offset into memory space and the linked type
+		 */
 		virtual std::optional<std::unique_ptr<TypeInfo>> findType(uint64_t pc, const std::string& from, uint64_t& offset) = 0;
 	};
 

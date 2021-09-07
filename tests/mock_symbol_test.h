@@ -2,6 +2,8 @@
 #define __YAGI_MOCK_SYMBOL_TEST__
 
 #include "symbolinfo.hh"
+#include "mock_type_test.h"
+#include "base.hh"
 #include <functional>
 #include <optional>
 #include <memory>
@@ -76,6 +78,9 @@ public:
 class MockFunctionSymbolInfo : public yagi::FunctionSymbolInfo
 {
 public:
+	std::map<std::string, std::string> m_name;
+	std::map<std::string, MockTypeInfo> m_type;
+
 	explicit MockFunctionSymbolInfo(std::unique_ptr<yagi::SymbolInfo> symbol)
 		: yagi::FunctionSymbolInfo{ std::move(symbol) }
 	{
@@ -83,12 +88,48 @@ public:
 
 	std::optional<std::string> findStackVar(uint64_t offset, uint32_t addrSize) override
 	{
-		return nullopt;
+		return std::nullopt;
 	}
 
 	std::optional<std::string> findName(uint64_t pc, const std::string& space) override
 	{
-		return nullopt;
+		std::stringstream ss;
+		ss << yagi::to_hex(pc) << "." << space;
+
+		auto iter = m_name.find(ss.str());
+		if (iter == m_name.end())
+		{
+			return std::nullopt;
+		}
+		return iter->second;
+	}
+
+	void saveName(uint64_t pc, const std::string& value, const std::string& space)  override
+	{
+		std::stringstream ss;
+		ss << yagi::to_hex(pc) << "." << space;
+		m_name.emplace(ss.str(), value);
+	}
+
+	void saveType(const yagi::MemoryLocation& loc, const yagi::TypeInfo& newType) override
+	{
+		std::stringstream ss;
+		ss << yagi::to_hex(loc.pc) << "." << yagi::MemoryLocation::to_string(loc.type);
+		m_type .emplace(ss.str(), MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()));
+	}
+
+	std::optional<std::unique_ptr<yagi::TypeInfo>> findType(uint64_t pc, const std::string& from, uint64_t& offset) override
+	{
+		std::stringstream ss;
+		ss << yagi::to_hex(pc) << "." << from;
+
+		auto iter = m_type.find(ss.str());
+		if (iter == m_type.end())
+		{
+			return std::nullopt;
+		}
+		offset = 0;
+		return std::make_unique<MockTypeInfo>(iter->second);
 	}
 };
 

@@ -19,11 +19,29 @@ namespace yagi
 			Stack
 		};
 
+		/*!
+		 * \brief	type of memory 
+		 */
 		MemoryLocationType type;
 
+		/*!
+		 * \brief	offset in memory type range 
+		 */
 		uint64_t offset;
+
+		/*!
+		 * \brief	address size in the memory type
+		 */
 		uint32_t addrSize;
+
+		/*!
+		 * \brief	define memory access address (from RAM) 
+		 */
 		uint64_t pc;
+
+		/*!
+		 * \brief	if there is type, the associated tytpe size
+		 */
 		uint64_t typeSize;
 
 		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize, uint64_t pc = 0, uint64_t tyepSz = 0)
@@ -46,6 +64,12 @@ namespace yagi
 				type = MemoryLocationType::RAM;
 			}
 		}
+
+		/*!
+		 * \brief	simple type to string
+		 * \param	type
+		 * \retuen	string associated to type
+		 */
 		static std::string to_string(MemoryLocationType type)
 		{
 			switch (type)
