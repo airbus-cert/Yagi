@@ -5,7 +5,7 @@ Yet Another Ghidra Integration for IDA
 
 `yagi` intend to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler part to both IDA pro and IDA Freeware.
 
-![Exemple of Yagi](.img/yagi.wbem)
+![Exemple of Yagi](.img/yagi.webm)
 
 You can download installer for Windows and Linux version [here](https://github.com/airbus-cert/Yagi/releases), press F7 and enjoy!
 
