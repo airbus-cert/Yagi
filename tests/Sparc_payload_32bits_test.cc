@@ -64,5 +64,5 @@ TEST(TestDecompilationPayload_sparc_32, DecompileWithoutType) {
 	//print as C
 	arch->print->docFunction(func);
 	
-	ASSERT_STREQ(ss.str().c_str(), "\n__uint32 test(__uint32 param_1)\n\n{\n  if (unk_0xaaac4f4a != 0) {\n    unk_0xaaac4f4a = 0;\n    func_0xaaa9a2ca();\n  }\n  if ((__uint8 *)0xaaac44e8 < unk_0xaaac035a) {\n    func_0xaaaaaa4a();\n  }\n  *unk_0xaaac035a = (char)param_1;\n  unk_0xaaac035a = unk_0xaaac035a + 1;\n  unk_0xaaac4f52 = 0;\n  return param_1;\n}\n");
+	ASSERT_STREQ(ss.str().c_str(), "\n/* WARNING: Removing unreachable block (ram,0x000111b8) */\n/* WARNING: Removing unreachable block (ram,0x000111a8) */\n/* WARNING: Removing unreachable block (ram,0x000111b0) */\n\n__uint32 test(__uint32 param_1)\n\n{\n  func_0x000227dc(param_1);\n  func_0x000227c4(1);\n  return param_1;\n}\n");
 }
