@@ -34,7 +34,10 @@ The list of architectures that are currently supported :
 
 It's really easy to add one if it's supported by Ghidra, so just open an issue, and we will try to do our best!
 
-It allows you to rename retype any global or local symbol. Changes are persistent.
+It allows you to edit :
+* Global Symbol like function prototype, global variable ...
+* Local stack variables name and type
+* Local regitry variables name and type
 
 ## Build
 
