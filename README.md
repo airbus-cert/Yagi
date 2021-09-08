@@ -21,7 +21,6 @@ Here is the list of architectures that Yagi can decompile at the moment:
 |powerpc|✔️|
 |mips|✔️|
 |sparc|✔️|
-|arm|✔️|
 |cp1600|❌|
 |cr16|❌|
 |avr8|❌|
@@ -157,3 +156,6 @@ ctest -VV
 * Add rules to handle end function computation on AARCH64
 
 ## Credits and references
+
+Thanks [Ghidra](https://ghidra-sre.org/) development team to open sources this master piece of software.
+Thanks [Hex-Ray](https://hex-rays.com/) teams to built a very extensible software
