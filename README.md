@@ -6,7 +6,7 @@ Yet Another Ghidra Integration for IDA
 
 `Yagi` intends to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler part into both IDA pro and IDA Freeware.
 
-![Exemple of Yagi](.img/yagi.gif)
+![Example of Yagi](.img/yagi.gif)
 
 You can download installers for Windows and Linux versions [here](https://github.com/airbus-cert/Yagi/releases), then press F7 and enjoy!
 
@@ -38,14 +38,14 @@ It's easy to add one if it's supported by Ghidra. Just open an issue, and we wil
 It allows you to edit the following items:
 * Global Symbol like function prototype, global variable, etc.
 * Local stack variables name and type
-* Local regitry variables name and type
+* Local registry variables name and type
 
 ## Build
 
 As `Yagi` is built using git `submodules` to handle Ghidra dependencies, you will first need to do a *recursive* clone:
 
 ```
-git clone https://github.cert.corp/CERT/yagi --recursive
+git clone https://github.com/airbus-cert/Yagi --recursive
 ```
 
 ### For Windows
@@ -54,7 +54,7 @@ git clone https://github.cert.corp/CERT/yagi --recursive
 
 As Ghidra uses `bison` and `flex` to parse  the `sleigh` grammar, we need first to install build dependencies from [here](https://github.com/lexxmark/winflexbison/releases/)
 
-You also need the `IDA` SDK associated with you version of IDA.
+You also need the `IDA` SDK associated with your version of IDA.
 
 #### Cmake
 
@@ -76,7 +76,7 @@ cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER]
 cmake --build . --target package --config release
 ```
 
-Then a new `yagi-1.0.0-win64.msi` will be generated and will install all dependencies.
+Then a new `yagi-1.0.0-win64.msi` will be generated. It will contain all the necessary dependencies to install the plugin.
 
 #### Development
 
@@ -152,7 +152,7 @@ ctest -VV
 ## TODO
 
 * Handle enum types
-* Add rules to handle CFG on windows
+* Add rules to handle CFG on Windows
 * Add rules to handle T9 for MIPS
 * Add rules to handle end function computation on AARCH64
 
