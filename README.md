@@ -47,6 +47,7 @@ It allows you to edit the following items:
 |Cross References| :keyboard: **X** |
 |Navigate| :computer_mouse: **Double Click** on keyword |
 
+:floppy_disk: **Changes are save into IDA database** :floppy_disk:
 
 ## Build
 
