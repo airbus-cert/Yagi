@@ -4,7 +4,7 @@ Yet Another Ghidra Integration for IDA
 
 ## Overview
 
-Yagi intends to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler into both IDA pro and IDA Freeware.
+Yagi intends to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler into both [IDA pro](https://hex-rays.com/ida-pro/) and [IDA Free](https://hex-rays.com/ida-free/).
 
 ![Example of Yagi](.img/yagi.gif)
 
@@ -38,6 +38,14 @@ It allows you to edit the following items:
 * Global Symbol like function prototype, global variable, etc.
 * Local stack variables name and type
 * Local registry variables name and type
+
+|Key|Interact|
+|----------|-----------|
+|Decompile| :computer_mouse: Place cursor on function :keyboard: **F7** |
+|Edit Type| :keyboard: **Y** |
+|Edit Name| :keyboard: **N** |
+|Navigate| :computer_mouse: **Double Click** on keyword |
+
 
 ## Build
 
