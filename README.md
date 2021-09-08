@@ -158,4 +158,5 @@ ctest -VV
 ## Credits and references
 
 Thanks [Ghidra](https://ghidra-sre.org/) development team to open sources this master piece of software.
-Thanks [Hex-Ray](https://hex-rays.com/) teams to built a very extensible software
+
+Thanks [Hex-Ray](https://hex-rays.com/) teams to built a very extensible software.
