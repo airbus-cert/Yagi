@@ -44,6 +44,7 @@ It allows you to edit the following items:
 |Decompile| :computer_mouse: Place cursor on function :keyboard: **F7** |
 |Edit Type| :keyboard: **Y** |
 |Edit Name| :keyboard: **N** |
+|Cross References| :keyboard: **X** |
 |Navigate| :computer_mouse: **Double Click** on keyword |
 
 
