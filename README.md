@@ -1,15 +1,16 @@
-# yagi
+# Yagi
+
 Yet Another Ghidra Integration for IDA
 
 ## Overview
 
-`yagi` intend to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler part to both IDA pro and IDA Freeware.
+`Yagi` intends to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler part into both IDA pro and IDA Freeware.
 
 ![Exemple of Yagi](.img/yagi.gif)
 
-You can download installer for Windows and Linux version [here](https://github.com/airbus-cert/Yagi/releases), press F7 and enjoy!
+You can download installers for Windows and Linux versions [here](https://github.com/airbus-cert/Yagi/releases), then press F7 and enjoy!
 
-The list of architectures that are currently supported :
+Here is the list of architectures that are currently supported:
 
 |Arch Names|Yagi|
 |----------|-----------|
@@ -32,16 +33,17 @@ The list of architectures that are currently supported :
 |System Z|❌|
 |xCore|❌|
 
-It's really easy to add one if it's supported by Ghidra, so just open an issue, and we will try to do our best!
+It's easy to add one if it's supported by Ghidra. Just open an issue, and we will do our best!
 
-It allows you to edit :
-* Global Symbol like function prototype, global variable ...
+It allows you to edit the following items:
+* Global Symbol like function prototype, global variable, etc.
 * Local stack variables name and type
 * Local regitry variables name and type
 
 ## Build
 
-As `Yagi` is built using git `submodules` to handle `ghidra` dependencies:
+As `Yagi` is built using git `submodules` to handle Ghidra dependencies, you will first need to do a *recursive* clone:
+
 ```
 git clone https://github.cert.corp/CERT/yagi --recursive
 ```
@@ -50,20 +52,21 @@ git clone https://github.cert.corp/CERT/yagi --recursive
 
 #### Install Dependencies
 
-As ghidra use `bison` and `flex` to parse  the `sleigh` grammar, we need first to install build dependencies from [here](https://github.com/lexxmark/winflexbison/releases/tag/v2.5.24)
+As Ghidra uses `bison` and `flex` to parse  the `sleigh` grammar, we need first to install build dependencies from [here](https://github.com/lexxmark/winflexbison/releases/)
 
 You also need the `IDA` SDK associated with you version of IDA.
 
 #### Cmake
 
-`yagi` build system is based on cmake, you need to install from [here](https://github.com/Kitware/CMake/releases/download/v3.20.4/cmake-3.20.4-windows-x86_64.msi).
+`Yagi`'s build system is based on cmake; you can find an MSI package [here](https://github.com/Kitware/CMake/releases/).
 
-You need at least a visual studio compiler with c++ tollchain.
+You need at least a Visual Studio compiler with C++ toolchain.
 
 #### Production
 
-To generate a Wix installer, you need to install [WiX](http://wixtoolset.org/releases/v3.11.1/stable) before
-Then `cmake` magic happen:
+To generate a Wix installer, you need to install [WiX](https://github.com/wixtoolset/wix3/releases) before.
+
+Then let the `cmake` magic happen:
 
 ```
 git clone https://github.com/airbus-cert/Yagi --recursive
@@ -77,7 +80,7 @@ Then a new `yagi-1.0.0-win64.msi` will be generated and will install all depende
 
 #### Development
 
-To generate a dev environment you need to generate the visual studio solution :
+To generate a dev environment you need to generate the Visual Studio solution:
 
 ```
 git clone https://github.com/airbus-cert/Yagi --recursive
@@ -86,7 +89,7 @@ cd build_yagi
 cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER] -DBUILD_TESTS=ON
 ```
 
-`PATH_TO_IDA_SDK_ROOT_FOLDER` represent the root path of the decompressed archive provided by Hex-Ray. 
+`PATH_TO_IDA_SDK_ROOT_FOLDER` represents the root path of the decompressed archive provided by Hex-Rays.
 
 To launch unit tests, just use `ctest` installed with `cmake`:
 
@@ -99,7 +102,7 @@ ctest -VV
 
 #### Install Dependencies
 
-As ghidra use `bison` and `flex` to parse  the `sleigh` grammar, and `yagi` is built using `cmake` and `c++` :
+As Ghidra uses `bison` and `flex` to parse  the `sleigh` grammar and `Yagi` is built using `cmake` and `c++`, you will need the following:
 
 ```
 apt install cmake c++ git flex bison yacc
@@ -117,9 +120,7 @@ cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER]
 cmake --build . --target package --config release
 ```
 
-This will produce `yagi-1.0.0-Linux.sh` script:
-
-Then you've just have to launch it :
+This will produce a `yagi-1.0.0-Linux.sh` script. Then you just have to launch it:
 
 ```
 ./yagi-1.0.0-Linux.sh --prefix=[PATH_TO_IDA_INSTALL_FOLDER]
@@ -131,7 +132,7 @@ Enjoy!
 
 #### Development
 
-To generate a dev environment you need to generate the Makefile :
+To generate a dev environment you need to generate the Makefile:
 
 ```
 git clone https://github.com/airbus-cert/Yagi --recursive
@@ -141,7 +142,7 @@ cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER] -DBUILD_TESTS=O
 make
 ```
 
-To launch unit tests, just use `ctest`, installed with `cmake`:
+To launch unit tests, just use `ctest` installed with `cmake`:
 
 ```
 cd tests
@@ -156,4 +157,3 @@ ctest -VV
 * Add rules to handle end function computation on AARCH64
 
 ## Credits and references
-
