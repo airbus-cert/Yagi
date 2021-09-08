@@ -4,13 +4,13 @@ Yet Another Ghidra Integration for IDA
 
 ## Overview
 
-`Yagi` intends to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler part into both IDA pro and IDA Freeware.
+Yagi intends to include the wonderful [Ghidra](https://github.com/NationalSecurityAgency/ghidra) decompiler into both IDA pro and IDA Freeware.
 
 ![Example of Yagi](.img/yagi.gif)
 
 You can download installers for Windows and Linux versions [here](https://github.com/airbus-cert/Yagi/releases), then press F7 and enjoy!
 
-Here is the list of architectures that are currently supported:
+Here is the list of architectures that Yagi can decompile at the moment:
 
 |Arch Names|Yagi|
 |----------|-----------|
@@ -58,7 +58,7 @@ You also need the `IDA` SDK associated with your version of IDA.
 
 #### Cmake
 
-`Yagi`'s build system is based on cmake; you can find an MSI package [here](https://github.com/Kitware/CMake/releases/).
+Yagi's build system is based on cmake; you can find an MSI package [here](https://github.com/Kitware/CMake/releases/).
 
 You need at least a Visual Studio compiler with C++ toolchain.
 
@@ -66,7 +66,7 @@ You need at least a Visual Studio compiler with C++ toolchain.
 
 To generate a Wix installer, you need to install [WiX](https://github.com/wixtoolset/wix3/releases) before.
 
-Then let the `cmake` magic happen:
+Then, let the `cmake` magic happen:
 
 ```
 git clone https://github.com/airbus-cert/Yagi --recursive
@@ -76,11 +76,11 @@ cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER]
 cmake --build . --target package --config release
 ```
 
-Then a new `yagi-1.0.0-win64.msi` will be generated. It will contain all the necessary dependencies to install the plugin.
+A new `yagi-1.0.0-win64.msi` will be generated. It will contain all the necessary dependencies to install the plugin.
 
 #### Development
 
-To generate a dev environment you need to generate the Visual Studio solution:
+To create a dev environment you need to generate the Visual Studio solution:
 
 ```
 git clone https://github.com/airbus-cert/Yagi --recursive
@@ -102,7 +102,7 @@ ctest -VV
 
 #### Install Dependencies
 
-As Ghidra uses `bison` and `flex` to parse  the `sleigh` grammar and `Yagi` is built using `cmake` and `c++`, you will need the following:
+As Ghidra uses `bison` and `flex` to parse  the `sleigh` grammar and Yagi is built using Cmake and C++, you will need the following:
 
 ```
 apt install cmake c++ git flex bison yacc
