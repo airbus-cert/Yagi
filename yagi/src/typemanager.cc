@@ -16,13 +16,6 @@ namespace yagi
 	/**********************************************************************/
 	Datatype* TypeManager::findById(const string& n, uint8 id)
 	{
-		// find in cache
-		auto result = TypeFactory::findById(n, id);
-		if (result != nullptr)
-		{
-			return result;
-		}
-
 		auto type = m_archi->getTypeInfoFactory().build(n);
 		
 		if (!type.has_value())
