@@ -118,6 +118,11 @@ public:
 		m_type .emplace(ss.str(), MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()));
 	}
 
+	bool clearType(const yagi::MemoryLocation& loc)
+	{
+		return true;
+	}
+
 	std::optional<std::unique_ptr<yagi::TypeInfo>> findType(uint64_t pc, const std::string& from, uint64_t& offset) override
 	{
 		std::stringstream ss;

@@ -217,6 +217,15 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	bool IdaFunctionSymbolInfo::clearType(const MemoryLocation& loc)
+	{
+		std::stringstream ss, os;
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << MemoryLocation::to_string(loc.type) << "." << to_hex(loc.pc);
+		netnode n(ss.str().c_str(), 0, true);
+		return n.delvalue() == 1;
+	}
+
+	/**********************************************************************/
 	std::optional<std::unique_ptr<TypeInfo>> IdaFunctionSymbolInfo::findType(uint64_t pc, const std::string& from, uint64_t& offset)
 	{
 		std::stringstream ss;

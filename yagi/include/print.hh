@@ -52,13 +52,6 @@ namespace yagi
 	protected:
 		friend class EmitColorGuard;
 
-		Funcdata* m_fd;
-
-		/*!
-		 * \brief	Sympbol map
-		 */
-		std::map<std::string, MemoryLocation> m_symbolMap;
-
 		/*!
 		 * \brief	start a color tag for each kind of token
 		 */

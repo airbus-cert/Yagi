@@ -187,6 +187,13 @@ namespace yagi
 		virtual void saveType(const MemoryLocation& loc, const TypeInfo& newType) = 0;
 
 		/*!
+		 * \brief	Clear type information linked to memory location
+		 * \param	loc		memory location where a type information is set
+		 * \return	true if there is something to clear
+		 */
+		virtual bool clearType(const MemoryLocation& loc) = 0;
+
+		/*!
 		 * \brief	retrieve a local type use at pc address from a particular offset
 		 *			Use to store local def into dedicated netnode
 		 * \param	pc		use address

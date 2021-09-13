@@ -273,6 +273,17 @@ namespace yagi
 				}
 			}
 			break;
+		case 'C':
+			if (addr->second.type == MemoryLocation::MemoryLocationType::Register
+				|| addr->second.type == MemoryLocation::MemoryLocationType::Stack)
+			{
+				if (functionSymbolInfo.value()->clearType(addr->second))
+				{
+					IdaLogger().info("Clear type for symbol : ", addr->first);
+					_RunYagi();
+				}
+			}
+			break;
 		}
 
 		return true;

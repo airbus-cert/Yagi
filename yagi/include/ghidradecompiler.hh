@@ -10,6 +10,8 @@
 #include "logger.hh"
 #include "loader.hh"
 
+class Funcdata;
+
 namespace yagi 
 {
 
@@ -25,6 +27,29 @@ namespace yagi
 		 *	\brief	pointer to the main Ghidra architecture 
 		 */
 		std::unique_ptr<YagiArchitecture> m_architecture;
+
+	protected:
+		/*!
+		 * \brief	Find high level variable and defined address
+		 * \param	data	the source function
+		 * \param	symbols	the output list of symbols
+		 */
+		void findVarSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const;
+
+		/*!
+		 * \brief	Find calling function and populate the sylbol map
+		 * \param	data	the source function
+		 * \param	symbols	the output map populate by algo
+		 */
+		void findFunctionSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const;
+
+		/*!
+		 * \param	Sometimes some variable especially stack var are not high level var but are defines into local scope
+		 *			this funciton will try to find unknown symbols
+		 * \param	data	the source function
+		 * \param	symbols	the output symbol maps
+		 */
+		void findLocalSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const;
 
 	public:
 		/*!

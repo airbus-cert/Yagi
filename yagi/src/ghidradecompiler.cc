@@ -19,6 +19,117 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	void GhidraDecompiler::findVarSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const
+	{
+		auto iter = data.beginDef();
+		while (iter != data.endDef())
+		{
+			auto varnode = *iter;
+			try
+			{
+				if (
+					varnode->getHigh() != nullptr &&
+					varnode->getHigh()->getSymbol() != nullptr &&
+					varnode->getHigh()->getNameRepresentative() != nullptr 
+					)
+				{
+				
+					// if a local variable
+					if (varnode->getHigh()->getNameRepresentative()->getDef() != nullptr)
+					{
+						auto high = varnode->getHigh();
+						auto nameRepr = high->getNameRepresentative();
+						auto def = nameRepr->getDef();
+						auto sym = high->getSymbol();
+						symbols.emplace(sym->getName(),
+							MemoryLocation(
+								nameRepr->getAddr().getSpace()->getName(),
+								nameRepr->getAddr().getOffset(),
+								nameRepr->getAddr().getSpace()->getAddrSize(),
+								def->getAddr().getOffset(),
+								sym->getType()->getSize()
+							)
+						);
+					}
+					else {
+						auto high = varnode->getHigh();
+						auto nameRepr = high->getNameRepresentative();
+						auto sym = high->getSymbol();
+						symbols.emplace(sym->getName(),
+							MemoryLocation(
+								nameRepr->getAddr().getSpace()->getName(),
+								nameRepr->getAddr().getOffset(),
+								nameRepr->getAddr().getSpace()->getAddrSize()
+							)
+						);
+					}
+				}
+			}
+			catch (LowlevelError&) {}
+			iter++;
+		}
+	}
+
+	/**********************************************************************/
+	void GhidraDecompiler::findFunctionSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const
+	{
+		// first we add the local function symbol
+		symbols.emplace(data.getName(),
+			MemoryLocation(
+				MemoryLocation::MemoryLocationType::RAM,
+				data.getAddress().getOffset(),
+				data.getAddress().getSpace()->getAddrSize()
+			)
+		);
+
+		for (auto i = 0; i < data.numCalls(); i++)
+		{
+			auto call = data.getCallSpecs(i);
+			if(call->getEntryAddress().getSpace() == nullptr)
+			{
+				continue;
+			}
+
+			auto name = call->getName();
+
+			if (name.substr(0, SymbolInfo::IMPORT_PREFIX.length()) == SymbolInfo::IMPORT_PREFIX)
+			{
+				name = name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length());
+			}
+
+			symbols.emplace(name,
+				MemoryLocation(
+					MemoryLocation::MemoryLocationType::RAM, 
+					call->getEntryAddress().getOffset(), 
+					call->getEntryAddress().getSpace()->getAddrSize()
+				)
+			);
+		}
+	}
+
+	/**********************************************************************/
+	void GhidraDecompiler::findLocalSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const
+	{
+		auto iter = data.getScopeLocal()->begin();
+		while (iter != data.getScopeLocal()->end())
+		{
+			auto symEntry = *iter;
+			auto sym = symEntry->getSymbol();
+			symbols.emplace(
+				sym->getName(),
+				MemoryLocation(
+					symEntry->getAddr().getSpace()->getName(),
+					symEntry->getAddr().getOffset(),
+					symEntry->getAddr().getSpace()->getAddrSize(),
+					symEntry->getFirstUseAddress().getOffset(),
+					sym->getType()->getSize()
+				)
+			);
+			iter++;
+		}
+	}
+
+	/**********************************************************************/
 	std::optional<Decompiler::Result> GhidraDecompiler::decompile(uint64_t funcAddress)
 	{
 		try
@@ -44,6 +155,12 @@ namespace yagi
 
 			m_architecture->clearAnalysis(func);
 			m_architecture->performActions(*func);
+
+			// now we compute symbols
+			std::map<std::string, MemoryLocation> symbols;
+			findVarSymbols(*func, symbols);
+			findFunctionSymbols(*func, symbols);
+			findLocalSymbols(*func, symbols);
 			
 			m_architecture->setPrintLanguage("yagi-c-language");
 
@@ -60,7 +177,7 @@ namespace yagi
 				funcSym.value()->getSymbol().getName(), 
 				funcSym.value()->getSymbol().getAddress(),
 				ss.str(), 
-				idaPrint->getEmitter().getSymbolAddr()
+				symbols
 			);
 		}
 		

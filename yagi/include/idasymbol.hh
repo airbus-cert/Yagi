@@ -126,6 +126,12 @@ namespace yagi
 		void saveType(const MemoryLocation& loc, const TypeInfo& newType) override;
 
 		/*!
+		 * \brief	Clear type information link to a memory location
+		 * \param	loc		memory location
+		 */
+		bool clearType(const MemoryLocation& loc) override;
+
+		/*!
 		 * \brief	retrieve a local type use at pc address from a particular offset
 		 *			Use to store local def into dedicated netnode
 		 * \param	pc		use address

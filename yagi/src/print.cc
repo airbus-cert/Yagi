@@ -109,8 +109,6 @@ namespace yagi
 	/**********************************************************************/
 	int4 IdaEmit::beginFunction(const Funcdata* fd)
 	{
-		m_fd = (Funcdata*)fd;
-		m_symbolMap.clear();
 		return EmitPrettyPrint::beginFunction(fd);
 	}
 
@@ -154,60 +152,6 @@ namespace yagi
 			hl = syntax_highlight::keyword_color;
 		}
 
-		auto vnSearch = vn;
-
-		if (vnSearch == nullptr && op != nullptr && op->code() == CPUI_PTRSUB)
-		{
-			vnSearch = op->getIn(1);
-		}
-
-		// handle classic variable, we put it into symbol database
-		if (vnSearch != nullptr)
-		{
-			auto high = vnSearch->getHigh();
-			vnSearch = high->getNameRepresentative();
-			if (high != nullptr)
-			{
-				auto sym = high->getSymbolEntry();
-
-				if (sym == nullptr && high->getSymbol() != nullptr)
-				{
-					sym = high->getSymbol()->getFirstWholeMap();
-				}
-
-				if (sym != nullptr)
-				{			
-					auto defCode = vnSearch->getDef();
-					auto space = sym->getAddr().getSpace();					
-					if (space != nullptr) {
-						if (defCode != nullptr)
-						{
-							m_symbolMap.emplace( 
-								sym->getSymbol()->getName(),
-								MemoryLocation(
-									space->getName(),
-									sym->getAddr().getOffset(),
-									sym->getAddr().getAddrSize(),
-									defCode->getAddr().getOffset(),
-									sym->getSymbol()->getType()->getSize()
-								)
-							);
-						}
-						else {
-							m_symbolMap.emplace(
-								sym->getSymbol()->getName(),
-								MemoryLocation(
-									space->getName(),
-									sym->getAddr().getOffset(),
-									sym->getAddr().getAddrSize()
-								)
-							);
-						}
-					}
-				}
-			}
-		}
-
 		if (isImport)
 		{
 			EmitColorGuard guard(*this, COLOR_IMPNAME);
@@ -242,36 +186,6 @@ namespace yagi
 		{
 			isImport = true;
 			name = name.substr(SymbolInfo::IMPORT_PREFIX.length(), name.length() - SymbolInfo::IMPORT_PREFIX.length());
-		}
-
-		// handle function into symbol
-		if (fd != nullptr)
-		{
-			m_symbolMap.emplace(name, 
-				MemoryLocation(
-					MemoryLocation::MemoryLocationType::RAM, 
-					fd->getAddress().getOffset(), 
-					fd->getAddress().getSpace()->getAddrSize()
-				)
-			);
-		}
-		else if (op != nullptr)
-		{
-			auto parentFd = op->getParent()->getFuncdata();
-			for (int i = 0; i < parentFd->numCalls(); i++)
-			{
-				auto currentCall = parentFd->getCallSpecs(i);
-				if (currentCall->getName() == name || (isImport && currentCall->getName() == SymbolInfo::IMPORT_PREFIX + name))
-				{
-					m_symbolMap.emplace(name, 
-						MemoryLocation(
-							MemoryLocation::MemoryLocationType::RAM, 
-							currentCall->getEntryAddress().getOffset(),
-							currentCall->getEntryAddress().getAddrSize()
-						)
-					);
-				}
-			}
 		}
 		
 		if (isImport)
@@ -323,12 +237,6 @@ namespace yagi
 	{
 		EmitColorGuard guard(*this, hl);
 		EmitPrettyPrint::tagType(ptr, hl, ct);
-	}
-
-	/**********************************************************************/
-	const std::map<std::string, MemoryLocation>& IdaEmit::getSymbolAddr() const
-	{
-		return m_symbolMap;
 	}
 
 	/**********************************************************************/
