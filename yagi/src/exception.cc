@@ -106,4 +106,13 @@ namespace yagi
 		ss << "The current arch have no default calling convention ";
 		m_reason = ss.str();
 	}
+
+	/**********************************************************************/
+	NoMoreData::NoMoreData()
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "No more data in the loader, decompilation is canceled";
+		m_reason = ss.str();
+	}
 } // end of namespace yagi

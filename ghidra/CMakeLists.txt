@@ -264,3 +264,23 @@ install(FILES "${SLEIGH_DIR}/SparcV9_64.sla" DESTINATION "plugins/Ghidra/Process
 SLA_TARGET(sla_SPARC_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Sparc/data/languages/SparcV9_32.slaspec" "${SLEIGH_DIR}/SparcV9_32.sla")
 set_property(TARGET sla_SPARC_32 PROPERTY FOLDER "sleigh")
 install(FILES "${SLEIGH_DIR}/SparcV9_32.sla" DESTINATION "plugins/Ghidra/Processors/Sparc/data/languages/")
+
+#######################
+######### Atmel  ######
+#######################
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Atmel" DESTINATION "plugins/Ghidra/Processors/")
+
+# compile file for Atmel 32
+SLA_TARGET(sla_ATMEL_32 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Atmel/data/languages/avr32a.slaspec" "${SLEIGH_DIR}/avr32a.sla")
+set_property(TARGET sla_ATMEL_32 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/avr32a.sla" DESTINATION "plugins/Ghidra/Processors/Atmel/data/languages/")
+
+# compile file for Atmel 8
+SLA_TARGET(sla_ATMEL_8 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Atmel/data/languages/avr8.slaspec" "${SLEIGH_DIR}/avr8.sla")
+set_property(TARGET sla_ATMEL_8 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/avr8.sla" DESTINATION "plugins/Ghidra/Processors/Atmel/data/languages/")
+
+# compile file for Atmel 8 xmega
+SLA_TARGET(sla_ATMEL_8_XMEGA "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Atmel/data/languages/avr8xmega.slaspec" "${SLEIGH_DIR}/avr8xmega.sla")
+set_property(TARGET sla_ATMEL_8_XMEGA PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/avr8xmega.sla" DESTINATION "plugins/Ghidra/Processors/Atmel/data/languages/")

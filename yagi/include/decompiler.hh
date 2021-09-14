@@ -103,7 +103,8 @@ namespace yagi
 			ARM,			// ARM	arch
 			PPC,			// PowerPC
 			MIPS,			// MIPS
-			SPARC			// Sparc
+			SPARC,			// Sparc
+			ATMEL			// ATMEL
 		};
 
 		enum class Endianess {
@@ -112,6 +113,8 @@ namespace yagi
 		};
 
 		enum class Mode {
+			M16,			// 16 bits
+			M24,			// 24 bits
 			M32,			// 32 bits
 			M64				// 64 bits
 		};

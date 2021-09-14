@@ -160,6 +160,11 @@ namespace yagi
 	{
 		auto idaFunc = get_func(m_symbol->getAddress());
 		auto frame = get_frame(idaFunc);
+		if (frame == nullptr)
+		{
+			return std::nullopt;
+		}
+
 		for (uint32_t i = 0; i < frame->memqty; i++)
 		{
 			auto member = frame->members[i];

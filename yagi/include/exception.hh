@@ -121,6 +121,15 @@ namespace yagi
 	public:
 		explicit NoDefaultCallingConvention();
 	};
+
+	/*!
+	 * \brief	No more data when loader can retrieve expected data
+	 */
+	class NoMoreData : public Error
+	{
+	public:
+		explicit NoMoreData();
+	};
 }
 
 #endif

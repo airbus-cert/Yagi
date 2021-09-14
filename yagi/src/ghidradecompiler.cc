@@ -247,7 +247,27 @@ namespace yagi
 				}
 			}
 			break;
+		case Compiler::Language::ATMEL:
+			{
+				if (compilerType.mode == Compiler::Mode::M32)
+				{
+					language = "avr32";
+					languageMeta = "default";
+				}
+				else if (compilerType.mode == Compiler::Mode::M24)
+				{
+					language = "avr8";
+					languageMeta = "xmega";
+				}
+				else if (compilerType.mode == Compiler::Mode::M16)
+				{
+					language = "avr8";
+					languageMeta = "default";
+				}
+			}
+			break;
 		}
+
 		
 		switch (compilerType.endianess)
 		{
@@ -263,6 +283,12 @@ namespace yagi
 
 		switch (compilerType.mode)
 		{
+		case Compiler::Mode::M16:
+			mode = "16";
+			break;
+		case Compiler::Mode::M24:
+			mode = "24";
+			break;
 		case Compiler::Mode::M32:
 			mode = "32";
 			break;
@@ -297,6 +323,8 @@ namespace yagi
 		case Compiler::Language::MIPS:
 			return "__stdcall";
 		case Compiler::Language::SPARC:
+			return "__stdcall";
+		case Compiler::Language::ATMEL:
 			return "__stdcall";
 		default:
 			break;

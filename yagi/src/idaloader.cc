@@ -1,4 +1,5 @@
 #include "idaloader.hh"
+#include "exception.hh"
 #include <libdecomp.hh>
 
 // due to some include incompatibility
@@ -27,7 +28,11 @@ namespace yagi
 	/**********************************************************************/
 	void IdaLoader::loadFill(uint1* ptr, int4 size, const Address& addr)
 	{
-		::get_bytes(ptr, size, addr.getOffset());
+		auto count = ::get_bytes(ptr, size, addr.getOffset());
+		if (count != size)
+		{
+			throw NoMoreData();
+		}
 	}
 
 	/**********************************************************************/

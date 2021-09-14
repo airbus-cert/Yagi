@@ -67,14 +67,31 @@ static yagi::Compiler compute_compiler() {
 	case PLFM_SPARC:
 		language = yagi::Compiler::Language::SPARC;
 		break;
+	case PLFM_AVR:
+		language = yagi::Compiler::Language::ATMEL;
+		break;
 	default:
 		throw yagi::UnknownCompiler(processor_id());
+	}
+
+	auto mode = yagi::Compiler::Mode::M24;
+	if (inf_is_64bit())
+	{
+		mode = yagi::Compiler::Mode::M64;
+	}
+	if (inf_is_16bit())
+	{
+		mode = yagi::Compiler::Mode::M16;
+	}
+	if (inf_is_32bit_exactly())
+	{
+		mode = yagi::Compiler::Mode::M32;
 	}
 
 	return yagi::Compiler(
 		language,
 		inf_is_be() ? yagi::Compiler::Endianess::BE : yagi::Compiler::Endianess::LE,
-		inf_is_64bit() ? yagi::Compiler::Mode::M64 : yagi::Compiler::Mode::M32
+		mode
 	);
 }
 
@@ -120,5 +137,5 @@ plugin_t PLUGIN =
 	"Yet Another Ghidra Integration",
 	"Airbus CERT.\n",
 	"yagi",
-	"F7"
+	"F3"
 };

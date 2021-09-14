@@ -23,7 +23,7 @@ Here is the list of architectures that Yagi can decompile at the moment:
 |sparc|✔️|
 |cp1600|❌|
 |cr16|❌|
-|avr8|❌|
+|avr8|✔️|
 |dalvik|❌|
 |jvm|❌|
 |tricore|❌|
@@ -31,6 +31,7 @@ Here is the list of architectures that Yagi can decompile at the moment:
 |z80|❌|
 |System Z|❌|
 |xCore|❌|
+|68000|❌|
 
 It's easy to add one if it's supported by Ghidra. Just open an issue, and we will do our best!
 
@@ -41,8 +42,9 @@ It allows you to edit the following items:
 
 |Key|Interact|
 |----------|-----------|
-|Decompile| :computer_mouse: Place cursor on function :keyboard: **F7** |
+|Decompile| :computer_mouse: Place cursor on function :keyboard: **F3** |
 |Edit Type| :keyboard: **Y** |
+|Clear Type| :keyboard: **C** |
 |Edit Name| :keyboard: **N** |
 |Cross References| :keyboard: **X** |
 |Navigate| :computer_mouse: **Double Click** on keyword |
