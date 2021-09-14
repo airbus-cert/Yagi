@@ -127,7 +127,7 @@ To generate an installer script:
 git clone https://github.com/airbus-cert/Yagi --recursive
 mkdir build_yagi
 cd build_yagi
-cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER]
+cmake ../Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER]
 cmake --build . --target package --config release
 ```
 
@@ -149,7 +149,7 @@ To generate a dev environment you need to generate the Makefile:
 git clone https://github.com/airbus-cert/Yagi --recursive
 mkdir build_yagi
 cd build_yagi
-cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER] -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
+cmake ../Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER] -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
 make
 ```
 
