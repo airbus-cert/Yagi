@@ -28,11 +28,7 @@ namespace yagi
 	/**********************************************************************/
 	void IdaLoader::loadFill(uint1* ptr, int4 size, const Address& addr)
 	{
-		auto count = ::get_bytes(ptr, size, addr.getOffset());
-		if (count != size)
-		{
-			throw NoMoreData();
-		}
+		::get_bytes(ptr, size, addr.getOffset());
 	}
 
 	/**********************************************************************/
