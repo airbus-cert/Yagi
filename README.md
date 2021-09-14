@@ -83,7 +83,7 @@ Then, let the `cmake` magic happen:
 git clone https://github.com/airbus-cert/Yagi --recursive
 mkdir build_yagi
 cd build_yagi
-cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER]
+cmake ..\Yagi -DIDA_SDK_SOURCE_DIR=[PATH_TO_IDA_SDK_ROOT_FOLDER] -DCPACK_PACKAGE_INSTALL_DIRECTORY="IDA Pro 7.6"
 cmake --build . --target package --config release
 ```
 
