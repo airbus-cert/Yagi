@@ -8,7 +8,7 @@ Yagi intends to include the wonderful [Ghidra](https://github.com/NationalSecuri
 
 ![Example of Yagi](.img/yagi.gif)
 
-:package: **You can download installers for Windows and Linux versions [here](https://github.com/airbus-cert/Yagi/releases), then press F7 and enjoy!** :package:
+:package: **You can download installers for Windows and Linux versions [here](https://github.com/airbus-cert/Yagi/releases), then press F3 and enjoy!** :package:
 
 Here is the list of architectures that Yagi can decompile at the moment:
 
