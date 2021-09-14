@@ -32,6 +32,12 @@ static int processor_id() {
 #endif
 }
 
+
+#if IDA_SDK_VERSION < 760
+#define inf_is_32bit_exactly inf_is_32bit
+#define inf_is_16bit() !inf_is_64bit() && !inf_is_32bit()
+#endif
+
 /*!
  * \brief	try to detect compiler of the binary 
  */
