@@ -284,3 +284,13 @@ install(FILES "${SLEIGH_DIR}/avr8.sla" DESTINATION "plugins/Ghidra/Processors/At
 SLA_TARGET(sla_ATMEL_8_XMEGA "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Atmel/data/languages/avr8xmega.slaspec" "${SLEIGH_DIR}/avr8xmega.sla")
 set_property(TARGET sla_ATMEL_8_XMEGA PROPERTY FOLDER "sleigh")
 install(FILES "${SLEIGH_DIR}/avr8xmega.sla" DESTINATION "plugins/Ghidra/Processors/Atmel/data/languages/")
+
+#######################
+######### 6502  #######
+#######################
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/6502" DESTINATION "plugins/Ghidra/Processors/")
+
+# compile file for 6502
+SLA_TARGET(sla_6502 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/6502/data/languages/6502.slaspec" "${SLEIGH_DIR}/6502.sla")
+set_property(TARGET sla_6502 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/6502.sla" DESTINATION "plugins/Ghidra/Processors/6502/data/languages/")

@@ -146,6 +146,9 @@ namespace yagi
 			// clear scope to update all symbols
 			scope->clear();
 
+			// clear type factory
+			m_architecture->types->clearNoncore();
+
 			auto func = scope->findFunction(
 				Address(
 					m_architecture->getDefaultCodeSpace(), 
@@ -231,6 +234,10 @@ namespace yagi
 			break;
 		case Compiler::Language::SPARC:
 			language = "sparc";
+			languageMeta = "default";
+			break;
+		case Compiler::Language::P6502:
+			language = "6502";
 			languageMeta = "default";
 			break;
 		case Compiler::Language::ARM:
@@ -325,6 +332,8 @@ namespace yagi
 		case Compiler::Language::SPARC:
 			return "__stdcall";
 		case Compiler::Language::ATMEL:
+			return "__stdcall";
+		case Compiler::Language::P6502:
 			return "__stdcall";
 		default:
 			break;

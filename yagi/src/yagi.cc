@@ -76,6 +76,9 @@ static yagi::Compiler compute_compiler() {
 	case PLFM_AVR:
 		language = yagi::Compiler::Language::ATMEL;
 		break;
+	case PLFM_6502:
+		language = yagi::Compiler::Language::P6502;
+		break;
 	default:
 		throw yagi::UnknownCompiler(processor_id());
 	}

@@ -16,6 +16,13 @@ namespace yagi
 	/**********************************************************************/
 	Datatype* TypeManager::findById(const string& n, uint8 id)
 	{
+		auto cached = findByIdLocal(n, id);
+
+		if (cached != nullptr)
+		{
+			return cached;
+		}
+
 		auto type = m_archi->getTypeInfoFactory().build(n);
 		
 		if (!type.has_value())
@@ -67,7 +74,9 @@ namespace yagi
 			m_archi->getLogger().info("use ", cc, std::string("as default calling convention for "), typeInfo.getName());
 		}
 
-		return getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
+		auto newType = getTypeCode(glb->getModel(cc), retType, paramType, typeInfo.isDotDotDot());
+		setName(newType, typeInfo.getName());
+		return newType;
 	}
 
 	/**********************************************************************/
@@ -78,7 +87,7 @@ namespace yagi
 		auto ptrType = typeInfo.toPtr();
 		if (ptrType.has_value())
 		{
-			auto ct = new TypePointer(
+			auto ct = getTypePointer(
 				glb->getDefaultCodeSpace()->getAddrSize(),
 				findByTypeInfo(*ptrType.value()->getPointedObject()),
 				glb->getDefaultCodeSpace()->getWordSize()
@@ -125,14 +134,13 @@ namespace yagi
 		auto structType = typeInfo.toStruct();
 		if (structType.has_value())
 		{
-			auto ct = new TypeStruct(name);
-			setName(ct, name);
+			auto ct = getTypeStruct(name);
 			auto fields = structType.value()->getFields();
 			std::vector<TypeField> result;
 			std::transform(fields.begin(), fields.end(), std::back_inserter(result),
 				[this](const TypeStructField& info)
 				{
-					return TypeField { static_cast<int4>(info.offset), info.name, findByTypeInfo(*(info.type)) };
+					return TypeField{ static_cast<int4>(info.offset), info.name, findByTypeInfo(*(info.type)) };
 				}
 			);
 			setFields(result, ct, 0, 0);
@@ -166,7 +174,7 @@ namespace yagi
 				return findByTypeInfo(*arrayType.value()->getPointedObject());
 			}
 			
-			auto ct = new TypeArray(
+			auto ct = getTypeArray(
 				typeInfo.getSize(), 
 				findByTypeInfo(*arrayType.value()->getPointedObject())
 			);

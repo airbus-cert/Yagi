@@ -104,7 +104,8 @@ namespace yagi
 			PPC,			// PowerPC
 			MIPS,			// MIPS
 			SPARC,			// Sparc
-			ATMEL			// ATMEL
+			ATMEL,			// ATMEL
+			P6502			// 6502
 		};
 
 		enum class Endianess {
