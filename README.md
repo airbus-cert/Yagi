@@ -21,9 +21,10 @@ Here is the list of architectures that Yagi can decompile at the moment:
 |powerpc|✔️|
 |mips|✔️|
 |sparc|✔️|
+|avr8|✔️|
+|6502|✔️|
 |cp1600|❌|
 |cr16|❌|
-|avr8|✔️|
 |dalvik|❌|
 |jvm|❌|
 |tricore|❌|
