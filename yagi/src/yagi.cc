@@ -11,6 +11,7 @@
 #endif
 
 #include <sstream>
+#include <filesystem>
 
 #include <loader.hpp>
 #include <ida.hpp>
@@ -24,15 +25,6 @@
 #include "idasymbol.hh"
 #include "idalogger.hh"
 #include "loader.hh"
-
-// Path name separator
-#ifdef _WINDOWS
-#define PATH_SEP '\\'
-#else
-#define PATH_SEP '/'
-#endif
-
-
 
 
 static int processor_id() {
@@ -120,28 +112,26 @@ static yagi::Compiler compute_compiler() {
  */
 static plugmod_t* idaapi yagi_init(void)
 {
-	qstrvec_t paths_list;
-	std::stringstream s;
-
 	auto logger = std::make_unique<yagi::IdaLogger>();
-
-	// Search Ghidra plugin installation path in $IDAUSR or $IDADIR
-	s << PLG_SUBDIR << PATH_SEP << "/Ghidra";
-	get_ida_subdirs(&paths_list, s.str().c_str(), IDA_SUBDIR_ONLY_EXISTING);
-
-	if (paths_list.empty()){
-		logger->error("Ghidra folder missing. Yagi was not correctly installed.");
-		return nullptr;
-	}
-
-	// Remove "/Ghidra" in the path
-	std::string ghidraPath(paths_list.at(0).c_str());
-	ghidraPath = ghidraPath.substr(0, ghidraPath.rfind(PATH_SEP));
-
-	yagi::ghidra::init(ghidraPath);
 
 	try
 	{
+		// Search Ghidra plugin installation path in $IDAUSR or $IDADIR
+		std::filesystem::path s = PLG_SUBDIR;
+		s /= "Ghidra";
+
+		qstrvec_t paths_list;
+		get_ida_subdirs(&paths_list, s.string().c_str(), IDA_SUBDIR_ONLY_EXISTING);
+
+		if (paths_list.empty()) 
+		{
+			throw yagi::UnableToFoundGhidraFolder();
+		}
+
+		// Remove "/Ghidra" in the path
+		std::filesystem::path ghidraPath = paths_list.at(0).c_str();
+		yagi::ghidra::init(ghidraPath.parent_path().string());
+
 		auto compilerId = compute_compiler();
 
 		auto decompiler = yagi::GhidraDecompiler::build(
@@ -155,7 +145,7 @@ static plugmod_t* idaapi yagi_init(void)
 			return new yagi::Plugin(std::move(decompiler.value()));
 		}
 	}
-	catch (yagi::UnknownCompiler& e)
+	catch (yagi::Error& e)
 	{
 		logger->error(e.what());
 	}

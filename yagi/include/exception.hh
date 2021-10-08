@@ -130,6 +130,15 @@ namespace yagi
 	public:
 		explicit NoMoreData();
 	};
+
+	/*!
+	 * \brief	Yagi can't found Ghidra file
+	 */
+	class UnableToFoundGhidraFolder : public Error
+	{
+	public:
+		explicit UnableToFoundGhidraFolder();
+	};
 }
 
 #endif

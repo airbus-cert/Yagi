@@ -115,4 +115,13 @@ namespace yagi
 		ss << "No more data in the loader, decompilation is canceled";
 		m_reason = ss.str();
 	}
+
+	/**********************************************************************/
+	UnableToFoundGhidraFolder::UnableToFoundGhidraFolder()
+		: Error("")
+	{
+		std::stringstream ss(m_reason);
+		ss << "Ghidra folder missing. Yagi was not correctly installed.";
+		m_reason = ss.str();
+	}
 } // end of namespace yagi
