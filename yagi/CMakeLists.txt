@@ -10,6 +10,7 @@ set(yagi_STATIC_SRC
 	src/scope.cc
 	src/symbolinfo.cc
 	src/typemanager.cc
+	src/yagirule.cc
 )
 
 set(yagi_STATIC_INCLUDE
@@ -25,6 +26,7 @@ set(yagi_STATIC_INCLUDE
 	include/symbolinfo.hh
 	include/typemanager.hh
 	include/typeinfo.hh
+	include/yagirule.hh
 )
 
 add_library(yagi_static STATIC ${yagi_STATIC_INCLUDE} ${yagi_STATIC_SRC})
@@ -77,7 +79,7 @@ if(MSVC)
 endif()
 
 #####################################################
-############### build tager yagi64 ##################
+############### build target yagi64 #################
 #####################################################
 add_library(yagi64 SHARED ${yagi_INCLUDE} ${yagi_SRC})
 target_compile_features(yagi64 PRIVATE cxx_std_17)

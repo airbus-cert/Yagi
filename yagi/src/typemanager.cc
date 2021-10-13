@@ -242,30 +242,5 @@ namespace yagi
 			pieces.innames = funcType.value()->getFuncParamName();
 			func.getFuncProto().setPieces(pieces);
 		}
-
-		auto injection = m_archi->findInjection(func.getName());
-		if (injection.has_value())
-		{
-			m_archi->getLogger().info("Perform injection ", injection.value());
-			setInjectAttribute(func, injection.value());
-		}
 	}
-
-	/**********************************************************************/
-	void TypeManager::setInjectAttribute(Funcdata& fd, std::string inject_name)
-	{
-		// inject interface is only available through
-		// XML API...
-		std::stringstream ss;
-		fd.getFuncProto().saveXml(ss);
-
-		auto document = xml_tree(ss);
-		Element inject(document->getRoot());
-		inject.setName("inject");
-		inject.addContent(inject_name.c_str(), 0, inject_name.length());
-
-		document->getRoot()->addChild(&inject);
-		fd.getFuncProto().restoreXml(document->getRoot(), m_archi);
-	}
-
 } // end of namespace yagi

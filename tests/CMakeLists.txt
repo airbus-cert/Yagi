@@ -30,6 +30,7 @@ add_executable(
   x86_payload_64bits_test.cc
   x86_payload_32bits_test.cc
   x86_payload_64bits_parameters.cc
+  x86_payload_64bits_cfg.cc
   ARM_payload_32bits_test.cc
   PPC_payload_32bits_test.cc
   MIPS_payload_32bits_test.cc

@@ -8,6 +8,7 @@
 #include "print.hh"
 #include "base.hh"
 #include "yagiaction.hh"
+#include "yagirule.hh"
 
 namespace yagi 
 {
@@ -370,7 +371,7 @@ namespace yagi
 		case Compiler::Language::X86_GCC:
 		case Compiler::Language::X86_WINDOWS:
 			architecture->addInjection("alloca_probe", "alloca_probe");
-			architecture->addInjection("guard_dispatch_icall_fptr", "guard_dispatch_icall");
+			architecture->extra_pool_rules.push_back(new RuleWindowsControlFlowGuard("analysis", "guard_dispatch_icall_fptr"));
 			break;
 		}
 

@@ -22,7 +22,9 @@ namespace yagi
 	/**********************************************************************/
 	Funcdata* YagiScope::findFunction(const Address& addr) const
 	{
-		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
+		auto yagiScope = static_cast<YagiScope*>(glb->symboltab->getGlobalScope());
+		auto proxy = yagiScope->getProxy();
+		auto archi = static_cast<YagiArchitecture*>(glb);
 
 		auto result = proxy->findFunction(addr);
 		if (result != nullptr)
@@ -30,7 +32,7 @@ namespace yagi
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = archi->getSymbolDatabase().find(addr.getOffset());
 
 		if (!data.has_value())
 		{
@@ -41,10 +43,36 @@ namespace yagi
 		auto sym = proxy->addFunction(addr, data.value()->getName());
 		auto funcData = sym->getFunction();
 
+		// Apply injection if available
+		// Perform injection first
+		auto injection = archi->findInjection(funcData->getName());
+		if (injection.has_value())
+		{
+			archi->getLogger().info("Perform injection ", injection.value());
+			yagiScope->setInjectAttribute(*funcData, injection.value());
+		}
+
 		// Try to set model type
 		static_cast<TypeManager*>(glb->types)->update(*funcData);
 
 		return funcData;
+	}
+
+	/**********************************************************************/
+	void YagiScope::setInjectAttribute(Funcdata& fd, std::string inject_name)
+	{
+		// inject interface is only available through
+		// XML API...
+		std::stringstream ss;
+		fd.getFuncProto().saveXml(ss);
+
+		auto document = xml_tree(ss);
+		Element inject(document->getRoot());
+		inject.setName("inject");
+		inject.addContent(inject_name.c_str(), 0, inject_name.length());
+
+		document->getRoot()->addChild(&inject);
+		fd.getFuncProto().restoreXml(document->getRoot(), glb);
 	}
 
 	/**********************************************************************/
@@ -56,7 +84,9 @@ namespace yagi
 	/**********************************************************************/
 	SymbolEntry* YagiScope::findContainer(const Address& addr, int4 size, const Address& usepoint) const
 	{
-		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
+		auto yagiScope = static_cast<YagiScope*>(glb->symboltab->getGlobalScope());
+		auto proxy = yagiScope->getProxy();
+		auto archi = static_cast<YagiArchitecture*>(glb);
 		
 		auto result = proxy->findContainer(addr, size, usepoint);
 		if (result != nullptr)
@@ -68,7 +98,7 @@ namespace yagi
 
 		if (addr.getSpace() == glb->getDefaultCodeSpace())
 		{
-			data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+			data = archi->getSymbolDatabase().find(addr.getOffset());
 		}
 		
 		if (data.has_value())
@@ -80,28 +110,28 @@ namespace yagi
 			switch (data.value()->getType())
 			{
 			case SymbolInfo::Type::Function:
-				static_cast<YagiArchitecture*>(glb)->getLogger().info("Found function symbol ", name);
+				archi->getLogger().info("Found function symbol ", name);
 				symbol = proxy->addFunction(addr, name);
 				break;
 			case SymbolInfo::Type::Import:
-				static_cast<YagiArchitecture*>(glb)->getLogger().info("Found import symbol ", name);
+				archi->getLogger().info("Found import symbol ", name);
 				symbol = proxy->addExternalRef(addr, addr, name);
 				break;
 			case SymbolInfo::Type::Label:
-				static_cast<YagiArchitecture*>(glb)->getLogger().info("Found label symbol ", name);
+				archi->getLogger().info("Found label symbol ", name);
 				symbol = proxy->addCodeLabel(addr, name);
 				break;
 			case SymbolInfo::Type::Other:
 			{
-				auto type = static_cast<YagiArchitecture*>(glb)->getTypeInfoFactory().build(addr.getOffset());
+				auto type = archi->getTypeInfoFactory().build(addr.getOffset());
 				if (type.has_value())
 				{
-					static_cast<YagiArchitecture*>(glb)->getLogger().info("Found type", type.value()->getName(),  std::string("for"), name);
+					archi->getLogger().info("Found type", type.value()->getName(),  std::string("for"), name);
 					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->findByTypeInfo(*(type.value())));
 				}
 				else 
 				{
-					static_cast<YagiArchitecture*>(glb)->getLogger().info("Unknown type for ", name);
+					archi->getLogger().info("Unknown type for ", name);
 					symbol = proxy->addSymbol(name, static_cast<TypeManager*>(glb->types)->getBase(size, TYPE_UNKNOWN));
 				}
 				break;
@@ -112,11 +142,11 @@ namespace yagi
 
 			if (data.value()->isReadOnly())
 			{
-				static_cast<YagiArchitecture*>(glb)->getLogger().info("Apply readonly type for ", name);
+				archi->getLogger().info("Apply readonly type for ", name);
 				proxy->setAttribute(symbol, Varnode::readonly);
 			}
 
-			static_cast<YagiArchitecture*>(glb)->getLogger().info("Found symbol ", name, std::string(" at "), to_hex(addr.getOffset()));
+			archi->getLogger().info("Found symbol ", name, std::string(" at "), to_hex(addr.getOffset()));
 			return proxy->addMapPoint(symbol, addr, usepoint);
 		}
 
@@ -132,34 +162,40 @@ namespace yagi
 	/**********************************************************************/
 	ExternRefSymbol* YagiScope::findExternalRef(const Address& addr) const
 	{
-		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
+		auto yagiScope = static_cast<YagiScope*>(glb->symboltab->getGlobalScope());
+		auto proxy = yagiScope->getProxy();
+		auto archi = static_cast<YagiArchitecture*>(glb);
+
 		auto result = proxy->findExternalRef(addr);
 		if (result != nullptr)
 		{
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = archi->getSymbolDatabase().find(addr.getOffset());
 		if (!data.has_value() || !data.value()->isImport())
 		{
 			return nullptr;
 		}
 
-		static_cast<YagiArchitecture*>(glb)->getLogger().info("Find external ref ", data.value()->getName());
+		archi->getLogger().info("Find external ref ", data.value()->getName());
 		return proxy->addExternalRef(addr, addr, data.value()->getName());
 	}
 
 	/**********************************************************************/
 	LabSymbol* YagiScope::findCodeLabel(const Address& addr) const
 	{
-		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
+		auto yagiScope = static_cast<YagiScope*>(glb->symboltab->getGlobalScope());
+		auto proxy = yagiScope->getProxy();
+		auto archi = static_cast<YagiArchitecture*>(glb);
+
 		auto result = proxy->findCodeLabel(addr);
 		if (result != nullptr)
 		{
 			return result;
 		}
 
-		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(addr.getOffset());
+		auto data = archi->getSymbolDatabase().find(addr.getOffset());
 		if (!data.has_value() || !data.value()->isLabel())
 		{
 			return nullptr;
@@ -177,7 +213,10 @@ namespace yagi
 	/**********************************************************************/
 	Funcdata* YagiScope::resolveExternalRefFunction(ExternRefSymbol* sym) const
 	{
-		auto proxy = static_cast<YagiScope*>(glb->symboltab->getGlobalScope())->getProxy();
+		auto yagiScope = static_cast<YagiScope*>(glb->symboltab->getGlobalScope());
+		auto proxy = yagiScope->getProxy();
+		auto archi = static_cast<YagiArchitecture*>(glb);
+
 		auto data = static_cast<YagiArchitecture*>(glb)->getSymbolDatabase().find(sym->getRefAddr().getOffset());
 		if (data.has_value())
 		{
@@ -190,7 +229,7 @@ namespace yagi
 			}
 			catch (Error& e)
 			{
-				static_cast<YagiArchitecture*>(glb)->getLogger().error(e.what());
+				archi->getLogger().error(e.what());
 			}
 			
 			return funcData;

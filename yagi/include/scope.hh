@@ -45,6 +45,7 @@ namespace yagi
 		 */
 		SymbolEntry* addDynamicMapInternal(Symbol* sym, uint4 exfl, uint8 hash, int4 off, int4 sz, const RangeList& uselim);
 
+		void setInjectAttribute(Funcdata& fd, std::string inject_name);
 	public:
 		/*!
 		 * \brief	ctor
