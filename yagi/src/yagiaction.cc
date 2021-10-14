@@ -175,10 +175,12 @@ namespace yagi
 		auto funcAddr = data.getAddress();
 		auto addrSize = data.getArch()->getDefaultCodeSpace()->getAddrSize();
 
-
+		// We will add a pcode at the begining of the function
+		// t9 = funcAddr -> CPUI_COPY input0 = addrFunc; output = t9
 		auto beginIter = data.beginOpAll();
 		auto beginPcode = beginIter->second;
 
+		// find t9 register
 		auto t9Addr = data.getArch()->getDefaultCodeSpace()->getTrans()->getRegister("t9").getAddr();
 		auto t9Vn = data.newVarnode(
 			addrSize,
@@ -186,10 +188,11 @@ namespace yagi
 		);
 
 		auto newPcode = data.newOp(1, funcAddr);
-		data.opSetOpcode(newPcode, CPUI_COPY);
-		data.opSetInput(newPcode, data.newConstant(4, funcAddr.getOffset()), 0);
-		data.opSetOutput(newPcode, t9Vn);
+		data.opSetOpcode(newPcode, CPUI_COPY);	// CPUI_COPY
+		data.opSetInput(newPcode, data.newConstant(arch->getDefaultCodeSpace()->getAddrSize(), funcAddr.getOffset()), 0); // input = funcAddr
+		data.opSetOutput(newPcode, t9Vn);	// output = t9
 		data.opInsertBegin(newPcode, beginPcode->getParent());
+		data.warningHeader("Yagi : setting t9 register value with address of the current function");
 		return 0;
 	}
 } // end of namespace yagi
