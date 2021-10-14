@@ -54,7 +54,7 @@ namespace yagi
 
 		// Try to set model type
 		static_cast<TypeManager*>(glb->types)->update(*funcData);
-
+		
 		return funcData;
 	}
 

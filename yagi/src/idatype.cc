@@ -28,7 +28,8 @@ namespace yagi
 		func_type_data_t funcInfo;
 		if (!m_info.m_type.get_func_details(&funcInfo, GTD_CALC_ARGLOCS))
 		{
-			throw UnableToFindPrototype(m_info.getName());
+			// not found return empty signature
+			return result;
 		}
 
 		result.push_back(std::make_unique<IdaTypeInfo>(funcInfo.rettype));
@@ -51,7 +52,7 @@ namespace yagi
 		func_type_data_t funcInfo;
 		if (!m_info.m_type.is_func() || !m_info.m_type.get_func_details(&funcInfo))
 		{
-			throw TypeIsNotAFunction(m_info.getName());
+			return result;
 		}
 
 		uint16_t index = 0;
@@ -83,7 +84,7 @@ namespace yagi
 		func_type_data_t funcInfo;
 		if (!m_info.m_type.get_func_details(&funcInfo))
 		{
-			throw UnableToFindPrototype(m_info.getName());
+			throw UnknownCallingConvention(m_info.getName());
 		}
 
 		switch (funcInfo.get_cc())

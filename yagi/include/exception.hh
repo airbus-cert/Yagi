@@ -78,15 +78,6 @@ namespace yagi
 	};
 
 	/*!
-	 * \brief	Unable to find a prototype associated with a function type
-	 */
-	class UnableToFindPrototype : public Error
-	{
-	public:
-		explicit UnableToFindPrototype(std::string funName);
-	};
-
-	/*!
 	 * \brief	Unknown calling convention for a function type 
 	 */
 	class UnknownCallingConvention : public Error

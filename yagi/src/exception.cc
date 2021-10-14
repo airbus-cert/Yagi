@@ -63,15 +63,6 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	UnableToFindPrototype::UnableToFindPrototype(std::string funcName)
-		: Error("")
-	{
-		std::stringstream ss(m_reason);
-		ss << "Unable to find a protype for " << funcName;
-		m_reason = ss.str();
-	}
-
-	/**********************************************************************/
 	UnknownCallingConvention::UnknownCallingConvention(std::string funcName)
 		: Error("")
 	{

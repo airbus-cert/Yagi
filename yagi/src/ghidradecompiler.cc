@@ -215,7 +215,15 @@ namespace yagi
 		{
 		case Compiler::Language::X86:
 			language = "x86";
-			languageMeta = "default";
+			if (compilerType.mode == Compiler::Mode::M16)
+			{
+				languageMeta = "Real Mode";
+			}
+			else
+			{
+				languageMeta = "default";
+			}
+			
 			break;
 		case Compiler::Language::X86_GCC:
 			language = "x86";

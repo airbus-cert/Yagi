@@ -27,6 +27,7 @@ endif()
 
 add_executable(
   yagi_unit_test
+  x86_payload_16bits_test.cc
   x86_payload_64bits_test.cc
   x86_payload_32bits_test.cc
   x86_payload_64bits_parameters.cc
