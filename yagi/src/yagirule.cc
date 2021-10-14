@@ -14,17 +14,19 @@ namespace yagi
 	/**********************************************************************/
 	int4 RuleWindowsControlFlowGuard::applyOp(PcodeOp* op, Funcdata& data)
 	{
-		auto sym = data.getArch()->symboltab->getGlobalScope()->findContainer(op->getIn(0)->getAddr(), 8, op->getAddr());
+		auto addrSize = data.getArch()->getDefaultCodeSpace()->getAddrSize();
+
+		auto sym = data.getArch()->symboltab->getGlobalScope()->findContainer(op->getIn(0)->getAddr(), addrSize, op->getAddr());
 		
 		// If the indirect call match the symbol name of the wrapped function
 		// We replace the input varnode from const space (with the associated symbol)
 		// with a register namespace
 		if (sym != nullptr && sym->getSymbol() != nullptr && sym->getSymbol()->getName() == m_cfgWrapperName)
 		{
+			auto raxAddr = data.getArch()->getDefaultCodeSpace()->getTrans()->getRegister("RAX").getAddr();
 			auto raxVn = data.newVarnode(
-				data.getArch()->getDefaultCodeSpace()->getAddrSize(),
-				data.getArch()->getSpaceByName("register"),
-				0
+				addrSize,
+				raxAddr
 			);
 			// Rewrite input with rax
 			data.opSetInput(op, raxVn, 0);

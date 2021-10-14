@@ -372,7 +372,7 @@ namespace yagi
 			compute_default_cc(compilerType)
 		);
 
-		// compute injection
+		// compute architecture rule and action
 		switch (compilerType.language)
 		{
 		case Compiler::Language::X86:
@@ -380,6 +380,9 @@ namespace yagi
 		case Compiler::Language::X86_WINDOWS:
 			architecture->addInjection("alloca_probe", "alloca_probe");
 			architecture->extra_pool_rules.push_back(new RuleWindowsControlFlowGuard("analysis", "guard_dispatch_icall_fptr"));
+			break;
+		case Compiler::Language::MIPS:
+			architecture->addArchAction(new ActionMIPST9Optimization("t9optim"));
 			break;
 		}
 

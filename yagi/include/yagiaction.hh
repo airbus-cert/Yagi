@@ -78,6 +78,24 @@ namespace yagi
 		 */
 		int4 apply(Funcdata& data) override;
 	};
+
+
+	class ActionMIPST9Optimization : public Action
+	{
+	public:
+		ActionMIPST9Optimization(const string& g)
+			: Action(Action::ruleflags::rule_onceperfunc, "load", g)
+		{}
+
+		virtual Action* clone(const ActionGroupList& grouplist) const {
+			if (!grouplist.contains(getGroup())) return (Action*)0;
+			return new ActionMIPST9Optimization(getGroup());
+		}
+		/*!
+		 * \brief	Will insert a context for T9 register
+		 */
+		int4 apply(Funcdata& data) override;
+	};
 }
 
 #endif

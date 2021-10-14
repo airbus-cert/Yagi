@@ -52,6 +52,12 @@ namespace yagi
 		ActionGroup m_retypeAction;
 
 		/*!
+		 * \brief	List of Action that will be done as the first before any Action
+		 *			These actions are arhitecture dependent
+		 */
+		ActionGroup m_archSpecific;
+
+		/*!
 		 *	\brief	allow object that have access to the core
 		 *			to print informations message to the end user
 		 */
@@ -178,6 +184,12 @@ namespace yagi
 		 * \brief apply universal action and custom action
 		 */
 		int4 performActions(Funcdata & data);
+
+		/*!
+		 * \brief	Add action in the Arch specific pool
+		 * \param	action	new action
+		 */
+		void addArchAction(Action * action);
 	};
 }
 

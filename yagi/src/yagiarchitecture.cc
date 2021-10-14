@@ -23,7 +23,8 @@ namespace yagi
 		m_type{ std::move(type) },
 		m_defaultCC { defaultCC },
 		m_renameAction(Action::rule_onceperfunc, "yagirename"),
-		m_retypeAction(Action::rule_onceperfunc, "yagiretype")
+		m_retypeAction(Action::rule_onceperfunc, "yagiretype"),
+		m_archSpecific(Action::rule_onceperfunc, "yagiarch")
 	{
 	}
 
@@ -96,14 +97,21 @@ namespace yagi
 	int4 YagiArchitecture::performActions(Funcdata& data)
 	{
 		allacts.getCurrent()->reset(data);
+		m_archSpecific.reset(data);
 		m_renameAction.reset(data);
 		m_retypeAction.reset(data);
+
 
 		// Break just after start action
 		// to have the CFG built
 		allacts.getCurrent()->setBreakPoint(Action::break_start, "constbase");
 
 		auto res = allacts.getCurrent()->perform(data);
+
+		// perform Arch specific action
+		m_archSpecific.perform(data);
+
+		// provisionning of type action
 		m_retypeAction.perform(data);
 
 		allacts.getCurrent()->clearBreakPoints();
@@ -115,6 +123,12 @@ namespace yagi
 		}
 
 		return res + m_renameAction.perform(data);
+	}
+
+	/**********************************************************************/
+	void YagiArchitecture::addArchAction(Action* action)
+	{
+		m_archSpecific.addAction(action);
 	}
 
 	/**********************************************************************/

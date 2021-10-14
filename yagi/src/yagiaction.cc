@@ -167,4 +167,29 @@ namespace yagi
 		}
 		return 0;
 	}
+
+	/**********************************************************************/
+	int4 ActionMIPST9Optimization::apply(Funcdata& data)
+	{
+		auto arch = static_cast<YagiArchitecture*>(data.getArch());
+		auto funcAddr = data.getAddress();
+		auto addrSize = data.getArch()->getDefaultCodeSpace()->getAddrSize();
+
+
+		auto beginIter = data.beginOpAll();
+		auto beginPcode = beginIter->second;
+
+		auto t9Addr = data.getArch()->getDefaultCodeSpace()->getTrans()->getRegister("t9").getAddr();
+		auto t9Vn = data.newVarnode(
+			addrSize,
+			t9Addr
+		);
+
+		auto newPcode = data.newOp(1, funcAddr);
+		data.opSetOpcode(newPcode, CPUI_COPY);
+		data.opSetInput(newPcode, data.newConstant(4, funcAddr.getOffset()), 0);
+		data.opSetOutput(newPcode, t9Vn);
+		data.opInsertBegin(newPcode, beginPcode->getParent());
+		return 0;
+	}
 } // end of namespace yagi
