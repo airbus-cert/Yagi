@@ -2,7 +2,7 @@
 * Add action do deal with T9 register MIPS compiler optim
 * Add rule to deal with Control Flow Guard
 * Fix installer path for Ida Freeware
-* Enable decompilation for x86 16 bits in Real Mode
+* Enable decompilation for x86 16 bits in Real Mode #11
 * Allow install into another folder than the main one, thanks @jbcayrou
 
 # 1.2.0
