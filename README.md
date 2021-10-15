@@ -164,9 +164,8 @@ ctest -VV
 ## TODO
 
 * Handle enum types
-* Add rules to handle CFG on Windows
-* Add rules to handle T9 for MIPS
 * Add rules to handle end function computation on AARCH64
+* Change constant type (key H, R)
 
 ## Credits and references
 

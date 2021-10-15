@@ -1,3 +1,10 @@
+# 1.3.0
+* Add action do deal with T9 register MIPS compiler optim
+* Add rule to deal with Control Flow Guard
+* Fix installer path for Ida Freeware
+* Enable decompilation for x86 16 bits in Real Mode
+* Allow install into another folder than the main one, thanks @jbcayrou
+
 # 1.2.0
 * Add support for 6502
 * Fix stack overflow #7 during solve of type tree (cyclic)
