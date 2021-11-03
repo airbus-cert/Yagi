@@ -214,7 +214,7 @@ namespace yagi
 	void IdaFunctionSymbolInfo::saveType(const MemoryLocation& loc, const TypeInfo& newType)
 	{
 		std::stringstream ss, os;
-		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << MemoryLocation::to_string(loc.type) << "." << to_hex(loc.pc);
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << loc.spaceName << "." << to_hex(loc.pc);
 		netnode n(ss.str().c_str(), 0, true);
 
 		os << newType.getName() << "|" << to_hex(loc.offset);
@@ -225,7 +225,7 @@ namespace yagi
 	bool IdaFunctionSymbolInfo::clearType(const MemoryLocation& loc)
 	{
 		std::stringstream ss, os;
-		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << MemoryLocation::to_string(loc.type) << "." << to_hex(loc.pc);
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << loc.spaceName << "." << to_hex(loc.pc);
 		netnode n(ss.str().c_str(), 0, true);
 		return n.delvalue() == 1;
 	}

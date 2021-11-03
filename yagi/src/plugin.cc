@@ -173,7 +173,7 @@ namespace yagi
 		{
 		case 'X':
 			// RAM xref
-			if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
+			if (addr->second.spaceName == "ram")
 			{
 				open_xrefs_window(addr->second.offset);
 			}
@@ -181,7 +181,7 @@ namespace yagi
 		case 'N':
 			{
 				// RAM rename
-				if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
+				if (addr->second.spaceName == "ram")
 				{
 					auto symbolInfo = IdaSymbolInfoFactory().find(addr->second.offset);
 					if (!symbolInfo.has_value())
@@ -196,7 +196,7 @@ namespace yagi
 						_RunYagi();
 					}
 				}
-				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register)
+				else
 				{
 					if (!functionSymbolInfo.has_value())
 					{
@@ -206,21 +206,7 @@ namespace yagi
 					auto name = qstring(keyword.value().c_str());
 					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
 					{
-						functionSymbolInfo.value()->saveName(addr->second.pc, "register", name.c_str());
-						_RunYagi();
-					}
-				}
-				else if (addr->second.type == MemoryLocation::MemoryLocationType::Stack)
-				{
-					if (!functionSymbolInfo.has_value())
-					{
-						return false;
-					}
-
-					auto name = qstring(keyword.value().c_str());
-					if (ask_str(&name, HIST_IDENT, "Please enter item name"))
-					{
-						functionSymbolInfo.value()->saveName(addr->second.offset, "stack", name.c_str());
+						functionSymbolInfo.value()->saveName(addr->second.offset, addr->second.spaceName, name.c_str());
 						_RunYagi();
 					}
 				}
@@ -229,7 +215,7 @@ namespace yagi
 		case 'Y':
 			{
 				// RAM retype
-				if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
+				if (addr->second.spaceName == "ram")
 				{
 					auto typeInfo = IdaTypeInfoFactory().build(addr->second.offset);
 					if (typeInfo.has_value())
@@ -248,25 +234,23 @@ namespace yagi
 						}
 					}
 				}
-				else if (addr->second.type == MemoryLocation::MemoryLocationType::Register
-					|| addr->second.type == MemoryLocation::MemoryLocationType::Stack)
+				else 
 				{
-					qstring name;
-					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
+					if (addr->second.pc == 0)
 					{
-						tinfo_t idaTypeInfo;
-						qstring parsedName;
-						if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
+						IdaLogger().error("constant type can't be retyped");
+					}
+					else {
+						qstring name;
+						if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
 						{
-							auto typeInfo = IdaTypeInfoFactory().build(idaTypeInfo);
-							if (typeInfo.has_value() && typeInfo.value()->getSize() == addr->second.typeSize)
+							tinfo_t idaTypeInfo;
+							qstring parsedName;
+							if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
 							{
+								auto typeInfo = IdaTypeInfoFactory().build(idaTypeInfo);
 								functionSymbolInfo.value()->saveType(addr->second, *(typeInfo.value()));
 								_RunYagi();
-							}
-							else
-							{
-								IdaLogger().error("Unable to retype : type must have the same size");
 							}
 						}
 					}
@@ -274,14 +258,10 @@ namespace yagi
 			}
 			break;
 		case 'C':
-			if (addr->second.type == MemoryLocation::MemoryLocationType::Register
-				|| addr->second.type == MemoryLocation::MemoryLocationType::Stack)
+			if (functionSymbolInfo.value()->clearType(addr->second))
 			{
-				if (functionSymbolInfo.value()->clearType(addr->second))
-				{
-					IdaLogger().info("Clear type for symbol : ", addr->first);
-					_RunYagi();
-				}
+				IdaLogger().info("Clear type for symbol : ", addr->first);
+				_RunYagi();
 			}
 			break;
 		}
@@ -314,11 +294,11 @@ namespace yagi
 			return false;
 		}
 
-		if (addr->second.type == MemoryLocation::MemoryLocationType::RAM)
+		if (addr->second.spaceName == "ram")
 		{
 			return jumpto(addr->second.offset);
 		}
-		else if (addr->second.type == MemoryLocation::MemoryLocationType::Stack)
+		else if (addr->second.spaceName == "stack")
 		{
 			auto idaFunc = get_func(code->ea);
 			auto offset = addr->second.offset;

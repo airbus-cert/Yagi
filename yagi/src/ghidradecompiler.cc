@@ -34,33 +34,28 @@ namespace yagi
 					varnode->getHigh()->getNameRepresentative() != nullptr 
 					)
 				{
-				
-					// if a local variable
-					if (varnode->getHigh()->getNameRepresentative()->getDef() != nullptr)
+					auto high = varnode->getHigh();
+					auto nameRepr = high->getNameRepresentative();
+					auto sym = high->getSymbol();
+
+					if (nameRepr->getDef() != nullptr)
 					{
-						auto high = varnode->getHigh();
-						auto nameRepr = high->getNameRepresentative();
 						auto def = nameRepr->getDef();
-						auto sym = high->getSymbol();
 						symbols.emplace(sym->getName(),
 							MemoryLocation(
 								nameRepr->getAddr().getSpace()->getName(),
 								nameRepr->getAddr().getOffset(),
-								nameRepr->getAddr().getSpace()->getAddrSize(),
-								def->getAddr().getOffset(),
-								sym->getType()->getSize()
+								nameRepr->getAddr().getAddrSize(),
+								def->getAddr().getOffset()
 							)
 						);
 					}
 					else {
-						auto high = varnode->getHigh();
-						auto nameRepr = high->getNameRepresentative();
-						auto sym = high->getSymbol();
 						symbols.emplace(sym->getName(),
 							MemoryLocation(
 								nameRepr->getAddr().getSpace()->getName(),
 								nameRepr->getAddr().getOffset(),
-								nameRepr->getAddr().getSpace()->getAddrSize()
+								nameRepr->getAddr().getAddrSize()
 							)
 						);
 					}
@@ -77,7 +72,7 @@ namespace yagi
 		// first we add the local function symbol
 		symbols.emplace(data.getName(),
 			MemoryLocation(
-				MemoryLocation::MemoryLocationType::RAM,
+				"ram",
 				data.getAddress().getOffset(),
 				data.getAddress().getSpace()->getAddrSize()
 			)
@@ -100,7 +95,7 @@ namespace yagi
 
 			symbols.emplace(name,
 				MemoryLocation(
-					MemoryLocation::MemoryLocationType::RAM, 
+					"ram", 
 					call->getEntryAddress().getOffset(), 
 					call->getEntryAddress().getSpace()->getAddrSize()
 				)
@@ -120,10 +115,8 @@ namespace yagi
 				sym->getName(),
 				MemoryLocation(
 					symEntry->getAddr().getSpace()->getName(),
-					symEntry->getAddr().getOffset(),
-					symEntry->getAddr().getSpace()->getAddrSize(),
 					symEntry->getFirstUseAddress().getOffset(),
-					sym->getType()->getSize()
+					symEntry->getAddr().getSpace()->getAddrSize()
 				)
 			);
 			iter++;

@@ -27,38 +27,19 @@ namespace yagi
 	 * \brief	This action will try to synchronize name
 	 *			with an IDA netnode
 	 */
-	class ActionRenameRegistryVar : public Action
+	class ActionRenameVar : public Action
 	{
 	public:
-		ActionRenameRegistryVar(const string& g) : Action(Action::ruleflags::rule_onceperfunc, "renameregistryvar", g) {}
+		ActionRenameVar(const string& g) : Action(Action::ruleflags::rule_onceperfunc, "renamevar", g) {}
 		virtual Action* clone(const ActionGroupList& grouplist) const {
 			if (!grouplist.contains(getGroup())) return (Action*)0;
-			return new ActionSyncStackVar(getGroup());
+			return new ActionRenameVar(getGroup());
 		}
 		/*!
 		 * \brief	Will apply the stack rename
 		 */
 		int4 apply(Funcdata& data) override;
 	};
-
-	/*!
-	 * \brief	This action will try to synchronize name
-	 *			with an IDA netnode
-	 */
-	class ActionRenameStackVar : public Action
-	{
-	public:
-		ActionRenameStackVar(const string& g) : Action(Action::ruleflags::rule_onceperfunc, "renamestackvar", g) {}
-		virtual Action* clone(const ActionGroupList& grouplist) const {
-			if (!grouplist.contains(getGroup())) return (Action*)0;
-			return new ActionSyncStackVar(getGroup());
-		}
-		/*!
-		 * \brief	Will apply the stack rename
-		 */
-		int4 apply(Funcdata& data) override;
-	};
-
 
 	class ActionLoadLocalScope : public Action
 	{

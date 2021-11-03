@@ -48,7 +48,7 @@ namespace yagi
 	/*!
 	 *	\brief	apply data sync with netnode for registry
 	 */
-	int4 ActionRenameRegistryVar::apply(Funcdata& data)
+	int4 ActionRenameVar::apply(Funcdata& data)
 	{
 		auto arch = static_cast<YagiArchitecture*>(data.getArch());
 		auto funcSym = arch->getSymbolDatabase().find_function(data.getAddress().getOffset());
@@ -59,79 +59,42 @@ namespace yagi
 		auto iter = data.getScopeLocal()->begin();
 		while (iter != data.getScopeLocal()->end())
 		{
-			auto sym = *iter;
+			auto symEntry = *iter;
 
-			auto high = data.findHigh(sym->getSymbol()->getName());
+			auto sym = symEntry->getSymbol();
+			auto symName = sym->getName();
+			auto symAddress = symEntry->getAddr();
+
+			auto high = data.findHigh(symName);
 			if (high != nullptr && high->getNameRepresentative() != nullptr && high->getNameRepresentative()->getDef() != nullptr)
 			{
-				auto newName = funcSym.value()->findName(high->getNameRepresentative()->getDef()->getAddr().getOffset(), "register");
-				if (newName.has_value() && newName.value() != sym->getSymbol()->getName())
-				{
-					std::stringstream ss;
-					ss << newName.value();
-					auto index = localIndex.find(newName.value());
-					if (index == localIndex.end())
-					{
-						localIndex.emplace(newName.value(), 0);
-					}
-					else
-					{
-						ss << "_" << index->second;
-						index->second++;
-					}
-
-					auto computeName = ss.str();
-
-					arch->getLogger().info("Apply registry sync var between ", sym->getSymbol()->getName(), computeName);
-					data.getScopeLocal()->renameSymbol(high->getSymbol(), computeName);
-				}
-			}		
-			iter++;
-		}
-		return 0;
-	}
-
-	/**********************************************************************/
-	/*!
-	 *	\brief	apply data sync with netnode for stack var
-	 */
-	int4 ActionRenameStackVar::apply(Funcdata& data)
-	{
-		auto arch = static_cast<YagiArchitecture*>(data.getArch());
-		auto funcSym = arch->getSymbolDatabase().find_function(data.getAddress().getOffset());
-
-		// to handle multiple var define at the same position
-		std::map<std::string, uint64_t> localIndex;
-
-		auto iter = data.getScopeLocal()->begin();
-		while (iter != data.getScopeLocal()->end())
-		{
-			auto sym = *iter;
-
-			if (sym->getAddr().getSpace()->getName() == "stack")
-			{
-				auto newName = funcSym.value()->findName(sym->getAddr().getOffset(), "stack");
-				if (newName.has_value() && newName.value() != sym->getSymbol()->getName())
-				{
-					std::stringstream ss;
-					ss << newName.value();
-					auto index = localIndex.find(newName.value());
-					if (index == localIndex.end())
-					{
-						localIndex.emplace(newName.value(), 0);
-					}
-					else
-					{
-						ss << "_" << index->second;
-						index->second++;
-					}
-
-					auto computeName = ss.str();
-
-					arch->getLogger().info("Apply registry sync var between ", sym->getSymbol()->getName(), computeName);
-					data.getScopeLocal()->renameSymbol(sym->getSymbol(), computeName);
-				}
+				auto def = high->getNameRepresentative()->getDef();
+				sym = high->getSymbol();
+				symAddress = def->getAddr();
 			}
+			 
+			auto newName = funcSym.value()->findName(symAddress.getOffset(), symAddress.getSpace()->getName());
+			if (newName.has_value() && newName.value() != symName)
+			{
+				std::stringstream ss;
+				ss << newName.value();
+				auto index = localIndex.find(newName.value());
+				if (index == localIndex.end())
+				{
+					localIndex.emplace(newName.value(), 0);
+				}
+				else
+				{
+					ss << "_" << index->second;
+					index->second++;
+				}
+
+				auto computeName = ss.str();
+
+				arch->getLogger().info("Renaming symbol : ", symName, computeName);
+				data.getScopeLocal()->renameSymbol(sym, computeName);
+			}
+		
 			iter++;
 		}
 		return 0;

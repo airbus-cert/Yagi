@@ -85,12 +85,15 @@ namespace yagi
 	void YagiArchitecture::buildAction(DocumentStorage& store)
 	{
 		SleighArchitecture::buildAction(store);
-		m_renameAction.addAction(new ActionRenameStackVar("yagi"));
+		// by default we will map name use in the frame view
 		m_renameAction.addAction(new ActionSyncStackVar("yagi"));
-		m_renameAction.addAction(new ActionRenameRegistryVar("yagi"));
+
+		m_renameAction.addAction(new ActionRenameVar("yagi"));
 
 		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "register"));
 		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "stack"));
+		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "unique"));
+		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "const"));
 	}
 
 	/**********************************************************************/

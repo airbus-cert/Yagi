@@ -114,7 +114,7 @@ public:
 	void saveType(const yagi::MemoryLocation& loc, const yagi::TypeInfo& newType) override
 	{
 		std::stringstream ss;
-		ss << yagi::to_hex(loc.pc) << "." << yagi::MemoryLocation::to_string(loc.type);
+		ss << yagi::to_hex(loc.offset) << "." << loc.spaceName;
 		m_type .emplace(ss.str(), MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()));
 	}
 

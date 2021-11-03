@@ -12,17 +12,11 @@ namespace yagi
 	 */
 	struct MemoryLocation
 	{
-		enum class MemoryLocationType
-		{
-			RAM,
-			Register,
-			Stack
-		};
 
 		/*!
 		 * \brief	type of memory 
 		 */
-		MemoryLocationType type;
+		std::string spaceName;
 
 		/*!
 		 * \brief	offset in memory type range 
@@ -30,63 +24,19 @@ namespace yagi
 		uint64_t offset;
 
 		/*!
-		 * \brief	address size in the memory type
+		 *	\brief	Size of address 
 		 */
 		uint32_t addrSize;
 
 		/*!
-		 * \brief	define memory access address (from RAM) 
+		 * \brief	pcode address definition
 		 */
 		uint64_t pc;
 
-		/*!
-		 * \brief	if there is type, the associated tytpe size
-		 */
-		uint64_t typeSize;
 
-		MemoryLocation(MemoryLocationType type, uint64_t offset, uint32_t addrSize, uint64_t pc = 0, uint64_t tyepSz = 0)
-			: type{ type }, offset{ offset }, addrSize{ addrSize }, pc { pc }, typeSize { tyepSz }
+		MemoryLocation(const std::string& spaceName, uint64_t offset, uint32_t addrSize, uint64_t pc = 0)
+			: spaceName{ spaceName }, offset{ offset }, addrSize{ addrSize }, pc{ pc }
 		{}
-
-
-		MemoryLocation(const std::string& name, uint64_t offset, uint32_t addrSize, uint64_t pc = 0, uint64_t tyepSz = 0)
-			: offset{ offset }, addrSize { addrSize }, pc{ pc }, typeSize{ tyepSz }
-		{
-			if (name == "register" || name == "unique")
-			{
-				type = MemoryLocationType::Register;
-			}
-			else if (name == "stack")
-			{
-				type = MemoryLocationType::Stack;
-			}
-			else {
-				type = MemoryLocationType::RAM;
-			}
-		}
-
-		/*!
-		 * \brief	simple type to string
-		 * \param	type
-		 * \retuen	string associated to type
-		 */
-		static std::string to_string(MemoryLocationType type)
-		{
-			switch (type)
-			{
-
-			case yagi::MemoryLocation::MemoryLocationType::RAM:
-				return "ram";
-			case yagi::MemoryLocation::MemoryLocationType::Register:
-				return "register";
-			case yagi::MemoryLocation::MemoryLocationType::Stack:
-				return "stack";
-			default:
-				break;
-			}
-
-			return "ram";
-		}
 	};
 
 	/*!
