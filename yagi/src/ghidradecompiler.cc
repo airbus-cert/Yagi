@@ -41,22 +41,40 @@ namespace yagi
 					if (nameRepr->getDef() != nullptr)
 					{
 						auto def = nameRepr->getDef();
+						MemoryLocation loc(
+							nameRepr->getAddr().getSpace()->getName(),
+							nameRepr->getAddr().getOffset(),
+							nameRepr->getAddr().getAddrSize()
+						);
+						loc.pc.push_back(def->getAddr().getOffset());
 						symbols.emplace(sym->getName(),
-							MemoryLocation(
-								nameRepr->getAddr().getSpace()->getName(),
-								nameRepr->getAddr().getOffset(),
-								nameRepr->getAddr().getAddrSize(),
-								def->getAddr().getOffset()
-							)
+							loc
 						);
 					}
 					else {
+						MemoryLocation loc(
+							nameRepr->getAddr().getSpace()->getName(),
+							nameRepr->getAddr().getOffset(),
+							nameRepr->getAddr().getAddrSize()
+						);
+						
+						// no name representative, so const (merge multiple variable)
+						auto itOp = data.beginOpAll();
+						while (itOp != data.endOpAll())
+						{
+							auto op = itOp->second;
+							for (auto i = 0; i < op->numInput(); i++)
+							{
+								auto tmpVn = op->getIn(i);
+								if (varnode->getAddr() == tmpVn->getAddr())
+								{
+									loc.pc.push_back(op->getAddr().getOffset());
+								}
+							}
+							++itOp;
+						}
 						symbols.emplace(sym->getName(),
-							MemoryLocation(
-								nameRepr->getAddr().getSpace()->getName(),
-								nameRepr->getAddr().getOffset(),
-								nameRepr->getAddr().getAddrSize()
-							)
+							loc
 						);
 					}
 				}
@@ -157,7 +175,7 @@ namespace yagi
 			std::map<std::string, MemoryLocation> symbols;
 			findVarSymbols(*func, symbols);
 			findFunctionSymbols(*func, symbols);
-			findLocalSymbols(*func, symbols);
+			//findLocalSymbols(*func, symbols);
 			
 			m_architecture->setPrintLanguage("yagi-c-language");
 

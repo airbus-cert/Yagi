@@ -95,7 +95,9 @@ TEST(TestDecompilationPayload_x86_32, RetypeLocalRegVar) {
 					FUNC_ADDR, FUNC_NAME, FUNC_SIZE, true, false, false, false
 					)
 				);
-			yagi::MemoryLocation loc("register", 0, 4, 0x0000000000401fa7);
+			yagi::MemoryLocation loc("register", 0, 4);
+			loc.pc.push_back(0x0000000000401fa7);
+
 			result->saveType(loc, MockTypeInfo(4, "pointer", true, false, false, false, false, false, false));
 			return result;
 		}),

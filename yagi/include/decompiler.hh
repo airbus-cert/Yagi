@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <optional>
+#include <vector>
 
 namespace yagi 
 {
@@ -31,11 +32,11 @@ namespace yagi
 		/*!
 		 * \brief	pcode address definition
 		 */
-		uint64_t pc;
+		std::vector<uint64_t> pc;
 
 
-		MemoryLocation(const std::string& spaceName, uint64_t offset, uint32_t addrSize, uint64_t pc = 0)
-			: spaceName{ spaceName }, offset{ offset }, addrSize{ addrSize }, pc{ pc }
+		MemoryLocation(const std::string& spaceName, uint64_t offset, uint32_t addrSize)
+			: spaceName{ spaceName }, offset{ offset }, addrSize{ addrSize }
 		{}
 	};
 

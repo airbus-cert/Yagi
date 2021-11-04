@@ -64,16 +64,14 @@ namespace yagi
 			auto sym = symEntry->getSymbol();
 			auto symName = sym->getName();
 			auto symAddress = symEntry->getAddr();
-
-			auto high = data.findHigh(symName);
-			if (high != nullptr && high->getNameRepresentative() != nullptr && high->getNameRepresentative()->getDef() != nullptr)
-			{
-				auto def = high->getNameRepresentative()->getDef();
-				sym = high->getSymbol();
-				symAddress = def->getAddr();
-			}
 			 
 			auto newName = funcSym.value()->findName(symAddress.getOffset(), symAddress.getSpace()->getName());
+			if (!newName.has_value())
+			{
+				// maybe in const namespace
+				newName = funcSym.value()->findName(symAddress.getOffset(), "const");
+			}
+
 			if (newName.has_value() && newName.value() != symName)
 			{
 				std::stringstream ss;
@@ -114,13 +112,28 @@ namespace yagi
 			uint64_t offset;
 			auto newType = funcSym.value()->findType(op->getAddr().getOffset(), m_space, offset);
 
-			if (newType.has_value() && data.getScopeLocal()->findAddr(Address(arch->getSpaceByName(m_space), offset), op->getAddr()) == nullptr)
+			auto space = m_space;
+			if (space == "const")
+			{
+				space = "stack";
+			}
+			
+			auto opAddr = op->getAddr();
+
+			// for stack based symbol
+			// we didn't specify any usepoint
+			if (space == "stack")
+			{
+				opAddr = Address();
+			}
+
+			if (newType.has_value() && data.getScopeLocal()->findAddr(Address(arch->getSpaceByName(space), offset), opAddr) == nullptr)
 			{
 				auto sym = data.getScopeLocal()->addSymbol(
 					"", 
 					static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())), 
-					Address(arch->getSpaceByName(m_space), offset), 
-					op->getAddr()
+					Address(arch->getSpaceByName(space), offset),
+					opAddr
 				)->getSymbol();
 
 				data.getScopeLocal()->setAttribute(sym, Varnode::typelock);
@@ -140,7 +153,7 @@ namespace yagi
 
 		// We will add a pcode at the begining of the function
 		// t9 = funcAddr -> CPUI_COPY input0 = addrFunc; output = t9
-		auto beginIter = data.beginOpAll();
+		auto beginIter = data.beginOp(funcAddr);
 		auto beginPcode = beginIter->second;
 
 		// find t9 register

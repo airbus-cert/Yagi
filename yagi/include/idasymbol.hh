@@ -126,10 +126,25 @@ namespace yagi
 		void saveType(const MemoryLocation& loc, const TypeInfo& newType) override;
 
 		/*!
+		 * \brief	Save a type reference at pc
+		 * \param	address	symbol address
+		 * \param	space	space name
+		 * \param	pc		pcode definition address
+		 */
+		void saveType(uint64_t address, const std::string& space, uint64_t pc, const TypeInfo& newType);
+
+		/*!
 		 * \brief	Clear type information link to a memory location
 		 * \param	loc		memory location
 		 */
 		bool clearType(const MemoryLocation& loc) override;
+
+		/*!
+		 * \brief	Clear type information link to a definition address
+		 * \param	space	space name
+		 * \param	pc
+		 */
+		bool clearType(const std::string& space, uint64_t pc);
 
 		/*!
 		 * \brief	retrieve a local type use at pc address from a particular offset

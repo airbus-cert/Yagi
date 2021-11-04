@@ -213,19 +213,39 @@ namespace yagi
 	/**********************************************************************/
 	void IdaFunctionSymbolInfo::saveType(const MemoryLocation& loc, const TypeInfo& newType)
 	{
+		for (uint64_t pc : loc.pc)
+		{
+			saveType(loc.offset, loc.spaceName, pc, newType);
+		}
+	}
+
+	/**********************************************************************/
+	void IdaFunctionSymbolInfo::saveType(uint64_t address, const std::string& space, uint64_t pc, const TypeInfo& newType)
+	{
 		std::stringstream ss, os;
-		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << loc.spaceName << "." << to_hex(loc.pc);
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << space << "." << to_hex(pc);
 		netnode n(ss.str().c_str(), 0, true);
 
-		os << newType.getName() << "|" << to_hex(loc.offset);
+		os << newType.getName() << "|" << to_hex(address);
 		n.set(os.str().c_str());
 	}
 
 	/**********************************************************************/
 	bool IdaFunctionSymbolInfo::clearType(const MemoryLocation& loc)
 	{
+		bool result = false;
+		for (uint64_t pc : loc.pc)
+		{
+			result |= clearType(loc.spaceName, pc);
+		}
+		return result;
+	}
+
+	/**********************************************************************/
+	bool IdaFunctionSymbolInfo::clearType(const std::string& space, uint64_t pc)
+	{
 		std::stringstream ss, os;
-		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << loc.spaceName << "." << to_hex(loc.pc);
+		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagitype." << space << "." << to_hex(pc);
 		netnode n(ss.str().c_str(), 0, true);
 		return n.delvalue() == 1;
 	}

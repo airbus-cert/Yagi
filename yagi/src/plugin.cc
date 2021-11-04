@@ -236,22 +236,16 @@ namespace yagi
 				}
 				else 
 				{
-					if (addr->second.pc == 0)
+					qstring name;
+					if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
 					{
-						IdaLogger().error("constant type can't be retyped");
-					}
-					else {
-						qstring name;
-						if (ask_str(&name, HIST_TYPE, "Please enter the type declaration"))
+						tinfo_t idaTypeInfo;
+						qstring parsedName;
+						if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
 						{
-							tinfo_t idaTypeInfo;
-							qstring parsedName;
-							if (parse_decl(&idaTypeInfo, &parsedName, nullptr, name.c_str(), PT_TYP))
-							{
-								auto typeInfo = IdaTypeInfoFactory().build(idaTypeInfo);
-								functionSymbolInfo.value()->saveType(addr->second, *(typeInfo.value()));
-								_RunYagi();
-							}
+							auto typeInfo = IdaTypeInfoFactory().build(idaTypeInfo);
+							functionSymbolInfo.value()->saveType(addr->second, *(typeInfo.value()));
+							_RunYagi();
 						}
 					}
 				}
@@ -298,7 +292,7 @@ namespace yagi
 		{
 			return jumpto(addr->second.offset);
 		}
-		else if (addr->second.spaceName == "stack")
+		else if (addr->second.spaceName == "stack" || addr->second.spaceName == "const")
 		{
 			auto idaFunc = get_func(code->ea);
 			auto offset = addr->second.offset;
