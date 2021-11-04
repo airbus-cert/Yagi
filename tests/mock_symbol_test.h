@@ -78,8 +78,8 @@ public:
 class MockFunctionSymbolInfo : public yagi::FunctionSymbolInfo
 {
 public:
-	std::map<std::string, std::string> m_name;
-	std::map<std::string, MockTypeInfo> m_type;
+	std::map<std::string, std::tuple<std::string, uint64_t>> m_name;
+	std::map<std::string, std::tuple<MockTypeInfo, uint64_t>> m_type;
 
 	explicit MockFunctionSymbolInfo(std::unique_ptr<yagi::SymbolInfo> symbol)
 		: yagi::FunctionSymbolInfo{ std::move(symbol) }
@@ -101,21 +101,23 @@ public:
 		{
 			return std::nullopt;
 		}
-		return iter->second;
+
+		offset = std::get<1>(iter->second);
+		return std::get<0>(iter->second);
 	}
 
 	void saveName(const yagi::MemoryLocation& loc, const std::string& value)  override
 	{
 		std::stringstream ss;
 		ss << yagi::to_hex(loc.pc.front()) << "." << loc.spaceName;
-		m_name.emplace(ss.str(), value);
+		m_name.emplace(ss.str(), std::make_tuple(value, loc.offset));
 	}
 
 	void saveType(const yagi::MemoryLocation& loc, const yagi::TypeInfo& newType) override
 	{
 		std::stringstream ss;
-		ss << yagi::to_hex(loc.offset) << "." << loc.spaceName;
-		m_type.emplace(ss.str(), MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()));
+		ss << yagi::to_hex(loc.pc.front()) << "." << loc.spaceName;
+		m_type.emplace(ss.str(), std::make_tuple(MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()), loc.offset));
 	}
 
 	bool clearType(const yagi::MemoryLocation& loc)
@@ -133,8 +135,8 @@ public:
 		{
 			return std::nullopt;
 		}
-		offset = 0;
-		return std::make_unique<MockTypeInfo>(iter->second);
+		offset = std::get<1>(iter->second);
+		return std::make_unique<MockTypeInfo>(std::get<0>(iter->second));
 	}
 };
 

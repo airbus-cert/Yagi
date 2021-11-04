@@ -187,7 +187,7 @@ namespace yagi
 			m_architecture->print->docFunction(func);
 
 			// get back context information
-			auto idaPrint = static_cast<IdaPrint*>(m_architecture->print);
+
 			return Decompiler::Result(
 				funcSym.value()->getSymbol().getName(), 
 				funcSym.value()->getSymbol().getAddress(),

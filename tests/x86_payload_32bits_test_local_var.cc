@@ -61,6 +61,7 @@ TEST(TestDecompilationPayload_x86_32, RenameLocalRegVar) {
 	);
 	arch->performActions(*func);
 
+
 	arch->setPrintLanguage("c-language");
 
 	stringstream ss;
