@@ -184,12 +184,12 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	std::optional<std::string> IdaFunctionSymbolInfo::findName(uint64_t pc, const std::string& space)
+	std::optional<std::string> IdaFunctionSymbolInfo::findName(uint64_t pc, const std::string& space, uint64_t& offset)
 	{
 		std::stringstream ss;
 		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << space << "." << to_hex(pc);
 		netnode n(ss.str().c_str(), 0, true);
-		
+
 		qstring res;
 		auto size = n.valstr(&res);
 
@@ -198,16 +198,36 @@ namespace yagi
 			return std::nullopt;
 		}
 
-		return res.c_str();
+		auto pb = res.find('|');
+		if (pb == qstring::npos)
+		{
+			return std::nullopt;
+		}
+
+		std::string name = res.substr(0, pb).c_str();
+		offset = std::stoull(res.substr(pb + 1).c_str(), nullptr, 16);
+
+		return name;
 	}
 
 	/**********************************************************************/
-	void IdaFunctionSymbolInfo::saveName(uint64_t pc, const std::string& space, const std::string& value)
+	void IdaFunctionSymbolInfo::saveName(const MemoryLocation& loc, const std::string& value)
 	{
-		std::stringstream ss;
+		for (uint64_t pc : loc.pc)
+		{
+			saveName(loc.offset, loc.spaceName, pc, value);
+		}
+	}
+
+	/**********************************************************************/
+	void IdaFunctionSymbolInfo::saveName(uint64_t address, const std::string& space, uint64_t pc, const std::string& value)
+	{
+		std::stringstream ss, os;
 		ss << "$ " << to_hex(m_symbol->getAddress()) << ".yagireg." << space << "." << to_hex(pc);
 		netnode n(ss.str().c_str(), 0, true);
-		n.set(value.c_str());
+
+		os << value << "|" << to_hex(address);
+		n.set(os.str().c_str());
 	}
 
 	/**********************************************************************/

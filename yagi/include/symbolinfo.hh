@@ -167,16 +167,15 @@ namespace yagi
 		 * \param	space	name of memory space
 		 * \return	if found the name of var
 		 */
-		virtual std::optional<std::string> findName(uint64_t pc, const std::string& space) = 0;
+		virtual std::optional<std::string> findName(uint64_t pc, const std::string& space, uint64_t& offset) = 0;
 
 		/*!
 		 * \brief	Save a var name use at pc for the space memory
 		 *			use to save local stack or registry var name
-		 * \param	pc		use address
-		 * \param	value	new name
+		 * \param	loc		memory location
 		 * \param	space	name of the memory space where var come from
 		 */
-		virtual void saveName(uint64_t pc, const std::string& value, const std::string& space) = 0;
+		virtual void saveName(const MemoryLocation& loc, const std::string& space) = 0;
 
 		/*!
 		 * \brief	Save a type ref use at memory location

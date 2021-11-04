@@ -57,10 +57,10 @@ namespace yagi
 							nameRepr->getAddr().getOffset(),
 							nameRepr->getAddr().getAddrSize()
 						);
-						
+
 						// no name representative, so const (merge multiple variable)
-						auto itOp = data.beginOpAll();
-						while (itOp != data.endOpAll())
+						auto itOp = data.beginOp(data.getAddress());
+						while (itOp != data.endOp(data.getAddress() + data.getSize()))
 						{
 							auto op = itOp->second;
 							for (auto i = 0; i < op->numInput(); i++)

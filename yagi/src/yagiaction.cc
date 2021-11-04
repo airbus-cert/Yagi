@@ -53,46 +53,28 @@ namespace yagi
 		auto arch = static_cast<YagiArchitecture*>(data.getArch());
 		auto funcSym = arch->getSymbolDatabase().find_function(data.getAddress().getOffset());
 
-		// to handle multiple var define at the same position
-		std::map<std::string, uint64_t> localIndex;
-
-		auto iter = data.getScopeLocal()->begin();
-		while (iter != data.getScopeLocal()->end())
+		auto iter = data.beginOpAll();
+		while (iter != data.endOpAll())
 		{
-			auto symEntry = *iter;
+			auto op = iter->second;
 
-			auto sym = symEntry->getSymbol();
-			auto symName = sym->getName();
-			auto symAddress = symEntry->getAddr();
-			 
-			auto newName = funcSym.value()->findName(symAddress.getOffset(), symAddress.getSpace()->getName());
-			if (!newName.has_value())
+			uint64_t offset;
+			auto newName = funcSym.value()->findName(op->getAddr().getOffset(), m_space, offset);
+
+			auto space = m_space;
+			if (space == "const")
 			{
-				// maybe in const namespace
-				newName = funcSym.value()->findName(symAddress.getOffset(), "const");
+				space = "stack";
 			}
 
-			if (newName.has_value() && newName.value() != symName)
+			auto symEntry = data.getScopeLocal()->findAddr(Address(arch->getSpaceByName(space), offset), op->getAddr());
+
+			if (newName.has_value() && symEntry != nullptr)
 			{
-				std::stringstream ss;
-				ss << newName.value();
-				auto index = localIndex.find(newName.value());
-				if (index == localIndex.end())
-				{
-					localIndex.emplace(newName.value(), 0);
-				}
-				else
-				{
-					ss << "_" << index->second;
-					index->second++;
-				}
-
-				auto computeName = ss.str();
-
-				arch->getLogger().info("Renaming symbol : ", symName, computeName);
-				data.getScopeLocal()->renameSymbol(sym, computeName);
+				auto sym = symEntry->getSymbol();
+				data.getScopeLocal()->renameSymbol(sym,  newName.value());
+				data.getScopeLocal()->setAttribute(sym, Varnode::namelock);
 			}
-		
 			iter++;
 		}
 		return 0;
@@ -127,17 +109,22 @@ namespace yagi
 				opAddr = Address();
 			}
 
+			auto symEntry = data.getScopeLocal()->findAddr(Address(arch->getSpaceByName(space), offset), opAddr);
+
 			if (newType.has_value() && data.getScopeLocal()->findAddr(Address(arch->getSpaceByName(space), offset), opAddr) == nullptr)
 			{
-				auto sym = data.getScopeLocal()->addSymbol(
-					"", 
-					static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())), 
-					Address(arch->getSpaceByName(space), offset),
-					opAddr
-				)->getSymbol();
+				if (symEntry == nullptr)
+				{
+					auto sym = data.getScopeLocal()->addSymbol(
+						"",
+						static_cast<TypeManager*>(arch->types)->findByTypeInfo(*(newType.value())),
+						Address(arch->getSpaceByName(space), offset),
+						opAddr
+					)->getSymbol();
 
-				data.getScopeLocal()->setAttribute(sym, Varnode::typelock);
-				sym->setIsolated(true);
+					data.getScopeLocal()->setAttribute(sym, Varnode::typelock);
+					//sym->setIsolated(true);
+				}
 			}
 			iter++;
 		}

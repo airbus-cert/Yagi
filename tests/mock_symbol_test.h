@@ -91,7 +91,7 @@ public:
 		return std::nullopt;
 	}
 
-	std::optional<std::string> findName(uint64_t pc, const std::string& space) override
+	std::optional<std::string> findName(uint64_t pc, const std::string& space, uint64_t& offset) override
 	{
 		std::stringstream ss;
 		ss << yagi::to_hex(pc) << "." << space;
@@ -104,10 +104,10 @@ public:
 		return iter->second;
 	}
 
-	void saveName(uint64_t pc, const std::string& value, const std::string& space)  override
+	void saveName(const yagi::MemoryLocation& loc, const std::string& value)  override
 	{
 		std::stringstream ss;
-		ss << yagi::to_hex(pc) << "." << space;
+		ss << yagi::to_hex(loc.pc.front()) << "." << loc.spaceName;
 		m_name.emplace(ss.str(), value);
 	}
 
@@ -115,7 +115,7 @@ public:
 	{
 		std::stringstream ss;
 		ss << yagi::to_hex(loc.offset) << "." << loc.spaceName;
-		m_type .emplace(ss.str(), MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()));
+		m_type.emplace(ss.str(), MockTypeInfo(newType.getSize(), newType.getName(), newType.isInt(), newType.isBool(), newType.isFloat(), newType.isVoid(), newType.isConst(), newType.isChar(), newType.isUnicode()));
 	}
 
 	bool clearType(const yagi::MemoryLocation& loc)

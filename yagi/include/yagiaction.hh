@@ -29,11 +29,15 @@ namespace yagi
 	 */
 	class ActionRenameVar : public Action
 	{
+	protected:
+		std::string m_space;
 	public:
-		ActionRenameVar(const string& g) : Action(Action::ruleflags::rule_onceperfunc, "renamevar", g) {}
+		ActionRenameVar(const string& g, const string& space) 
+			: Action(Action::ruleflags::rule_onceperfunc, "renamevar", g), m_space{ space }
+		{}
 		virtual Action* clone(const ActionGroupList& grouplist) const {
 			if (!grouplist.contains(getGroup())) return (Action*)0;
-			return new ActionRenameVar(getGroup());
+			return new ActionRenameVar(getGroup(), m_space);
 		}
 		/*!
 		 * \brief	Will apply the stack rename

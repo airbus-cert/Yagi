@@ -88,7 +88,10 @@ namespace yagi
 		// by default we will map name use in the frame view
 		m_renameAction.addAction(new ActionSyncStackVar("yagi"));
 
-		m_renameAction.addAction(new ActionRenameVar("yagi"));
+		m_renameAction.addAction(new ActionRenameVar("yagi", "register"));
+		m_renameAction.addAction(new ActionRenameVar("yagi", "stack"));
+		m_renameAction.addAction(new ActionRenameVar("yagi", "unique"));
+		m_renameAction.addAction(new ActionRenameVar("yagi", "const"));
 
 		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "register"));
 		m_retypeAction.addAction(new ActionLoadLocalScope("yagi", "stack"));

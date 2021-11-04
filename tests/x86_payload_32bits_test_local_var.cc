@@ -43,7 +43,9 @@ TEST(TestDecompilationPayload_x86_32, RenameLocalRegVar) {
 						FUNC_ADDR, FUNC_NAME, FUNC_SIZE, true, false, false, false
 					)
 				);
-			result->saveName(0x0000000000401fa7, "yeah", "register");
+			yagi::MemoryLocation loc("register", 0x0000000000000000, 4);
+			loc.pc.push_back(0x0000000000401fa7);
+			result->saveName(loc, "yeah");
 			return result;
 		}),
 		std::make_unique<MockTypeInfoFactory>([](uint64_t) { return std::nullopt; }, [](const std::string&) { return std::nullopt; }),

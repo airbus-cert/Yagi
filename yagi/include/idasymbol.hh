@@ -104,18 +104,20 @@ namespace yagi
 		 *			use to staore registry or stack var name
 		 * \param	pc		use address
 		 * \param	space	name of memory space
+		 * \param	offset	symbol offset
 		 * \return	if found the name of var
 		 */
-		std::optional<std::string> findName(uint64_t pc, const std::string& space) override;
+		std::optional<std::string> findName(uint64_t pc, const std::string& space, uint64_t& offset) override;
 
 		/*!
 		 * \brief	Save a var name use at pc for the space memory
 		 *			use to save local stack or registry var name
-		 * \param	pc		use address
-		 * \param	value	new name
+		 * \param	loc		memory location
 		 * \param	space	name of the memory space where var come from
 		 */
-		void saveName(uint64_t pc, const std::string& value, const std::string& space) override;
+		void saveName(const MemoryLocation& loc, const std::string& space) override;
+		void saveName(uint64_t address, const std::string& space, uint64_t pc, const std::string& value);
+
 
 		/*!
 		 * \brief	Save a type ref use at memory location
