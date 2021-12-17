@@ -294,3 +294,13 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/6502" DE
 SLA_TARGET(sla_6502 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/6502/data/languages/6502.slaspec" "${SLEIGH_DIR}/6502.sla")
 set_property(TARGET sla_6502 PROPERTY FOLDER "sleigh")
 install(FILES "${SLEIGH_DIR}/6502.sla" DESTINATION "plugins/Ghidra/Processors/6502/data/languages/")
+
+#######################
+######### Z80  #######
+#######################
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Z80" DESTINATION "plugins/Ghidra/Processors/")
+
+# compile file for Z80
+SLA_TARGET(sla_Z80 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Z80/data/languages/z80.slaspec" "${SLEIGH_DIR}/z80.sla")
+set_property(TARGET sla_Z80 PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/z80.sla" DESTINATION "plugins/Ghidra/Processors/Z80/data/languages/")

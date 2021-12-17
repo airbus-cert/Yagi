@@ -82,6 +82,9 @@ static yagi::Compiler compute_compiler() {
 	case PLFM_6502:
 		language = yagi::Compiler::Language::P6502;
 		break;
+	case PLFM_Z80:
+		language = yagi::Compiler::Language::Z80;
+		break;
 	default:
 		throw yagi::UnknownCompiler(processor_id());
 	}

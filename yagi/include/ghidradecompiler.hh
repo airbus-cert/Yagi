@@ -44,12 +44,11 @@ namespace yagi
 		void findFunctionSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const;
 
 		/*!
-		 * \param	Sometimes some variable especially stack var are not high level var but are defines into local scope
-		 *			this funciton will try to find unknown symbols
+		 * \param	Trying to find Constant symbols
 		 * \param	data	the source function
 		 * \param	symbols	the output symbol maps
 		 */
-		void findLocalSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const;
+		void findConstantSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const;
 
 	public:
 		/*!

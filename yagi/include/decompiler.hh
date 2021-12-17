@@ -56,7 +56,8 @@ namespace yagi
 			MIPS,			// MIPS
 			SPARC,			// Sparc
 			ATMEL,			// ATMEL
-			P6502			// 6502
+			P6502,			// 6502
+			Z80				// 8085 Z80
 		};
 
 		enum class Endianess {

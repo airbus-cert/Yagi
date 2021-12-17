@@ -122,21 +122,26 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	void GhidraDecompiler::findLocalSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const
+	void GhidraDecompiler::findConstantSymbols(const Funcdata& data, std::map<std::string, MemoryLocation>& symbols) const
 	{
-		auto iter = data.getScopeLocal()->begin();
-		while (iter != data.getScopeLocal()->end())
+		auto iter = data.beginOp(data.getAddress());
+		while (iter != data.endOp(data.getAddress() + data.getSize()))
 		{
-			auto symEntry = *iter;
-			auto sym = symEntry->getSymbol();
-			symbols.emplace(
-				sym->getName(),
-				MemoryLocation(
-					symEntry->getAddr().getSpace()->getName(),
-					symEntry->getFirstUseAddress().getOffset(),
-					symEntry->getAddr().getSpace()->getAddrSize()
-				)
-			);
+			auto op = iter->second;
+			for (auto i = 0; i < op->numInput(); i++)
+			{
+				auto varnode = op->getIn(i);
+				if (varnode->isConstant())
+				{
+					MemoryLocation loc(
+						varnode->getAddr().getSpace()->getName(),
+						varnode->getAddr().getOffset(),
+						varnode->getAddr().getSpace()->getAddrSize()
+					);
+					loc.pc.push_back(op->getAddr().getOffset());
+					
+				}
+			}
 			iter++;
 		}
 	}
@@ -175,7 +180,7 @@ namespace yagi
 			std::map<std::string, MemoryLocation> symbols;
 			findVarSymbols(*func, symbols);
 			findFunctionSymbols(*func, symbols);
-			//findLocalSymbols(*func, symbols);
+			findConstantSymbols(*func, symbols);
 			
 			m_architecture->setPrintLanguage("yagi-c-language");
 
@@ -260,6 +265,10 @@ namespace yagi
 			language = "6502";
 			languageMeta = "default";
 			break;
+		case Compiler::Language::Z80:
+			language = "z80";
+			languageMeta = "default";
+			break;
 		case Compiler::Language::ARM:
 			{
 				if (compilerType.mode == Compiler::Mode::M64)
@@ -334,10 +343,6 @@ namespace yagi
 	{
 		switch (compilerType.language)
 		{
-		case Compiler::Language::X86:
-			return "__stdcall";
-		case Compiler::Language::X86_GCC:
-			return "__stdcall";
 		case Compiler::Language::X86_WINDOWS:
 			return "__fastcall";
 		case Compiler::Language::ARM:
@@ -345,18 +350,8 @@ namespace yagi
 				return "__stdcall";
 			else
 				return "__cdecl";
-		case Compiler::Language::PPC:
-			return "__stdcall";
-		case Compiler::Language::MIPS:
-			return "__stdcall";
-		case Compiler::Language::SPARC:
-			return "__stdcall";
-		case Compiler::Language::ATMEL:
-			return "__stdcall";
-		case Compiler::Language::P6502:
-			return "__stdcall";
 		default:
-			break;
+			return "__stdcall";
 		}
 
 		throw NoDefaultCallingConvention();
