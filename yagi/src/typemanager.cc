@@ -14,7 +14,7 @@ namespace yagi
 	}
 
 	/**********************************************************************/
-	Datatype* TypeManager::findById(const string& n, uint8 id)
+	Datatype* TypeManager::findById(const string& n, uint8 id, int4 sz)
 	{
 		auto cached = findByIdLocal(n, id);
 

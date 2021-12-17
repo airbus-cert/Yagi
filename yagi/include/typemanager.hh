@@ -30,15 +30,7 @@ namespace yagi
 		 * \param	id	id of the type
 		 * \return	found type
 		 */
-		Datatype* findById(const string& n, uint8 id) override;
-
-		/*!
-		 * \brief	inject API is not available throw normal API
-		 *			We need to use XML tricks...
-		 * \param	fd	function data to update
-		 * \param	inject_name	name of th injection
-		 */
-		void setInjectAttribute(Funcdata& fd, std::string inject_name);
+		Datatype* findById(const string& n, uint8 id, int4 sz) override;
 
 	public:
 		/*!

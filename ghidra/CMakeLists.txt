@@ -58,7 +58,6 @@ set(DECOMPILER_SOURCE_BASE_CXX
 		${DECOMPILER_SOURCE_DIR}/opbehavior.cc
 		${DECOMPILER_SOURCE_DIR}/paramid.cc
 		${DECOMPILER_SOURCE_DIR}/transform.cc
-		${DECOMPILER_SOURCE_DIR}/string_ghidra.cc
 		${DECOMPILER_SOURCE_DIR}/stringmanage.cc
 		# ${DECOMPILER_SOURCE_DIR}/callgraph.cc			// uncomment for debug
 		# ${DECOMPILER_SOURCE_DIR}/ifacedecomp.cc		// uncomment for debug

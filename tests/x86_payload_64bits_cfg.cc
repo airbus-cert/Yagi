@@ -82,5 +82,5 @@ TEST(TestDecompilationPayload_x86_64, CheckControlFlowGuardPatch) {
 	//print as C
 	arch->print->docFunction(func);
 	
-	ASSERT_STREQ(ss.str().c_str(), "\n/* WARNING: Yagi : Control Flow Guard patching */\n/* WARNING: Restarted to delay deadcode elimination for space: register */\n\n__uint64 test(__uint64 param_1,__uint64 param_2,__uint32 param_3,__uint64 param_4)\n\n{\n  int32_t iVar1;\n  code *pcVar2;\n  \n  do {\n    pcVar2 = (code *)(*unk_0x140033620)(param_4,param_2);\n    if ((int32_t)pcVar2 == 0) {\n      unk_0x140045ba8 = (*pcVar2)();\n      return 0;\n    }\n    iVar1 = (*unk_0x140033e78)(param_2,param_3);\n  } while (iVar1 == 0);\n  unk_0x140045ba8 = 0;\n  return 1;\n}\n");
+	ASSERT_STREQ(ss.str().c_str(), "\n/* WARNING: Yagi : Control Flow Guard patching */\n/* WARNING: Heritage AFTER dead removal. Example location: RAX : 0x000140018aa3 */\n/* WARNING: Restarted to delay deadcode elimination for space: register */\n\n__uint64 test(__uint64 param_1,__uint64 param_2,__uint32 param_3,__uint64 param_4)\n\n{\n  code *in_RAX;\n  \n  do {\n    (*unk_0x140033620)(param_4,param_2);\n    if ((int32_t)in_RAX == 0) {\n      unk_0x140045ba8 = (*in_RAX)();\n      return 0;\n    }\n    in_RAX = (code *)(*unk_0x140033e78)(param_2,param_3);\n  } while ((int32_t)in_RAX == 0);\n  unk_0x140045ba8 = 0;\n  return 1;\n}\n");
 }
