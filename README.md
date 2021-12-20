@@ -23,13 +23,13 @@ Here is the list of architectures that Yagi can decompile at the moment:
 |sparc|✔️|
 |avr8|✔️|
 |6502|✔️|
+|z80|✔️|
 |cp1600|❌|
 |cr16|❌|
 |dalvik|❌|
 |jvm|❌|
 |tricore|❌|
 |riscv|❌|
-|z80|❌|
 |System Z|❌|
 |xCore|❌|
 |68000|❌|

@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.11)
 
 # Project
-project(yagi LANGUAGES CXX VERSION 1.3.0)
+project(yagi LANGUAGES CXX VERSION 1.4.0)
 
 # Opions
 option(BUILD_TESTS "Build test programs" OFF)

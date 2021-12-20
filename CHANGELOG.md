@@ -1,3 +1,9 @@
+# 1.4.0
+* Upgrade to Ghidra 10.1
+* Add support for z80
+* Improve variable management (typing and naming)
+* Fix issues on T9 register MIPS compiler optim
+
 # 1.3.0
 * Add action do deal with T9 register MIPS compiler optim
 * Add rule to deal with Control Flow Guard
