@@ -3,6 +3,7 @@
 * Add support for z80
 * Improve variable management (typing and naming)
 * Fix issues on T9 register MIPS compiler optim
+* Fix access violation in Ghidra (now use a fork to track local changes)
 
 # 1.3.0
 * Add action do deal with T9 register MIPS compiler optim
