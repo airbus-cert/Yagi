@@ -10,6 +10,7 @@
 
 namespace yagi 
 {
+	class YagiScope;
 	/*!
 	 *	\brief	Main Ghidra core class
 	 *			Use to centralize all class associated with
@@ -56,6 +57,8 @@ namespace yagi
 		 *			These actions are arhitecture dependent
 		 */
 		ActionGroup m_archSpecific;
+
+		ActionGroup m_initAction;
 
 		/*!
 		 *	\brief	allow object that have access to the core
@@ -155,6 +158,8 @@ namespace yagi
 		 */
 		TypeInfoFactory& getTypeInfoFactory() const;
 
+		YagiScope* getYagiScope();
+
 		/*!
 		 *	\brief	Access to the current logger
 		 *	\return	An implementation of a logger
@@ -190,6 +195,12 @@ namespace yagi
 		 * \param	action	new action
 		 */
 		void addArchAction(Action * action);
+
+		/*!
+		 * \brief	Init action are performed before all other
+		 * \param	action	new action
+		 */
+		void addInitAction(Action * action);
 	};
 }
 
