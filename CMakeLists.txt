@@ -29,6 +29,9 @@ add_subdirectory(ghidra)
 # The IDA plugin
 add_subdirectory(yagi)
 
+# Add third party loader
+add_subdirectory(loader)
+
 # Tests
 if(BUILD_TESTS)
     add_subdirectory(tests)
