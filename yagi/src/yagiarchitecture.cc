@@ -1,9 +1,9 @@
 #include "architecture.hh"
 #include "yagiaction.hh"
 #include "loader.hh"
-#include "scope.hh"
 #include "typemanager.hh"
 #include "coreaction.hh"
+#include "scope.hh"
 
 namespace yagi 
 {
@@ -24,7 +24,8 @@ namespace yagi
 		m_defaultCC { defaultCC },
 		m_renameAction(Action::rule_onceperfunc, "yagirename"),
 		m_retypeAction(Action::rule_onceperfunc, "yagiretype"),
-		m_archSpecific(Action::rule_onceperfunc, "yagiarch")
+		m_archSpecific(Action::rule_onceperfunc, "yagiarch"),
+		m_initAction(Action::rule_onceperfunc, "yagiinit")
 	{
 	}
 
@@ -106,7 +107,10 @@ namespace yagi
 		m_archSpecific.reset(data);
 		m_renameAction.reset(data);
 		m_retypeAction.reset(data);
+		m_initAction.reset(data);
 
+		// perform init action
+		m_initAction.perform(data);
 
 		// Break just after start action
 		// to have the CFG built
@@ -138,6 +142,12 @@ namespace yagi
 	}
 
 	/**********************************************************************/
+	void YagiArchitecture::addInitAction(Action* action)
+	{
+		m_initAction.addAction(action);
+	}
+
+	/**********************************************************************/
 	SymbolInfoFactory& YagiArchitecture::getSymbolDatabase() const
 	{
 		return *m_symbols.get();
@@ -147,6 +157,12 @@ namespace yagi
 	TypeInfoFactory& YagiArchitecture::getTypeInfoFactory() const
 	{
 		return *m_type.get();
+	}
+
+	/**********************************************************************/
+	YagiScope* YagiArchitecture::getYagiScope()
+	{
+		return static_cast<YagiScope*>(symboltab->getGlobalScope());
 	}
 
 	/**********************************************************************/

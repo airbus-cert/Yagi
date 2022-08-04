@@ -57,7 +57,8 @@ namespace yagi
 			SPARC,			// Sparc
 			ATMEL,			// ATMEL
 			P6502,			// 6502
-			Z80				// 8085 Z80
+			Z80,			// 8085 Z80
+			eBPF			// eBpf loader from https://github.com/cylance/eBPF_processor
 		};
 
 		enum class Endianess {

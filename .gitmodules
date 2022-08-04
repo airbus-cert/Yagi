@@ -2,3 +2,6 @@
 	path = ghidra/ghidra
 	url = https://github.com/airbus-cert/ghidra
 	branch = fix-memory-access-violation
+[submodule "ghidra/eBPF-for-Ghidra"]
+	path = ghidra/eBPF-for-Ghidra
+	url = https://github.com/Nalen98/eBPF-for-Ghidra.git

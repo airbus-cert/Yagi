@@ -302,6 +302,10 @@ namespace yagi
 				}
 			}
 			break;
+		case Compiler::Language::eBPF:
+			language = "eBPF";
+			languageMeta = "default";
+			break;
 		}
 
 		
@@ -389,6 +393,9 @@ namespace yagi
 			break;
 		case Compiler::Language::MIPS:
 			architecture->addArchAction(new ActionMIPST9Optimization("t9optim"));
+			break;
+		case Compiler::Language::eBPF:
+			architecture->addInitAction(new ActionAddeBPFSyscall("ebpfsyscall"));
 			break;
 		}
 

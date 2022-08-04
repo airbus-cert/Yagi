@@ -35,5 +35,4 @@ namespace yagi
 
 		return 0;
 	}
-
 } // end of namespace yagi

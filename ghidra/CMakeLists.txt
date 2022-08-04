@@ -303,3 +303,13 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Z80" DES
 SLA_TARGET(sla_Z80 "${CMAKE_CURRENT_SOURCE_DIR}/ghidra/Ghidra/Processors/Z80/data/languages/z80.slaspec" "${SLEIGH_DIR}/z80.sla")
 set_property(TARGET sla_Z80 PROPERTY FOLDER "sleigh")
 install(FILES "${SLEIGH_DIR}/z80.sla" DESTINATION "plugins/Ghidra/Processors/Z80/data/languages/")
+
+#######################
+######### eBPF  #######
+#######################
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/eBPF-for-Ghidra" DESTINATION "plugins/Ghidra/Processors/")
+
+# compile file for eBPF
+SLA_TARGET(sla_eBPF "${CMAKE_CURRENT_SOURCE_DIR}/eBPF-for-Ghidra/data/languages/eBPF.slaspec" "${SLEIGH_DIR}/eBPF.sla")
+set_property(TARGET sla_eBPF PROPERTY FOLDER "sleigh")
+install(FILES "${SLEIGH_DIR}/eBPF.sla" DESTINATION "plugins/Ghidra/Processors/eBPF-for-Ghidra/data/languages/")
