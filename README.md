@@ -24,6 +24,7 @@ Here is the list of architectures that Yagi can decompile at the moment:
 |avr8|✔️|
 |6502|✔️|
 |z80|✔️|
+|eBPF|:bee:✔️:bee:|
 |cp1600|❌|
 |cr16|❌|
 |dalvik|❌|
