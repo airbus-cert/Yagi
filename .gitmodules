@@ -5,3 +5,6 @@
 [submodule "ghidra/eBPF-for-Ghidra"]
 	path = ghidra/eBPF-for-Ghidra
 	url = https://github.com/Nalen98/eBPF-for-Ghidra.git
+[submodule "loader/eBPF_processor"]
+	path = loader/eBPF_processor
+	url = https://github.com/cylance/eBPF_processor.git
